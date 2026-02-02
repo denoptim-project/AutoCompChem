@@ -22,7 +22,7 @@ public class AtomTupleConstants
 	 */
 	// WARNING: if you change this list you must update also the documentation
     // at the resource inputdefinition/*.json and
-	// inputdefinition/AtomTupleGenerator.jsonv
+	// inputdefinition/AtomTupleGenerator.json
 	public static final String KEYUSECURRENTVALUE = "GETCURRENTVALUE";
 
 	/**
@@ -32,8 +32,18 @@ public class AtomTupleConstants
 	 */
     // WARNING: if you change this list you must update also the documentation
     // at the resource inputdefinition/*.json and
-	// inputdefinition/AtomTupleGenerator.jsonv
+	// inputdefinition/AtomTupleGenerator.json
 	public static final String KEYONLYBONDED = "ONLYBONDED";
+
+    /**
+     * Key of value-less attribute of {@link AtomTupleMatchingRule} that 
+     * require to restrict the generation of annotated tuples of atoms 
+     * to those that contain atoms belonging to different molecules.
+     */
+    // WARNING: if you change this list you must update also the documentation
+    // at the resource inputdefinition/*.json and
+	// inputdefinition/AtomTupleGenerator.json
+	public static final String KEYONLYINTERMOLECULAR = "ONLYINTERMOLECULAR";
 
 	/**
 	 * Key of value-less attribute of {@link AtomTupleMatchingRule} that 
@@ -79,7 +89,8 @@ public class AtomTupleConstants
     // at the resource inputdefinition/*.json and
 	// inputdefinition/AtomTupleGenerator.json
     public static final String[] DEFAULTVALUELESSKEYS = {
-    		KEYONLYBONDED, KEYUSECURRENTVALUE, KEYGETATOMLABELS};
+    		KEYONLYBONDED, KEYONLYINTERMOLECULAR, 
+            KEYUSECURRENTVALUE, KEYGETATOMLABELS};
     
     /**
      * Key used to define the string used to name {@link AtomTupleMatchingRule}s

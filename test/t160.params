@@ -1,0 +1,10 @@
+#
+# Parameters for Automated Computational Chemistry
+#
+VERBOSITY: 5
+TASK: MeasureGeomDescriptors
+INFILE: ../t160-mol.sdf
+$STARTSMARTS:
+[#44] [#17] name=myDist onlyIntermolecular
+[#17] [#44] [$([#6;X3]([#1])([#1])~[#44])] onlyBonded
+$END

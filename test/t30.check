@@ -10,12 +10,12 @@ if [ $? != 1 ] ; then
   echo NOT Passed 2
   exit -1
 fi
-grep -q 'Mol.0 BESCAF  Ang.ang-2 C15:Fe1:C16 = 97.78' t30.log
+grep -q 'Mol.0 BESCAF Ang.ang C15:Fe1:C16 = 97.78' t30.log
 if [ $? != 0 ] ; then
   echo NOT Passed 3
   exit -1
 fi
-grep -q 'Mol.0 BESCAF  Dih.dihBLA-3 C15:Fe1:C16:O6 = -45.922' t30.log
+grep -q 'Mol.0 BESCAF Dih.dihBLA C15:Fe1:C16:O6 = -45.922' t30.log
 if [ $? != 0 ] ; then
   echo NOT Passed 4
   exit -1
@@ -31,12 +31,12 @@ if [ $? != 1 ] ; then
   echo NOT Passed 6
   exit -1
 fi
-grep -q 'Mol.1 CEPKOZ  Dst.dist-1 C35:O9 = 1.178' t30.log
+grep -q 'Mol.1 CEPKOZ Dst.dist C35:O9 = 1.178' t30.log
 if [ $? != 0 ] ; then
   echo NOT Passed 7
   exit -1
 fi
-grep -q 'Mol.1 CEPKOZ  Dst.dist-4 Fe1:S3 = 2.275' t30.log
+grep -q 'Mol.1 CEPKOZ Dst.dist Fe1:S3 = 2.275' t30.log
 if [ $? != 0 ] ; then
   echo NOT Passed 8
   exit -1
@@ -52,12 +52,12 @@ if [ $? != 1 ] ; then
   echo NOT Passed 10
   exit -1
 fi
-grep -q 'Mol.2 FEXKUQ  Ang.ang-2 C17:Fe3:C19 = 97.378' t30.log
+grep -q 'Mol.2 FEXKUQ Ang.ang C17:Fe3:C19 = 97.378' t30.log
 if [ $? != 0 ] ; then
   echo NOT Passed 11
   exit -1
 fi
-grep -q 'Mol.2 FEXKUQ  Dst.dist-4 Fe3:S4 = 2.172' t30.log
+grep -q 'Mol.2 FEXKUQ Dst.dist Fe3:S4 = 2.172' t30.log
 if [ $? != 0 ] ; then
   echo NOT Passed 12
   exit -1

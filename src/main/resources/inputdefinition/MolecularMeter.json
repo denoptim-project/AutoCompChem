@@ -1,27 +1,18 @@
 [
   {
-    "key": "SMARTS",
-    "casedKey": "SMARTS",
-    "type": "<String>",
-    "doc": "Lines defining the quantities to measure. Each line must adhere to the following syntax: <String> <String> <String> [<String> [<String>]] where the first string is any measure identifier that must beging with DIST, ANG, or DIH to indicate the kind of measure (i.e., distance, angle, dihedral) and each following string is a SMARTS query identifying atoms used to calculate values."
-  },
-  {
-    "key": "ATOMINDEXES",
-    "casedKey": "atomIndexes",
-    "type": "<String>",
-    "doc": "Lines defining the quantities to measure. Each line must adhere to the following syntax: <String> <int> <int> [<int> [<int>]] where the first string is any measure identifier that must beging with DIST, ANG, or DIH to indicate the kind of measure (i.e., distance, angle, dihedral) and each following each string is a SMARTS query identifying atoms used to calculate values."
-  },
-  {
-    "key": "ONLYBONDED",
-    "casedKey": "onlyBonded",
-    "type": "void",
-    "doc": "If this option is given, then only the tuples corresponding to chains of bonded atoms will be considered as measurable quantities. For example, is 3 SMARTS are given, we'll measure only the angles that correspond to triplets of atoms A-B-C where A and B are bonded and B and C are bonded."
-  },
-  {
     "key": "OUTDATAFILE",
     "casedKey": "outDataFile",
     "type": "<String>",
     "doc": "The pathname to the file where to save the resulting descriptors."
+  },
+  {
+    "embeddedWorker": "autocompchem.modeling.atomtuple.AtomTupleGenerator",
+    "tag": "definition of geometric descriptors to measure",
+    "task": "generateAtomTuples",
+    "ignorableWorkers": [
+      "autocompchem.modeling.AtomLabelsGenerator",
+      "autocompchem.molecule.AtomContainerInputProcessor"
+    ]
   },
   {
     "embeddedWorker": "autocompchem.molecule.AtomContainerInputProcessor",

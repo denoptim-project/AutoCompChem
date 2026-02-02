@@ -2,6 +2,6 @@ VERBOSITY: 7
 TASK: MeasureGeomDescriptors
 INFILE: ../t121-mol.sdf
 $STARTSMARTS:
-dist [$([#1]~[Ru])] [Ru]
-dist [$([#6]~[#1]~[Ru])] [Ru]
+[$([#1]~[Ru])] [Ru] name=dist
+[$([#6]~[#1]~[Ru])] [Ru] name=dist
 $END

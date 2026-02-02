@@ -1,0 +1,22 @@
+#!/bin/bash
+
+function not_passed() {
+  echo "NOT Passed: check condition leading to line '$1' of '$0'"
+  exit -1
+}
+
+if [ ! -f t160.log ] ; then not_passed $LINENO ; fi
+
+n=0;n=$(grep -c 'Mol.0 noname Dst.myDist .*Ru.* ' t160.log)
+if [ $n != 4 ] ; then not_passed $LINENO ; fi
+
+n=0;n=$(grep -c 'Mol.0 noname Ang. ' t160.log)
+if [ $n != 4 ] ; then not_passed $LINENO ; fi
+
+if grep -q 'Termination status: 0' t160.log ; then
+  echo Passed
+  exit 0
+else
+  echo NOT Passed 99
+  exit -1
+fi

@@ -2,7 +2,7 @@ JOBSTART
 JOBSTART
 APP:ACC
 TASK:MeasureGeomDescriptors
-SMARTS:dist1 [#7] [Ru]
+SMARTS: [#7] [Ru] name=dist1
 VERBOSITY:7
 INFILE:../cli14-mol.sdf
 JOBEND
@@ -17,8 +17,8 @@ JOBEND
 JOBSTART
 APP:ACC
 TASK:MeasureGeomDescriptors
-SMARTS:$STARTdist2 [$([#6]~[Ru])] [Ru]
-dist3 [#7] [Ru]$END
+SMARTS:$START[$([#6]~[Ru])] [Ru] name=dist2
+[#7] [Ru] name=dist3$END
 VERBOSITY:7
 INFILE:cli14-pruned.sdf
 JOBEND

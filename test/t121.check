@@ -1,12 +1,12 @@
 #!/bin/bash
 
-grep -q -i "Dst.dist-0 H1:Ru2 = 2.74" t121.log
+grep -q -i "Dst.dist H1:Ru2 = 2.74" t121.log
 if [ $? != 0 ] ; then
 echo NOT Passed ERROR 1
 exit -1
 fi
 
-grep -q -i "Dst.dist-1 C3:Ru2 = 2.83" t121.log
+grep -q -i "Dst.dist C3:Ru2 = 2.83" t121.log
 if [ $? != 0 ] ; then
 echo NOT Passed ERROR 2
 exit -1

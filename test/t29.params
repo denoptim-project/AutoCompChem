@@ -5,6 +5,6 @@ VERBOSITY: 5
 TASK: MeasureGeomDescriptors
 INFILE: ../t29.sdf
 $STARTSMARTS: 
-dist [Fe] [$([#6;X2]~[#8;X1])]
+[Fe] [$([#6;X2]~[#8;X1])] name=dist
 $END
 outDataFile: t29.dat

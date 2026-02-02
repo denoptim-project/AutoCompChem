@@ -23,7 +23,7 @@ n=0;n=$(grep -c "Dst.dist2" cli13.log)
 if [ $n -ne 2 ] ; then echo NOT Passed ERROR 7 ; exit -1 ; fi
 n=0;n=$(grep -c "Dst.dist3" cli13.log)
 if [ $n -ne 0 ] ; then echo NOT Passed ERROR 8 ; exit -1 ; fi
-n=0;n=$(grep -c "Unexpected number of matched.*dist3\-1" cli13.log)
+n=0;n=$(grep -c "#7]') did not match anything" cli13.log)
 if [ $n -ne 1 ] ; then echo NOT Passed ERROR 9 ; exit -1 ; fi
 
 # Fourth job removes Cl atoms

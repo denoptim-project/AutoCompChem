@@ -12,7 +12,7 @@ if [ 1 != "$n" ] ; then not_passed $LINENO ; fi
 
 if [ ! -f "cli23-out.sdf" ] ; then not_passed $LINENO ; fi
 
-# NB: one is the property fro msaveAsProperty, two are form getACCJobsResults
+# NB: one is the property from saveAsProperty, two are form getACCJobsResults
 n=0; n=$(grep -c -i "2\.95044530367875" "cli23-out.sdf")
 if [ 3 != "$n" ] ; then not_passed $LINENO ; fi
 

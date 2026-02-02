@@ -10,7 +10,7 @@ if [ $? != 0 ] ; then
   echo NOT Passed 2
   exit -1
 fi
-grep -q 'Mol.0 M0001  Dst.dist-3 C1:F7 = 1.4877' t86.log
+grep -q 'Mol.0 M0001 Dst.dist C1:F7 = 1.4877' t86.log
 if [ $? != 0 ] ; then
   echo NOT Passed 3
   exit -1

@@ -2,6 +2,7 @@ package autocompchem.modeling.atomtuple;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -23,6 +24,7 @@ import autocompchem.modeling.AtomLabelsGenerator;
 import autocompchem.modeling.atomtuple.AtomTupleMatchingRule.RuleType;
 import autocompchem.molecule.AtomContainerInputProcessor;
 import autocompchem.molecule.MolecularUtils;
+import autocompchem.molecule.connectivity.ConnectivityUtils;
 import autocompchem.run.Job;
 import autocompchem.smarts.MatchingIdxs;
 import autocompchem.smarts.SMARTS;
@@ -378,6 +380,15 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
     public static List<AnnotatedAtomTuple> createTuples(IAtomContainer mol,
     		List<AtomTupleMatchingRule> rules, List<String> labels, Mode mode)
     {
+		// If needed, identify continuously connected sets of atoms, i.e., molcules
+		// withing the atom container
+		Map<Integer,List<IAtom>> molecules = null;
+		if (rules.stream().anyMatch(r -> r.hasValuelessAttribute(
+			AtomTupleConstants.KEYONLYINTERMOLECULAR)))
+		{
+			molecules = ConnectivityUtils.identifyConnectedFrags(mol);
+		}
+
     	List<AnnotatedAtomTuple> result = new ArrayList<AnnotatedAtomTuple>();
     	
     	//Here we collect all atom tuples (without annotation) by the name of
@@ -449,7 +460,7 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
             }
             
             // The behavior in presence of a single multi-atom SMARTS is 
-            // that of an  ordered list of single-atom SMARTS
+            // that of an ordered list of single-atom SMARTS
             boolean useMultiAtomMatches = false;
             if (atmIdxsForMR.size()==1)
             {
@@ -551,6 +562,14 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
         			if (!isLinearlyConnected)
         				continue;
         		}
+
+				if (r.hasValuelessAttribute(AtomTupleConstants.KEYONLYINTERMOLECULAR))
+				{
+					if (belongToSameList(atoms, molecules.values()))
+					{
+						continue;
+					}
+				}
         		
         		if (labels !=null && r.hasValuelessAttribute(
         				AtomTupleConstants.KEYGETATOMLABELS))
@@ -596,6 +615,20 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
         }
         return result;
     }
+
+    
+//------------------------------------------------------------------------------
+
+	private static boolean belongToSameList(List<IAtom> atms, 
+		Collection<List<IAtom>> lists)
+	{
+		for (List<IAtom> lst : lists)
+		{
+			if (lst.containsAll(atms))
+				return true;
+		}
+		return false;
+	}
 
 //-----------------------------------------------------------------------------
 

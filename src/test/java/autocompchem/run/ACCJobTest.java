@@ -36,7 +36,9 @@ import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.io.IOtools;
+import autocompchem.modeling.atomtuple.AtomTupleConstants;
 import autocompchem.molecule.MolecularMeter;
+import autocompchem.molecule.geometry.GeomDescriptorDefinition;
 import autocompchem.worker.WorkerConstants;
 
 
@@ -76,7 +78,8 @@ public class ACCJobTest
         	params.setParameter(WorkerConstants.PARINFILE,
         			sdfFile.getAbsolutePath());
         	params.setParameter(ParameterConstants.VERBOSITY, "7");
-        	params.setParameter("ATOMINDEXES", label + " 1 2");
+        	params.setParameter(AtomTupleConstants.KEYRULETYPEATOMIDS, 
+        			"0 1 " + GeomDescriptorDefinition.KEYNAME + "=" + label);
         	
         	// Prepare structure
         	IAtomContainer mol = new AtomContainer();

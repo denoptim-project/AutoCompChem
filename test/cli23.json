@@ -11,7 +11,7 @@
         },
         {
           "reference": "SMARTS",
-          "value": "dist [#7] [Ru]"
+          "value": "[#7] [Ru] name=myDescriptor"
         },
         {
           "reference": "VERBOSITY",
@@ -31,7 +31,7 @@
         },
         {
           "reference": "setProperties",
-          "value": "distance: getACCJobsResults(#0,mol-0_dist-0)\nsomething: 1234"
+          "value": "distance: getACCJobsResults(#0,mol-0_myDescriptor)\nsomething: 1234"
         }
       ]
     }

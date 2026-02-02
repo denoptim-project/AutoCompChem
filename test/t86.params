@@ -5,12 +5,12 @@ VERBOSITY: 6
 TASK: MeasureGeomDescriptors
 INFILE: ../t86-mol.sdf
 $STARTSMARTS:
-dist [$(CO)] [#8]
-ang [O] [$(CO)] [$(CF)]
-dih [O] [$(CO)] [$(CF)] [F]
+[$(CO)] [#8] name=dist
+[O] [$(CO)] [$(CF)] name=ang
+[O] [$(CO)] [$(CF)] [F] name=dih
 $END
-$STARTATOMINDEXES:
-dist 1 7
-ang 7 1 4
-dih 7 1 4 8
+$STARTATOMIDS:
+0 6 name=dist
+6 0 3 name=ang
+6 0 3 7 name=dih
 $END

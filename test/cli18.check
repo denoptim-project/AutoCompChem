@@ -23,10 +23,10 @@ n=0;n=$(grep -i -c "measure" cli18.json)
 if [ $n -ne 4 ] ; then echo NOT Passed ERROR 6 ; exit -1 ; fi
 
 n=0;n=$(grep -i -c "{" cli18.json)
-if [ $n -ne 40 ] ; then echo NOT Passed ERROR 7 ; exit -1 ; fi
+if [ $n -ne 39 ] ; then echo NOT Passed ERROR 7 ; exit -1 ; fi
 
 n=0;n=$(grep -i -c "}" cli18.json)
-if [ $n -ne 40 ] ; then echo NOT Passed ERROR 8 ; exit -1 ; fi
+if [ $n -ne 39 ] ; then echo NOT Passed ERROR 8 ; exit -1 ; fi
 
 n=0;n=$(grep -i -c "params" cli18.json)
 if [ $n -ne 6 ] ; then echo NOT Passed ERROR 9 ; exit -1 ; fi
@@ -52,7 +52,7 @@ n=0;n=$(grep -i -c "measure" cli18.par2)
 if [ $n -ne 4 ] ; then echo NOT Passed ERROR 16 ; exit -1 ; fi
 
 n=0;n=$(grep -i -c ":" cli18.par2)
-if [ $n -ne 33 ] ; then echo NOT Passed ERROR 17 ; exit -1 ; fi
+if [ $n -ne 32 ] ; then echo NOT Passed ERROR 17 ; exit -1 ; fi
 
 n=0;n=$(grep -i -c "params" cli18.par2)
 if [ $n -ne 0 ] ; then echo NOT Passed ERROR 19 ; exit -1 ; fi

@@ -14,7 +14,7 @@
         },
         {
           "reference": "SMARTS",
-          "value": "dist1 [#7] [Ru]"
+          "value": "[#7] [Ru] name=dist1"
         },
         {
           "reference": "VERBOSITY",
@@ -68,7 +68,7 @@
         },
         {
           "reference": "SMARTS",
-          "value": "dist2 [Si] [Fe]\ndist3 [Si] [#7]"
+          "value": "[Si] [Fe] name=dist2\n[Si] [#7] name=dist3"
         },
         {
           "reference": "VERBOSITY",

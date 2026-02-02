@@ -11,21 +11,18 @@ if [ ! -f "cli21-b.log" ] ; then not_passed $LINENO ; fi
 if [ ! -f "cli21-c.log" ] ; then not_passed $LINENO ; fi
 if [ ! -f "cli21-d.log" ] ; then not_passed $LINENO ; fi
 
-n=0; n=$(grep -c -i "dih-0" "cli21-a.log")
+n=0; n=$(grep -c -i "dih-a" "cli21-a.log")
 if [ 2 != "$n" ] ; then not_passed $LINENO ; fi
 if ! grep -q 'Termination status: 0' "cli21-a.log" ; then not_passed $LINENO ; fi
 
-n=0; n=$(grep -c -i "dih-0" "cli21-b.log")
-if [ 1 != "$n" ] ; then not_passed $LINENO ; fi
-if ! grep -q 'Unexpected number of matched atom sets (3)' "cli21-b.log" ; then not_passed $LINENO ; fi
+n=0; n=$(grep -c -i "dih-b" "cli21-b.log")
+if [ 3 != "$n" ] ; then not_passed $LINENO ; fi
 if ! grep -q 'Termination status: 0' "cli21-b.log" ; then not_passed $LINENO ; fi
 
-n=0; n=$(grep -c -i "dih-0" "cli21-c.log")
-if [ 1 != "$n" ] ; then not_passed $LINENO ; fi
-if ! grep -q 'Unexpected number of matched atom sets (5)' "cli21-c.log" ; then not_passed $LINENO ; fi
+if grep -q 'dih-c' "cli21-c.log" ; then not_passed $LINENO ; fi
 if ! grep -q 'Termination status: 0' "cli21-c.log" ; then not_passed $LINENO ; fi
 
-if ! grep -q "No match for SMARTS query " "cli21-d.log" ; then not_passed $LINENO ; fi
+if ! grep -q "#2]') did not match anything" "cli21-d.log" ; then not_passed $LINENO ; fi
 if grep -q 'Termination status: 0' "cli21-d.log" ; then echo Passed ; exit 0 ; fi
 not_passed $LINENO
 exit -1

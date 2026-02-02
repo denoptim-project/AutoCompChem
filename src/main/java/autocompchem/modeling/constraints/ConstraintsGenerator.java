@@ -24,7 +24,6 @@ import autocompchem.worker.Worker;
  * @author Marco Foscato
  */
 
-
 public class ConstraintsGenerator extends AtomTupleGenerator
 {   
     /**
@@ -79,7 +78,7 @@ public class ConstraintsGenerator extends AtomTupleGenerator
      * Parses the formatted text defining {@link ConstraintDefinition} and adds
      * the resulting rules to this instance of atom tuple generator.
      * @param lines the lines of text to be parsed into 
-     * {@link AtomTupleMatchingRule}s.
+     * {@link ConstraintDefinition}s.
      */
 
     @Override

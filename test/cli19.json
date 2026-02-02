@@ -14,7 +14,7 @@
         },
         {
           "reference": "SMARTS",
-          "value": "dist [#7] [Ru]"
+          "value": "[#7] [Ru] name=dist"
         },
         {
           "reference": "VERBOSITY",
@@ -68,7 +68,7 @@
         },
         {
           "reference": "SMARTS",
-          "value": "dist [$([#6]~[Ru])] [Ru]\ndist [#7] [Ru]"
+          "value": "[$([#6]~[Ru])] [Ru]\n[#7] [Ru]"
         },
         {
           "reference": "VERBOSITY",
@@ -93,7 +93,7 @@
             },
             {
               "reference": "SMARTS",
-              "value": "dist [#17] [#7]\ndist [#17] [Ru]"
+              "value": "[#17] [#7]\n[#17] [Ru]"
             },
             {
               "reference": "VERBOSITY",
@@ -118,15 +118,11 @@
             },
             {
               "reference": "SMARTS",
-              "value": "dist [#6] [$([#1]-C)]"
+              "value": "[#6] [$([#1]-C)] onlybonded"
             },
             {
               "reference": "VERBOSITY",
               "value": "7"
-            },
-            {
-              "reference": "ONLYBONDED",
-              "value": "true"
             },
             {
               "reference": "INFILE",

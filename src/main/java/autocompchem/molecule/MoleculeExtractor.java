@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
+import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.silent.AtomContainerSet;
 
@@ -189,7 +190,7 @@ public class MoleculeExtractor extends AtomContainerInputProcessor
 		AtomContainerSet molecules = new AtomContainerSet();
     	if (task.equals(EXTRACTMOLECULESTASK))
     	{
-    		List<IAtomContainer> mols = isolateMolecules(iac);
+    		List<IAtomContainer> mols = isolateClonedMolecules(iac);
     		for (IAtomContainer keptMol : filterMolecules(mols, requiredSmarts,
     				excludedSmarts, logger))
     			molecules.addAtomContainer(keptMol);
@@ -250,14 +251,14 @@ public class MoleculeExtractor extends AtomContainerInputProcessor
 //------------------------------------------------------------------------------
 
 	/**
-	 * Puts each set of atoms that belong to a continuously connected set 
-	 * (i.e., a Molecule). into 
+	 * Clones each set of atoms that belong to a continuously connected set 
+	 * (i.e., a Molecule) into 
 	 * an independent atom container and collects all such containers.
 	 * @param iac the initial container of atoms from which we clone-out the
 	 * isolated molecules.
 	 * @return the list of molecules.
 	 */
-    public static List<IAtomContainer> isolateMolecules(IAtomContainer iac) 
+    public static List<IAtomContainer> isolateClonedMolecules(IAtomContainer iac) 
     {
     	List<IAtomContainer> mols = ConnectivityUtils.getConnectedFrags(iac);
     	for (int i=0; i<mols.size(); i++)
