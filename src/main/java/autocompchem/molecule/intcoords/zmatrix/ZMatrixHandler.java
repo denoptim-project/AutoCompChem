@@ -104,21 +104,6 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
     private final AtomicInteger torCounter = new AtomicInteger(1);
 
     /**
-     * Root for distance-type IC names
-     */
-    private final String DISTROOT = "dst";
-
-    /**
-     * Root for angle-type IC names
-     */
-    private final String ANGROOT = "ang";
-
-    /**
-     * Root for torsion-type IC names
-     */
-    private final String TORROOT = "tor";
-    
-    /**
      * String defining the task of generating and printing a ZMatrix
      */
     public static final String CONVERTTOZMATNAME = "convertToZMatrix";
@@ -622,9 +607,9 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
         List<String> txt = modZMat.toLinesOfText(false,false);
         for (int i=0; i<txt.size(); i++)
         {
-           msg = msg + "  Line-" + i + ": " + txt.get(i);
+           msg = msg + "  Line-" + i + ": " + txt.get(i) + NL;
         }
-        logger.info(msg);
+        logger.debug(msg);
         
         return modZMat;
     } 
@@ -1463,8 +1448,7 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
 
     private String getUnqDistName()
     {
-        String s = DISTROOT + distCounter.getAndIncrement();
-        return s;
+        return InternalCoordNaming.getSequentialDistName(distCounter);
     }
 
 //-----------------------------------------------------------------------------
@@ -1476,8 +1460,7 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
 
     private String getUnqAngName()
     {
-        String s = ANGROOT + angCounter.getAndIncrement();
-        return s;
+        return InternalCoordNaming.getSequentialAngName(angCounter);
     }
 
 //-----------------------------------------------------------------------------
@@ -1489,8 +1472,7 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
 
     private String getUnqTorName()
     {
-        String s = TORROOT + torCounter.getAndIncrement();
-        return s;
+        return InternalCoordNaming.getSequentialTorName(torCounter);
     }
 
 //------------------------------------------------------------------------------

@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import autocompchem.molecule.intcoords.InternalCoord;
 import autocompchem.run.Terminator;
@@ -96,18 +97,20 @@ public class ZMatrixAtom implements Cloneable
      * @param string the string to parse
      * @param id a unique id for this ZMatrixAtom (i.e., position in list).
      * This is used to define the reference
-     * names for the internal coordinates included in this line.
+     * names for the internal coordinates included in this line. May be 1-based 
+     * or 0-based, and will be adjusted according to the value of zeroBasedIds.
      * @param zeroBasedIds set to <code>true</code> to read zero-based atom IDs.
      * By default we expect 1-based atom IDs.
      */
 
-    public ZMatrixAtom(String string, int id, boolean zeroBasedIds)
+    public ZMatrixAtom(String string, int id, boolean zeroBasedIds, AtomicInteger distCounter, AtomicInteger angCounter, AtomicInteger torCounter)
     {
         int phase = 1;
         if (zeroBasedIds)
         {
             phase = 0;
         }
+        int zeroBasedId = id - phase;
         String[] parts = string.trim().split("\\s+");
         switch (parts.length)
         {
@@ -118,7 +121,15 @@ public class ZMatrixAtom implements Cloneable
             case 3:
                 this.name = parts[0];
                 this.idI = Integer.parseInt(parts[1]) - phase;
-                buildIcI(parts[2],id);
+                if (NumberUtils.isNumber(parts[2]))
+                {
+                    String icName = InternalCoordNaming.getSequentialDistName(distCounter);
+                    buildIcI(icName, Double.parseDouble(parts[2]), zeroBasedId);
+                }
+                else
+                {
+                    buildIcI(parts[2], 0.0, zeroBasedId);
+                }
                 break;
 
             case 4:
@@ -128,8 +139,24 @@ public class ZMatrixAtom implements Cloneable
                 this.name = parts[0];
                 this.idI = Integer.parseInt(parts[1]) - phase;
                 this.idJ = Integer.parseInt(parts[3]) - phase;
-                buildIcI(parts[2],id);
-                buildIcJ(parts[4],id);
+                if (NumberUtils.isNumber(parts[2]))
+                {
+                    String icName = InternalCoordNaming.getSequentialDistName(distCounter);
+                    buildIcI(icName, Double.parseDouble(parts[2]), zeroBasedId);
+                }
+                else
+                {
+                    buildIcI(parts[2], 0.0, zeroBasedId);
+                }
+                if (NumberUtils.isNumber(parts[4]))
+                {
+                    String icName = InternalCoordNaming.getSequentialAngName(angCounter);
+                    buildIcJ(icName, Double.parseDouble(parts[4]), zeroBasedId);
+                }
+                else
+                {
+                    buildIcJ(parts[4], 0.0, zeroBasedId);
+                }
                 break;
 
             case 7:
@@ -137,9 +164,33 @@ public class ZMatrixAtom implements Cloneable
                 this.idI = Integer.parseInt(parts[1]) - phase;
                 this.idJ = Integer.parseInt(parts[3]) - phase;
                 this.idK = Integer.parseInt(parts[5]) - phase;
-                buildIcI(parts[2],id);
-                buildIcJ(parts[4],id);
-                buildIcK(parts[6],id,"notype");
+                if (NumberUtils.isNumber(parts[2]))
+                {
+                    String icName = InternalCoordNaming.getSequentialDistName(distCounter);
+                    buildIcI(icName, Double.parseDouble(parts[2]), zeroBasedId);
+                }
+                else
+                {
+                    buildIcI(parts[2], 0.0, zeroBasedId);
+                }
+                if (NumberUtils.isNumber(parts[4]))
+                {
+                    String icName = InternalCoordNaming.getSequentialAngName(angCounter);
+                    buildIcJ(icName, Double.parseDouble(parts[4]), zeroBasedId);
+                }
+                else
+                {
+                    buildIcJ(parts[4], 0.0, zeroBasedId);
+                }
+                if (NumberUtils.isNumber(parts[6]))
+                {
+                    String icName = InternalCoordNaming.getSequentialTorName(torCounter);
+                    buildIcK(icName, Double.parseDouble(parts[6]), zeroBasedId, "notype");
+                }
+                else
+                {
+                    buildIcK(parts[6], 0.0, zeroBasedId, "notype");
+                }
                 break;
 
             case 8:
@@ -147,9 +198,33 @@ public class ZMatrixAtom implements Cloneable
                 this.idI = Integer.parseInt(parts[1]) - phase;
                 this.idJ = Integer.parseInt(parts[3]) - phase;
                 this.idK = Integer.parseInt(parts[5]) - phase;
-                buildIcI(parts[2],id);
-                buildIcJ(parts[4],id);
-                buildIcK(parts[6],id,parts[7]);
+                if (NumberUtils.isNumber(parts[2]))
+                {
+                    String icName = InternalCoordNaming.getSequentialDistName(distCounter);
+                    buildIcI(icName, Double.parseDouble(parts[2]), zeroBasedId);
+                }
+                else
+                {
+                    buildIcI(parts[2], 0.0, zeroBasedId);
+                }
+                if (NumberUtils.isNumber(parts[4]))
+                {
+                    String icName = InternalCoordNaming.getSequentialAngName(angCounter);
+                    buildIcJ(icName, Double.parseDouble(parts[4]), zeroBasedId);
+                }
+                else
+                {
+                    buildIcJ(parts[4], 0.0, zeroBasedId);
+                }
+                if (NumberUtils.isNumber(parts[6]))
+                {
+                    String icName = InternalCoordNaming.getSequentialTorName(torCounter);
+                    buildIcK(icName, Double.parseDouble(parts[6]), zeroBasedId, parts[7]);
+                }
+                else
+                {
+                    buildIcK(parts[6], 0.0, zeroBasedId, parts[7]);
+                }
                 break;
 
             default:
@@ -162,83 +237,82 @@ public class ZMatrixAtom implements Cloneable
 //------------------------------------------------------------------------------
 
     /**
-     * Build the first internal coordinate.
+     * Build the first internal coordinate (distance).
+     * @param name the name of the internal coordinate
+     * @param value the value of the internal coordinate
+     * @param id the 0-based index of the atom that has a position defined by 
+     * the internal coordinate this method builds.
      */
 
-    private void buildIcI(String s, int id)
+    private void buildIcI(String name, double value, int id)
     {
         ArrayList<Integer> ids = new ArrayList<Integer>();
         ids.add(id);
         ids.add(idI);
-        if (NumberUtils.isNumber(s))
-        {
-            this.icI = new InternalCoord(id+"_ic_1",Double.parseDouble(s),ids);
-        }
-        else
-        {
-            this.icI = new InternalCoord(s,0.0,ids);
-        }
+        this.icI = new InternalCoord(name, value, ids);
     }
 
 //------------------------------------------------------------------------------
 
     /**
-     * Build the second internal coordinate.
+     * Build the second internal coordinate (angle).
+     * @param name the name of the internal coordinate
+     * @param value the value of the internal coordinate
+     * @param id the 0-based index of the atom that has a position defined by 
+     * the internal coordinate this method builds.
      */
 
-    private void buildIcJ(String s, int id)
+    private void buildIcJ(String name, double value, int id)
     {
         ArrayList<Integer> ids = new ArrayList<Integer>();
         ids.add(id);
         ids.add(idI);
         ids.add(idJ);
-        if (NumberUtils.isNumber(s))
-        {
-            this.icJ = new InternalCoord(id+"_ic_2",Double.parseDouble(s),ids);
-        }
-        else
-        {
-            this.icJ = new InternalCoord(s,0.0,ids);
-        }
+        this.icJ = new InternalCoord(name, value, ids);
     }
 
 //------------------------------------------------------------------------------
 
     /**
-     * Build the third internal coordinate.
+     * Build the third internal coordinate (torsion or second angle).
+     * @param name the name of the internal coordinate
+     * @param value the value of the internal coordinate
+     * @param id the 0-based index of the atom that has a position defined by 
+     * the internal coordinate this method builds.
+     * @param type the type of the internal coordinate. Can be "notype" to indicate
+     * that the internal coordinate is not a type.
+     * Otherwise, the type is a string that can be converted to an integer.
+     * For example, "0" to indicate a proper torsion or "-1"/"1" to indicate a
+     * second bond angle.
      */
 
-    private void buildIcK(String s, int id, String type)
+    private void buildIcK(String name, double value, int id, String type)
     {
         ArrayList<Integer> ids = new ArrayList<Integer>();
-        ids.add(id);
-        ids.add(idI);
-        ids.add(idJ);
-        ids.add(idK);
-        if (NumberUtils.isNumber(s))
+        if ("-1".equals(type) || "1".equals(type))
         {
-            if ("notype" == type)
-            {
-                this.icK = new InternalCoord(id+"_ic_3",Double.parseDouble(s),
-                                                                           ids);
-
-            }
-            else
-            {
-                this.icK = new InternalCoord(id+"_ic_3",Double.parseDouble(s),
-                                                                      ids,type);
-            }
+            ids.add(id);
+            ids.add(idI);
+            ids.add(idK);
+        } else if ("0".equals(type)) {
+            ids.add(id);
+            ids.add(idI);
+            ids.add(idJ);
+            ids.add(idK);
+        } else {
+            ids.add(id);
+            ids.add(idI);
+            ids.add(idJ);
+            ids.add(idK);
+        }
+        
+        if ("notype".equals(type))
+        {
+            this.icK = new InternalCoord(name, value, ids);
         }
         else
         {
-            if ("notype" == type)
-            {
-                this.icK = new InternalCoord(s,0.0,ids);
-            }
-            else
-            {
-                this.icK = new InternalCoord(s,0.0,ids,type);
-            }
+            this.icK = new InternalCoord(name, value, ids, type);
         }
     }
 
@@ -430,6 +504,21 @@ public class ZMatrixAtom implements Cloneable
 //------------------------------------------------------------------------------
 
     /**
+     * Checks if this atom's internal coordinates include the bond distance
+     * along the bond/axes defined by the two parameters.
+     * @param i the index of the atom from which the bond distance is measured
+     * @return <code>true</code> if the bond distance is used in the definition of 
+     * this ZMatrixAtom
+     */
+
+    public boolean usesBondDistance(int i)
+    {
+        return idI == i;
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
      * Checks if this atom's internal coordinates include the proper torsion
      * along the bond/axes defined by the two parameters.
      * @param i the index of the first atom in the pair defining the direction 
@@ -552,7 +641,70 @@ public class ZMatrixAtom implements Cloneable
         }
         return sb.toString();
     }
-    
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Produces a string to print this details of this atom.
+     * @return a string that can be used for logging purposes.
+     */
+
+    @Override
+    public String toString()
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.append(this.getClass().getSimpleName()).append(" [");
+        sb.append(name).append(", ");
+        sb.append(idI).append(", ");
+        if (null!=icI)
+        {
+            sb.append(icI.toString()).append(", ");
+        } else {
+            sb.append("null, ");
+        }
+        sb.append(idJ).append(", ");
+        if (null!=icJ)
+        {
+            sb.append(icJ.toString()).append(", ");
+        } else {
+            sb.append("null, ");
+        }
+        sb.append(idK).append(", ");
+        if (null!=icK)
+        {
+            sb.append(icK.toString()).append(", ");
+        }
+        sb.append(properties.toString());
+        sb.append("]");
+        return sb.toString();
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Create a new {@link ZMatrixAtom} with the same structure as this one, 
+     * i.e., the name, the reference IDs, and the internal coordinates having 
+     * same definition but all values set to 0.0.
+     * @return a new {@link ZMatrixAtom} with the same structure as this one.
+     */
+    public ZMatrixAtom getStructureCopy()
+    {
+        ZMatrixAtom copy = this.clone();
+        if (null!=copy.icI)
+        {
+            copy.icI.setValue(0.0);
+        }
+        if (null!=copy.icJ)
+        {
+            copy.icJ.setValue(0.0);
+        }
+        if (null!=copy.icK)
+        {
+            copy.icK.setValue(0.0);
+        }
+        return copy;
+    }
+
 //------------------------------------------------------------------------------
     
     /**

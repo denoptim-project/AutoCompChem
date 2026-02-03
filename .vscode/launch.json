@@ -1,0 +1,16 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Run t161 (Instant - No Build)",
+            "request": "launch",
+            "mainClass": "autocompchem.ui.ACCMain",
+            "args": [
+                "../t161.params"
+            ],
+            "cwd": "${workspaceFolder}/test/results",
+            "console": "integratedTerminal"
+        }
+    ]
+}

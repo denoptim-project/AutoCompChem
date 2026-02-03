@@ -37,6 +37,7 @@ import org.openscience.cdk.AtomContainerSet;
 import org.openscience.cdk.CDKConstants;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
+import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.tools.periodictable.PeriodicTable;
 
 import autocompchem.datacollections.NamedData;
@@ -47,7 +48,10 @@ import autocompchem.io.IOtools;
 import autocompchem.molecule.AtomContainerInputProcessor;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
+import autocompchem.molecule.intcoords.zmatrix.ZMatrixAtom;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrixHandler;
+import autocompchem.smarts.SMARTS;
+import autocompchem.smarts.SMARTSUtils;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.worker.Task;
@@ -85,6 +89,11 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
      * ZMatrix Move
      */
     private ZMatrix zmtMove;
+
+	/**
+	 * SMARTS bond to stretch
+	 */
+	private SMARTS smartsBondToStretch;
 
     /**
      * Scale factor for Move
@@ -155,6 +164,11 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
      * String defining the task of altering a geometry
      */
     public static final String MODIFYGEOMETRYTASKNAME = "modifyGeometry";
+    
+    /**
+     * String defining the task of altering stretching a bond
+     */
+    public static final String STRETCHBONDTASKNAME = "stretchBond";
 
     /**
      * Task about altering a geometry
@@ -164,7 +178,14 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
     	MODIFYGEOMETRYTASK = Task.make(MODIFYGEOMETRYTASKNAME);
     }
 
-    
+    /**
+     * Task about altering stretching a bond
+     */
+    public static final Task STRETCHBONDTASK;
+    static {
+    	STRETCHBONDTASK = Task.make(STRETCHBONDTASKNAME);
+    }
+
 //-----------------------------------------------------------------------------
     
     /**
@@ -178,7 +199,7 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
     @Override
     public Set<Task> getCapabilities() {
         return Collections.unmodifiableSet(new HashSet<Task>(
-                Arrays.asList(MODIFYGEOMETRYTASK)));
+                Arrays.asList(MODIFYGEOMETRYTASK, STRETCHBONDTASK)));
     }
 
 //------------------------------------------------------------------------------
@@ -350,6 +371,13 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
             }
             this.refMol = refMols.get(0);
         }
+
+		// Get the bond to stretch
+		if (params.contains("SMARTSBONDTOSTRETCH"))
+		{
+			this.smartsBondToStretch = new SMARTS(params.getParameter(
+				"SMARTSBONDTOSTRETCH").getValueAsString());
+		}
     }
     
 //-----------------------------------------------------------------------------
@@ -396,6 +424,18 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
                 Terminator.withMsgAndStatus("ERROR! Choose and provide either "
                         + "a Cartesian or a ZMatrix move.", -1);
             }
+    		
+    		if (exposedOutputCollector != null)
+            {
+	    	    String molID = "mol-"+i;
+		        exposeOutputData(new NamedData(task.ID + molID, 
+		        		result));
+        	}
+    		
+    		tryWritingToOutfile(result);
+    		outFileAlreadyUsed = true;
+    	} else if (task.equals(STRETCHBONDTASK)) {
+    		result = stretchBond(iac);
     		
     		if (exposedOutputCollector != null)
             {
@@ -967,6 +1007,103 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
         
 		return chosenScalingFactors;
 	}
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Stretch a bond as defined by the SMARTS bond to stretch.
+     * @param iac the atom container to stretch the bond in
+     * @return the atom container with the stretched bond
+     */
+    private AtomContainerSet stretchBond(IAtomContainer iac)
+    {
+		String outMolBasename = MolecularUtils.getNameOrID(iac);
+
+		if (smartsBondToStretch == null || smartsBondToStretch.getString().isEmpty())
+		{
+			Terminator.withMsgAndStatus("ERROR! No SMARTS bond to stretch defined. "
+				+ "Please, try using 'SMARTSBONDTOSTRETCH' to provide a bond "
+				+ "to stretch.", -1);
+		}
+
+		// Identify the bond to stretch
+		Map<String, List<IBond>> bondsToStretch = SMARTSUtils.identifyBondsBySMARTS(
+			iac, Map.of("bondToStretch", smartsBondToStretch));
+		if (bondsToStretch.size() == 0)
+		{
+			Terminator.withMsgAndStatus("ERROR! No match for SMARTS '" 
+			+ smartsBondToStretch.getString() + "' found in molecule '"
+			+ outMolBasename + "'.", -1);
+		} else if (bondsToStretch.size() > 1)
+		{
+			Terminator.withMsgAndStatus("ERROR! Multiple matches for SMARTS '" 
+			+ smartsBondToStretch.getString() + "' found in molecule '"
+			+ outMolBasename + "'. Can't "
+			+ "stretch multiple bonds at once.", -1);
+		}
+		IBond bondToStretch = bondsToStretch.get("bondToStretch").get(0);
+
+		// Make a suitable Zmatrix representation of the molecule
+        ParameterStorage locPar = params.copy();
+        locPar.setParameter(WorkerConstants.PARTASK, 
+        		ZMatrixHandler.CONVERTTOZMATTASK.ID);
+        locPar.removeData(WorkerConstants.PAROUTFILE);
+        locPar.setParameter(WorkerConstants.PARNOOUTFILEMODE);
+        Worker w;
+		try {
+			w = WorkerFactory.createWorker(locPar, this.getMyJob());
+		} catch (ClassNotFoundException e) {
+			throw new IllegalStateException(e);
+		}
+        ZMatrixHandler zmh = (ZMatrixHandler) w;
+        ZMatrix zmatMol = zmh.makeZMatrix(iac);
+        String msg = "Original ZMatrix: " + NL;
+        List<String> txt = zmatMol.toLinesOfText(false,false);
+        for (int i=0; i<txt.size(); i++)
+        {
+        	msg = msg + "  Line-" + i + ": " + txt.get(i) + NL;
+        }
+        logger.debug(msg);
+
+		// Identify the internal coordinate corresponding to the bond to stretch
+		ZMatrixAtom atomToMove = zmatMol.findBondDistance(
+			iac.indexOf(bondToStretch.getBegin()), 
+			iac.indexOf(bondToStretch.getEnd()));
+		if (atomToMove == null)
+		{
+			Terminator.withMsgAndStatus("ERROR! No internal coordinate "
+				+ "corresponding to the bond to stretch ("
+				+ MolecularUtils.getAtomRef(bondToStretch.getBegin(), iac)
+				+ "-" + MolecularUtils.getAtomRef(bondToStretch.getEnd(), iac)
+				+ ") found.", -1);
+		}
+		int indexOfZAtomToAlter = zmatMol.zatoms().indexOf(atomToMove);
+		double initialValue = zmatMol.getZAtom(indexOfZAtomToAlter).getIC(0).getValue();
+		
+		// produce modified geometries
+		AtomContainerSet results = new AtomContainerSet();
+		for (double scaleFactor : scaleFactors)
+		{
+			double newValue = initialValue * scaleFactor;
+			zmatMol.getZAtom(indexOfZAtomToAlter).getIC(0).setValue(newValue);
+
+			logger.info("Bond stretched by " + scaleFactor + "x(SMARTSBondToStretch: " 
+				+ initialValue + ") (Current value: " + newValue + ")");
+
+			IAtomContainer outMol = null;
+			try {
+				outMol = zmh.convertZMatrixToIAC(zmatMol, iac);
+			} catch (Throwable e) {
+				Terminator.withMsgAndStatus("ERROR! Exception while "
+					+ "converting ZMatrix to IAC. Cause of the exception: "
+					+ e.getMessage(), -1);
+			}
+			outMol.setProperty(CDKConstants.TITLE, outMolBasename 
+				+ " - stretched by " + scaleFactor );
+			results.addAtomContainer(outMol);
+		}
+		return results;
+    }
 
 //------------------------------------------------------------------------------
 
