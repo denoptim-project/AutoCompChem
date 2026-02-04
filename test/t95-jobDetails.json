@@ -5,9 +5,6 @@
       "jobType": "CompChemJob",
       "directives": [
         {
-          "name": "Link0"
-        },
-        {
           "name": "Route",
           "keywords": [
             {
@@ -126,7 +123,7 @@
               "accTaskParams": [
                 {
                   "reference": "ATOMSPECIFICBASISSET",
-                  "value": "Element C name STO-3G\nElement H name STO-3G\nElement N link ../data/basisset/gaussian/H_C-F_Si-Cl_Br_I__LANL2DZdp_ECP.gbs"
+                  "value": "Element C name STO-3G\nElement H name STO-3G\nElement N link ../data/basisset/gaussian/H_C-F_Si-Cl_Br_I__LANL2DZdp_ECP.gbs\nElement Pd name STO-3G"
                 },
                 {
                   "reference": "TASK",
@@ -164,8 +161,161 @@
       "jobType": "CompChemJob",
       "directives": [
         {
-          "name": "Link0"
+          "name": "Route",
+          "keywords": [
+            {
+              "reference": "MODEL_METHOD",
+              "value": "HF",
+              "isLoud": false
+            },
+            {
+              "reference": "GUESS",
+              "value": "READ"
+            },
+            {
+              "reference": "PRINT",
+              "value": "P",
+              "isLoud": false
+            },
+            {
+              "reference": "GEOM",
+              "value": "CHECK"
+            },
+            {
+              "reference": "MODEL_BASISSET",
+              "value": "GEN 5D 7F",
+              "isLoud": false
+            },
+            {
+              "reference": "JOBTYPE",
+              "value": "SP",
+              "isLoud": false
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "SCF",
+              "keywords": [
+                {
+                  "reference": "SYMM",
+                  "value": "NOSYM",
+                  "isLoud": false
+                },
+                {
+                  "reference": "MAXCYCLE",
+                  "value": "280"
+                },
+                {
+                  "reference": "VSHIFT",
+                  "value": "800"
+                },
+                {
+                  "reference": "VARACC",
+                  "value": "NOVARACC",
+                  "isLoud": false
+                }
+              ]
+            },
+            {
+              "name": "SCRF",
+              "keywords": [
+                {
+                  "reference": "MODEL",
+                  "value": "PCM",
+                  "isLoud": false
+                },
+                {
+                  "reference": "SOLVENT",
+                  "value": "BENZENE"
+                },
+                {
+                  "reference": "OPTS",
+                  "value": "READ",
+                  "isLoud": false
+                }
+              ]
+            },
+            {
+              "name": "POP",
+              "keywords": [
+                {
+                  "reference": "NBO",
+                  "value": "NBO6READ",
+                  "isLoud": false
+                }
+              ]
+            }
+          ]
         },
+        {
+          "name": "Title",
+          "keywords": [
+            {
+              "reference": "title",
+              "value": " SP+PCM(benzene) with ECP",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "MolSpec",
+          "keywords": [
+            {
+              "reference": "SPIN_MULTIPLICITY",
+              "value": "111",
+              "isLoud": false
+            },
+            {
+              "reference": "CHARGE",
+              "value": "-222",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "Options",
+          "dirData": [
+            {
+              "accTaskParams": [
+                {
+                  "reference": "ATOMSPECIFICBASISSET",
+                  "value": "Element C name STO-3G\nElement H name STO-3G\nElement N link ../data/basisset/gaussian/H_C-F_Si-Cl_Br_I__LANL2DZdp_ECP.gbs\nElement Pd link ../data/basisset/gaussian/Pd__LANL2DZ_ECP.gbs"
+                },
+                {
+                  "reference": "TASK",
+                  "value": "GENERATEBASISSET"
+                }
+              ],
+              "reference": "BASISSET",
+              "type": "UNDEFINED"
+            },
+            {
+              "reference": "NBO",
+              "value": [
+                "$NBO 1st row",
+                "2nd row ",
+                "3rd row $END"
+              ],
+              "type": "TEXTBLOCK"
+            },
+            {
+              "reference": "PCM",
+              "value": [
+                "radii=UAHF",
+                "pcmdoc",
+                "Dis",
+                "Rep",
+                "Cav"
+              ],
+              "type": "TEXTBLOCK"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
         {
           "name": "Route",
           "keywords": [

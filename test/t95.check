@@ -7,16 +7,26 @@ exit -1
 fi
 
 n=0;n=$(grep -c "^\$NBO" t95-mol.inp) 
-if [ $n -ne 2 ] ; then echo NOT Passes ERROR 2 ; exit -1 ; fi
+if [ $n -ne 3 ] ; then echo NOT Passes ERROR 2 ; exit -1 ; fi
 
 n=0;n=$(grep -c "\$END$" t95-mol.inp)
-if [ $n -ne 2 ] ; then echo NOT Passes ERROR 3 ; exit -1 ; fi
+if [ $n -ne 3 ] ; then echo NOT Passes ERROR 3 ; exit -1 ; fi
 
 n=0;n=$(grep -c "^3rd row \$END$" t95-mol.inp)
-if [ $n -ne 1 ] ; then echo NOT Passes ERROR 4 ; exit -1 ; fi
+if [ $n -ne 2 ] ; then echo NOT Passes ERROR 4 ; exit -1 ; fi
 
 n=0;n=$(grep -c "^\$NBO ARCHIVE \$END$" t95-mol.inp)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 5 ; exit -1 ; fi
+
+n=0;n=$(grep -B 1 "^radii" t95-mol.inp | grep -v radii | grep -v "\-\-" | grep -c "^$")
+if [ $n -ne 2 ] ; then echo NOT Passes ERROR 6 ; exit -1 ; fi
+
+n=0;n=$(grep -B 1 "^\$NBO" t95-mol.inp | grep -v radii | grep -v "\-\-" | grep -c "^$")
+if [ $n -ne 3 ] ; then echo NOT Passes ERROR 7 ; exit -1 ; fi
+
+# The new lines at the and of steps can be one or two when there are option sections. Here we check for two just because one is from the end of the single option section (e.g., PCM, basis set) and the other is from the end of the overall options card (like the Route card, the link0 card, and the mol.spec. cards).
+n=0;n=$(grep -B 2 "^\-\-Link1" t95-mol.inp | grep -v radii | grep -v "\-\-" | grep -c "^$")
+if [ $n -ne 4 ] ; then echo NOT Passes ERROR 8 ; exit -1 ; fi
 
 grep -q 'Termination status: 0' "t95.log"
 if [ "$?" == 0 ] ; then

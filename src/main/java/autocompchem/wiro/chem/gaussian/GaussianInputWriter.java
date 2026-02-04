@@ -795,6 +795,7 @@ public class GaussianInputWriter extends ChemSoftInputWriter
 	    				BasisSet bs = (BasisSet) dd.getValue();
 	    				sb.append(StringUtils.mergeListToString(
 	    						formatBasisSetLines(bs), NL));
+	        			sb.append(NL); //empty line that terminates this part of option section
 	    				break;
 	    			}
 	    			
@@ -995,9 +996,7 @@ public class GaussianInputWriter extends ChemSoftInputWriter
 	        }
     	}
     	
-    	// This is where we add the empty line between basis set and ECP block
-    	lines.add("");
-    	
+    	boolean firstECP = true;
     	for (CenterBasisSet cbs : bs.centerBSs)
     	{
 	        if (cbs.getECPShells().size() == 0)
@@ -1005,6 +1004,13 @@ public class GaussianInputWriter extends ChemSoftInputWriter
 	            continue;
 	        }
 	        
+	        if (firstECP) 
+	        {
+	        	// This is where we add the empty line between basis set and ECP block
+	        	// We do it here to be consistent wrt final new line when having ECP or not.
+	        	lines.add("");
+	        	firstECP = false;
+	        }
 	        String atmStr = getCenterIdentifier(cbs);
 	        
 	        lines.add(String.format(Locale.ENGLISH, "%-6s 0", atmStr));
