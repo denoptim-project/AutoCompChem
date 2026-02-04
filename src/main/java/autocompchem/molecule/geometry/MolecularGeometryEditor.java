@@ -45,13 +45,21 @@ import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileUtils;
 import autocompchem.geometry.DistanceMatrix;
 import autocompchem.io.IOtools;
+import autocompchem.modeling.atomtuple.AtomTupleConstants;
+import autocompchem.modeling.atomtuple.AtomTupleMatchingRule;
 import autocompchem.molecule.AtomContainerInputProcessor;
+import autocompchem.molecule.BondEditor;
+import autocompchem.molecule.MolecularMeter;
 import autocompchem.molecule.MolecularUtils;
+import autocompchem.molecule.connectivity.BondEditingRule;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrixAtom;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrixHandler;
 import autocompchem.smarts.SMARTS;
 import autocompchem.smarts.SMARTSUtils;
+import autocompchem.utils.NumberUtils;
+import autocompchem.utils.StringUtils;
+import autocompchem.wiro.chem.ChemSoftConstants;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.worker.Task;
@@ -107,24 +115,22 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
     private boolean optimizeScalingFactors = false;
     
     /**
-     * Kind of distribution for automatically generated scaling factors
+     * Kind of distribution for optimized Cartesianscaling factors
      */
     private String scalingFactorDistribution = "BALANCED";
     
     /**
-     * Number of automatically generated scaling factors 
+     * Number of optimized Cartesian scaling factors 
      */
     private int numScalingFactors = 15;
     
     /**
-     * Percentage of the possible negative path to consider 
-     * (opt. scaling factors)
+     * Scaling factor for cartesian move in negative direction 
      */
     private double percOfNeg = 1.0;
     
     /**
-     * Percentage of the possible positive path to consider 
-     * (opt. scaling factors)
+     * Scaling factor for cartesian move in positive direction 
      */
     private double percOfPos = 1.0;
     
@@ -157,7 +163,26 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
      * Default maximum step length (opt. scaling factors)
      */
     private static double defMaxStep = 1.0;
+
+	/**
+	 * Known termination criteria for bond stretching
+	 */
+	private static List<String> knownTerminationKinds = new ArrayList<String>(Arrays.asList(
+		"MININTERFRAGMENTDIST"));
     
+	/**
+	 * Kind of termination criteria for bond stretching
+	 */
+	private String terminationKind;
+	
+	/**
+	 * Threshold for termination criteria for bond stretching
+	 */
+	private double terminationThreshold = 5.0;
+
+	/**
+	 * New line character
+	 */
     private final String NL =System.getProperty("line.separator"); 
     
     /**
@@ -280,6 +305,56 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
                 scaleFactors.add(d);
             }
         }
+
+        // Generate a sequence of scaling factors
+        if (params.contains("GENERATESCALINGFACTORS"))
+        {
+            String line = params.getParameter("GENERATESCALINGFACTORS")
+                                                         .getValueAsString();
+            scaleFactors.clear();
+            String[] parts = line.trim().split("\\s+");
+			// Expected: initial, final, steps
+			// or: steps, initial, step_length
+			if (parts.length != 3)
+			{
+				Terminator.withMsgAndStatus("ERROR! Cannot understand value '"
+                        + line + "'. Expecting either of these syntaxes: " + NL  
+                        + "  <real> <real> <integer> (initial_value, final_value, #steps)" + NL
+                        + "  <integer> <real> <real> (#steps, initial_value, step_length).",-1);
+			} else {
+				int steps = 0;
+				double initialValue = 0.0;
+				double finalValue = 0.0;
+				double stepLength = 0.0;
+				if (parts[0].matches("\\d+"))
+				{
+					// #steps, initial_value, step_length
+					steps = Integer.parseInt(parts[0]);
+					initialValue = Double.parseDouble(parts[1]);
+					stepLength = Double.parseDouble(parts[2]);
+					for (int i=0; i<steps; i++)
+					{
+						scaleFactors.add(initialValue + i*stepLength);
+					}
+				} else {
+					// initial_value, final_value, #steps
+					initialValue = Double.parseDouble(parts[0]);
+					finalValue = Double.parseDouble(parts[1]);
+					steps = Integer.parseInt(parts[2]);
+					stepLength = (finalValue - initialValue) / (steps-1);
+					for (int i=0; i<steps; i++)
+					{
+						scaleFactors.add(initialValue + i*stepLength);
+					}
+				}
+			}
+			String values = "";
+			for (int i=0; i<scaleFactors.size(); i++)
+			{
+				values = values + "  " + NumberUtils.getEnglishFormattedDecimal("###.####", scaleFactors.get(i));
+			}
+			logger.info("Generated " + scaleFactors.size() + " scaling factors: " + NL + values);
+        }
         
         // Guess scaling factors
         if (params.contains("OPTIMIZESCALINGFACTORS"))
@@ -340,6 +415,29 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
 	            }
             }
         }
+
+		// Define bond stretching termination criteria
+		if (params.contains("TERMINATIONCRITERIA"))
+		{
+			String line = params.getParameter("TERMINATIONCRITERIA")
+				.getValueAsString();
+			String[] parts = line.trim().split("\\s+");
+			if (parts.length < 2)
+			{
+				Terminator.withMsgAndStatus("ERROR! Cannot understand value '"
+					+ line + "'. Expecting this syntax: " + NL
+					+ "  <string> <real> (kind, threshold).",-1);
+			}
+			terminationKind = parts[0];
+			if (!knownTerminationKinds.contains(terminationKind.toUpperCase()))
+			{
+				Terminator.withMsgAndStatus("ERROR! Cannot understand '" + terminationKind
+					+ "' as a termination criterion kind. Known kinds are: " 
+					+ NL + StringUtils.mergeListToString(knownTerminationKinds, ", "),-1);
+			}
+			terminationThreshold = Double.parseDouble(parts[1]);
+			logger.info("Bond stretching termination criteria: " + terminationKind + " " + NumberUtils.getEnglishFormattedDecimal("###.####", terminationThreshold));
+		}
 
         // Get the Cartesian move
         if (params.contains("ZMATRIXMOVE"))
@@ -1087,8 +1185,13 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
 			double newValue = initialValue * scaleFactor;
 			zmatMol.getZAtom(indexOfZAtomToAlter).getIC(0).setValue(newValue);
 
-			logger.info("Bond stretched by " + scaleFactor + "x(SMARTSBondToStretch: " 
-				+ initialValue + ") (Current value: " + newValue + ")");
+			logger.info("Bond stretched by " 
+				+  NumberUtils.getEnglishFormattedDecimal("###.####", scaleFactor) 
+				+ "x(SMARTSBondToStretch: " 
+				+ NumberUtils.getEnglishFormattedDecimal("###.####", initialValue) 
+				+ ") (Current value: " 
+				+ NumberUtils.getEnglishFormattedDecimal("###.####", newValue) 
+				+ ")");
 
 			IAtomContainer outMol = null;
 			try {
@@ -1101,6 +1204,37 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
 			outMol.setProperty(CDKConstants.TITLE, outMolBasename 
 				+ " - stretched by " + scaleFactor );
 			results.addAtomContainer(outMol);
+
+			// Check termination criteria
+			if (terminationKind != null && terminationKind.toUpperCase().equals("MININTERFRAGMENTDIST"))
+			{
+				IAtomContainer clonedResult;
+				try {
+					clonedResult = (IAtomContainer) outMol.clone();
+				} catch (CloneNotSupportedException e) {
+					throw new IllegalStateException(e);
+				}
+
+				// Remove the bond that was stretched
+				BondEditor.editBonds(clonedResult, Map.of("bondToStretch", 
+					new BondEditingRule(new SMARTS[] {smartsBondToStretch}, null, null, true, 0)));
+
+				// Measure all interfragment distances
+				Map<String,List<Double>> distances = MolecularMeter.measureAllQuantities(
+					clonedResult, 0, List.of(new GeomDescriptorDefinition(
+						"interatomicDistance", 0, new SMARTS[] {
+							new SMARTS("[*]"), new SMARTS("[*]")},
+							false,true)), true);
+					
+				double minInterfragmentDist = distances.get("interatomicDistance")
+					.stream().min(Double::compare).orElse(Double.MAX_VALUE);
+
+				if (minInterfragmentDist > terminationThreshold)
+				{
+					logger.info("Termination criteria met: minInterfragmentDist (" + minInterfragmentDist + ") > " + terminationThreshold);
+					break;
+				}
+			}
 		}
 		return results;
     }
@@ -1147,18 +1281,15 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
         ZMatrix actualZMatMove = new ZMatrix();
         if (iac.getAtomCount() != zmtMove.getZAtomCount())
         {
-            logger.fatal("TODO: what if only some IC is modified?");
-            Terminator.withMsgAndStatus("ERROR! Still in development",-1);
-        }
-        else
-        {
-            actualZMatMove = new ZMatrix(zmtMove.toLinesOfText(false,false));
-        }
+            Terminator.withMsgAndStatus("ERROR! The ZMatrix move has a"
+			    + "different number of atoms than the molecule.",-1);
+        } 
+		actualZMatMove = new ZMatrix(zmtMove.toLinesOfText(false,false));
         String msg2 = "Actual ZMatrixMove: " + NL;
         List<String> txt2 = actualZMatMove.toLinesOfText(false,false);
         for (int i=0; i<txt2.size(); i++)
         {
-        	msg2 = msg2 + "  Line-" + i + ": " + txt.get(i) + NL;
+        	msg2 = msg2 + "  Line-" + i + ": " + txt2.get(i) + NL;
         }
         msg2 = msg2 + "Scaling factors: " + scaleFactors;
         logger.debug(msg2);
@@ -1171,8 +1302,8 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
             		+ scaleFactors.get(j));
 
             // Apply ZMatrixMove
-            ZMatrix modZMat = zmh.modifyZMatrix(inZMatMol,actualZMatMove,
-                                                           scaleFactors.get(j));
+            ZMatrix modZMat = zmh.modifyZMatrix(inZMatMol, actualZMatMove, 
+				scaleFactors.get(j));
 
             // Convert to Cartesian coordinates
             IAtomContainer outMol = zmh.convertZMatrixToIAC(modZMat, iac);

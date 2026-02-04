@@ -1,0 +1,33 @@
+#!/bin/bash
+
+function not_passed() {
+  echo "NOT Passed: check condition leading to line '$1' of '$0'"
+  exit -1
+}
+
+if [ ! -f t161.log ] ; then not_passed $LINENO ; fi
+
+if [ ! -f t161-stretched.sdf ] ; then not_passed $LINENO ; fi
+
+n=0;n=$(grep -c 'Generated 20 scaling factors' t161.log)
+if [ $n != 1 ] ; then not_passed $LINENO ; fi
+
+n=0;n=$(grep -c '\$\$\$\$' t161-stretched.sdf)
+if [ $n != 20 ] ; then not_passed $LINENO ; fi
+
+n=0;n=$(grep -c 'stretched by 1.0$' t161-stretched.sdf)
+if [ $n != 1 ] ; then not_passed $LINENO ; fi
+
+n=0;n=$(grep -c 'stretched by 1.950' t161-stretched.sdf)
+if [ $n != 1 ] ; then not_passed $LINENO ; fi
+
+n=0;n=$(grep " Cl " t161-stretched.sdf  | sort --unique | wc -l | awk '{print $1}')
+if [ $n != 42 ] ; then not_passed $LINENO ; fi
+
+if grep -q 'Termination status: 0' t161.log ; then
+  echo Passed
+  exit 0
+else
+  echo NOT Passed 99
+  exit -1
+fi

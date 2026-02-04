@@ -5,6 +5,7 @@ import java.util.List;
 
 import autocompchem.modeling.atomtuple.AtomTupleConstants;
 import autocompchem.modeling.atomtuple.AtomTupleMatchingRule;
+import autocompchem.smarts.SMARTS;
 
 
 /**
@@ -61,7 +62,36 @@ public class GeomDescriptorDefinition extends AtomTupleMatchingRule
     	super(txt+" "+AtomTupleConstants.KEYUSECURRENTVALUE, BASENAME+i, 
     			DEFAULTVALUEDKEYS, DEFAULTVALUELESSKEYS);
     }
-    
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Construct the rule for defining gemetry descriptors by matching SMARTS. 
+     * @param name the name of the geometric descriptor
+     * @param i a unique integer used to identify the rule. Is used to build
+     * the reference name of the generated rule for logging purposes.
+     * @param smarts the list of SMARTS to match
+     * @param onlyBonded <code>true</code> if the geometric descriptor is applied
+     * only to tuples of atoms that are connected
+     * @param onlyIntermolecular <code>true</code> if the geometric descriptor is 
+     * applied only to tuples of atoms that are in different molecules
+     */
+    public GeomDescriptorDefinition(String name, int i, SMARTS[] smarts, 
+        boolean onlyBonded, boolean onlyIntermolecular)
+    {
+    	super(BASENAME+i, smarts);
+    	setValuedAttribute(KEYNAME, name);
+        setValuelessAttribute(AtomTupleConstants.KEYUSECURRENTVALUE);
+    	if (onlyBonded)
+    	{
+    		setValuelessAttribute(AtomTupleConstants.KEYONLYBONDED);
+    	}
+    	if (onlyIntermolecular)
+    	{
+    		setValuelessAttribute(AtomTupleConstants.KEYONLYINTERMOLECULAR);
+    	}
+    }
+
 //------------------------------------------------------------------------------
 
     /**

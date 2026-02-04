@@ -6,28 +6,40 @@
     "doc": "Pathname to a file defining the Cartesian components of the geometric change. The file format consists of a list of translation vectors in Cartesian coordinates, where each vector is reported as a space-separated  (X Y Z) tupla. The Cartesian move is orientation-dependent. Unless a reference substructure is also provided (see keyword REFERENCESUBSTRUCTURE), it is assumed that the 1-to-N vectors refer to the 1-to-N atoms in the molecular system provided as input and that the orientation of the molecule is consistent with that of the Cartesian move. When a reference substructure is provided (see parameter REFERENCESUBSTRUCTURE), the orientation of the Cartesian move is assumed to be consistent with that of the reference substructure."
   },
   {
+    "key": "ZMATRIXMOVE",
+    "casedKey": "ZMatrixMove",
+    "type": "<String>",
+    "doc": "Pathname to a file defining the components of the geometric change in terms of internal coordinates using a ZMatrix. The file format consists of a ZMatrix where entries correspond to how much each internal coordinate changes."
+  },
+  {
+    "key": "SMARTSBONDTOSTRETCH",
+    "casedKey": "smartsBondToStretch",
+    "type": "<String>",
+    "doc": "Specifies one SMARTS pattern to identify the bond to stretch."
+  },
+  {
     "key": "SCALINGFACTORS",
     "casedKey": "scalingFactors",
     "type": "<float> [<float> [<float> [...]]]",
-    "doc": "One or more scaling factors (real numbers, positive or negative) to be applied to the given Cartesian of ZMatrix move. The scaled move is applied on the initial structure per each given scaling factor. The default is 1.0."
+    "doc": "One or more scaling factors (real numbers, positive or negative) to be applied to the either Cartesian or ZMatrix moves or to bond stretching moves. The scaled move is applied on the initial structure per each given scaling factor. The default is 1.0."
+  },
+  {
+    "key": "GENERATESCALINGFACTORS",
+    "casedKey": "generateScalingFactors",
+    "type": "<real> <real> <integer> | <integer> <real> <real>",
+    "doc": "Requests the generation of a sequence of scaling factors. The syntax is either <initial_value> <final_value> <#steps> or <#steps> <initial_value> <step_length>."
   },
   {
     "key": "OPTIMIZESCALINGFACTORS",
     "casedKey": "optimizeScalingFactors",
     "type": "<String> <int> <float> <float> [<float>]",
-    "doc": "Requests the optimisation of scaling factors to Cartesian mode and specifies i) the kind of distribution to be produced (one string - acceptable kinds are 'EVEN' and 'BALANCED'), and ii) the number of scaling factors to generate (one integer), iii) the percent of the possible negative path to consider, and iv) the percent of the possible positive path to consider, and (optional) the maximum acceptable displacement."
+    "doc": "Requests the optimisation of scaling factors for Cartesian moves and specifies i) the kind of distribution to be produced (one string - acceptable values are 'EVEN' and 'BALANCED'), and ii) the number of scaling factors to generate (one integer), iii) the scaling factor for the move in negative direction (e.g., 0.5 for cosidering a movement up to (-0.5)xCartesianMove), and iv) the scaling factor for the move in positive direction (e.g., 0.5 for cosidering a movement up to (+0.5)xCartesianMove), and (optional) the maximum acceptable displacement."
   },
   {
     "key": "REFERENCESUBSTRUCTUREFILE",
     "casedKey": "referenceSubstructureFile",
     "type": "<String>",
     "doc": "Pathname to SDF file with the definition of the substructure to which the geometric change has to be applied. The atom list is used to assign the Cartesian moves to the atoms of the molecular system given via the INFILE keyword."
-  },
-  {
-    "key": "ZMATRIXMOVE",
-    "casedKey": "ZMatrixMove",
-    "type": "<String>",
-    "doc": "Pathname to a file defining the components of the geometric change in terms of internal coordinates using a ZMatrix. The file format consists of a ZMatrix where entries correspond to how much each internal coordinate changes."
   },
   {
     "embeddedWorker": "autocompchem.molecule.intcoords.zmatrix.ZMatrixHandler",

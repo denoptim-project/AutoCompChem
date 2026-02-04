@@ -1,0 +1,30 @@
+[
+  {
+    "key": "SMARTSBONDTOSTRETCH",
+    "casedKey": "smartsBondToStretch",
+    "type": "<String>",
+    "doc": "Specifies one SMARTS pattern to identify the bond to stretch."
+  },
+  {
+    "key": "SCALINGFACTORS",
+    "casedKey": "scalingFactors",
+    "type": "<float> [<float> [<float> [...]]]",
+    "doc": "One or more real numbers (positive or negative) to be applied to the current value of the bond length to produce modified geometries. The default is 1.0."
+  },
+  {
+    "key": "GENERATESCALINGFACTORS",
+    "casedKey": "generateScalingFactors",
+    "type": "<real> <real> <integer> | <integer> <real> <real>",
+    "doc": "Requests the generation of a sequence of scaling factors. The syntax is either <initial_value> <final_value> <#steps> or <#steps> <initial_value> <step_length>."
+  },
+  {
+    "key": "TERMINATIONCRITERIA",
+    "casedKey": "terminationCriteria",
+    "type": "<string> <real>",
+    "doc": "The termination criteria to use. The syntax is <kind> <threshold>. Acceptable kinds are:\n -> 'minInterfragmentDist': the minimum distance between the fragments resulting by removing the stretched bond must be greater than the threshold."
+  },
+  {
+    "embeddedWorker": "autocompchem.molecule.AtomContainerInputProcessor",
+    "tag": "the importing of chemical objects (e.g., molecular geometries)"
+  }
+]

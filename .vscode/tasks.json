@@ -63,6 +63,21 @@
                 "panel": "shared"
             },
             "problemMatcher": []
+        },
+        {
+            "label": "Clean test results",
+            "type": "shell",
+            "command": "rm",
+            "args": [
+                "-rf",
+                "test/results/*"
+            ],
+            "presentation": {
+                "reveal": "silent",
+                "panel": "shared",
+                "showReuseMessage": false
+            },
+            "problemMatcher": []
         }
     ]
 }

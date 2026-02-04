@@ -1,13 +1,5 @@
 package autocompchem.molecule;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-
 /*   
  *   Copyright (C) 2014  Marco Foscato 
  *
@@ -25,14 +17,18 @@ import java.util.HashSet;
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.datacollections.ListOfDoubles;
@@ -42,14 +38,10 @@ import autocompchem.io.IOtools;
 import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
 import autocompchem.modeling.atomtuple.AtomTupleGenerator;
 import autocompchem.modeling.atomtuple.AtomTupleMatchingRule;
-import autocompchem.molecule.connectivity.ConnectivityUtils;
 import autocompchem.molecule.geometry.GeomDescriptor;
 import autocompchem.molecule.geometry.GeomDescriptorDefinition;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
-import autocompchem.smarts.ManySMARTSQuery;
-import autocompchem.smarts.MatchingIdxs;
-import autocompchem.smarts.SMARTS;
 import autocompchem.utils.StringUtils;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
@@ -237,7 +229,25 @@ public class MolecularMeter extends AtomTupleGenerator
      */
 
     public static Map<String,List<Double>> measureAllQuantities(
-    		IAtomContainer iac, int i, List<AtomTupleMatchingRule> rules)
+            IAtomContainer iac, int i, List<AtomTupleMatchingRule> rules)
+    {
+        return measureAllQuantities(iac, i, rules, false);
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Measure all geometric descriptors in a given molecule and using a given
+     * set of geometric descriptor defining rules.
+     * @param mol the molecular system we measure geometric descriptors for.
+     * @param rules the set of geometric descriptor defining rules to apply.
+     * @param silent <code>true</code> if the logger should not be used.
+     * @return the map of geometric descriptors and their values.
+     */
+
+    public static Map<String,List<Double>> measureAllQuantities(
+    		IAtomContainer iac, int i, List<AtomTupleMatchingRule> rules,
+            boolean silent)
     {
     	Logger logger = LogManager.getLogger(MolecularMeter.class);
     	
@@ -282,7 +292,10 @@ public class MolecularMeter extends AtomTupleGenerator
             }
             strRes += " = " + descriptor.getValue();
 
-            logger.info(strRes);
+            if (!silent)
+            {
+                logger.info(strRes);
+            }
 
             if (results.containsKey(descriptor.getName()))
             {

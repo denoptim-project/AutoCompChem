@@ -3,5 +3,8 @@ TASK: stretchBond
 #INFILE: ../t161-mol.sdf
 INFILE: ../t161-mol_reordered.sdf
 SMARTSBONDTOSTRETCH: [$([#6]([#1])([#1])~[#44])]-[$([#6]([#1])([#1])~[#44])]
-SCALINGFACTORS: 1.0 1.2 1.4 1.6 1.8 2.0 2.2 2.4 2.6 2.8 3.0 3.2 3.4 3.6 3.8 4.0 4.2 4.4 4.6 4.8 5.0
+#  initial_value, final_value, #steps
+#generateScalingFactors: 1.0 5.0 25
+#  #steps, initial_value, step_length
+generateScalingFactors: 20 1.0 0.05
 OUTFILE: t161-stretched.sdf

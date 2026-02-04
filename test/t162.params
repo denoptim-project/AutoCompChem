@@ -1,0 +1,7 @@
+VERBOSITY: 4
+TASK: stretchBond
+INFILE: ../t162-mol.sdf
+SMARTSBONDTOSTRETCH: [$([#6]([#1])([#1])~[#44])]-[$([#6]([#1])([#1])~[#44])]
+generateScalingFactors: 50 1.0 0.1
+terminationCriteria: minInterfragmentDist 4.0
+OUTFILE: t162-stretched.sdf
