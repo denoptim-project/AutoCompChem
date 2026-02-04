@@ -16,6 +16,7 @@
     "tag": "the importing of chemical objects (e.g., molecular geometries)",
     "ignorableItems": [
       "outFile",
+      "onlyLastStructure",
       "outFormat",
       "setProperties"
     ]

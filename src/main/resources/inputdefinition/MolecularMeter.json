@@ -6,6 +6,12 @@
     "doc": "The pathname to the file where to save the resulting descriptors."
   },
   {
+    "key": "SAVEASPROPERTIES",
+    "casedKey": "saveAsProperties",
+    "type": "<boolean>",
+    "doc": "Whether to save the descriptors as properties of the output molecule."
+  },
+  {
     "embeddedWorker": "autocompchem.modeling.atomtuple.AtomTupleGenerator",
     "tag": "definition of geometric descriptors to measure",
     "task": "generateAtomTuples",
@@ -19,6 +25,7 @@
     "tag": "the importing of chemical objects (e.g., molecular geometries)",
     "ignorableItems": [
       "outFile",
+      "onlyLastStructure",
       "outFormat",
       "setProperties"
     ]

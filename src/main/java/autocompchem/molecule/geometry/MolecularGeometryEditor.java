@@ -553,15 +553,20 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
     	{
     		return result.getAtomContainer(0);
     	} else {
-    		if (outFile==null)
-    		{
-    			logger.warn("Multiple resulting geometries are exposed as "
-    					+ "'" + task.ID + "' data. The initial geometry is "
-    					+ "exposed as main output. You can save the multiple "
-    					+ "geometries to file by using parameter '" 
-    					+ WorkerConstants.PAROUTFILE + "'.");
-    		}
-    		return iac;
+			if (onlyLastOne)
+			{
+				return result.getAtomContainer(result.getAtomContainerCount()-1);
+			} else {
+				if (outFile==null)
+				{
+					logger.warn("Multiple resulting geometries are exposed as "
+							+ "'" + task.ID + "' data. The initial geometry is "
+							+ "exposed as main output. You can save the multiple "
+							+ "geometries to file by using parameter '" 
+							+ WorkerConstants.PAROUTFILE + "'.");
+				}
+				return iac;
+			}
     	}
     }
    
