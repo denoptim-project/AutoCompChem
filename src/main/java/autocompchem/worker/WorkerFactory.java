@@ -56,6 +56,7 @@ import autocompchem.run.Job;
 import autocompchem.run.JobAssistant;
 import autocompchem.run.JobDefinitionConverter;
 import autocompchem.run.JobEvaluator;
+import autocompchem.run.JobLooper;
 import autocompchem.wiro.InputWriter;
 import autocompchem.wiro.OutputReader;
 import autocompchem.wiro.acc.ACCInputWriter;
@@ -96,7 +97,6 @@ public final class WorkerFactory
 	 * Singleton instance of this class
 	 */
 	private static WorkerFactory INSTANCE;
-
 	
 //-----------------------------------------------------------------------------
 	
@@ -153,6 +153,7 @@ public final class WorkerFactory
         registerType(new ConformersGenerator());
         registerType(new MoleculeExtractor());
         registerType(new JobAssistant());
+        registerType(new JobLooper());
 	}
 
 //-----------------------------------------------------------------------------

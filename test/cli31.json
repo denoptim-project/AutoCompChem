@@ -1,0 +1,43 @@
+{
+  "jobType": "ACCJob",
+  "params": [
+    {
+      "reference": "TASK",
+      "value": "loopJob"
+    },
+    {
+      "reference": "loopedJob",
+      "type": "JOB",
+      "value":
+      {
+        "jobType": "ShellJob",
+        "params": [
+          {
+            "reference": "APP",
+            "value": "SHELL"
+          },
+          {
+            "reference": "VERBOSITY",
+            "value": "4"
+          },
+          {
+            "reference": "CMD",
+            "value": "echo Iteration=ACCITERNUMBER varA=ACCVALEVARA varB=ACCVALEVARB ; exit -ACCITERNUMBER"
+          }
+        ]
+      }
+    },
+    {
+      "reference": "replacementRules",
+      "value": "ACCITERNUMBER ${x}\nACCVALEVARA ${x*1.23}\nACCVALEVARB ${2*x - 2.5}"
+    },
+    {
+      "reference": "maxIterations",
+      "value": "12"
+    },
+    {
+      "reference": "VERBOSITY",
+      "value": "4"
+    }
+  ]
+}

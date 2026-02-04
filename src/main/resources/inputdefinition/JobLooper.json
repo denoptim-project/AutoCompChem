@@ -1,0 +1,20 @@
+[
+  {
+    "key": "LOOPEDJOB",
+    "casedKey": "loopedJob",
+    "type": "Job",
+    "doc": "The definition of the job to loop over. Each iteration will create a copi of the job, possibly altered according to the replacementRules parameter, and run it."
+  },
+  {
+    "key": "MAXITERATIONS",
+    "casedKey": "maxIterations",
+    "type": "<int>",
+    "doc": "The maximum number of iterations of the loop. Sets the loop to iterate from 0 to maxIterations-1."
+  },
+  {
+    "key": "REPLACEMENTRULES",
+    "casedKey": "replacementRules",
+    "type": "<String>",
+    "doc": "The rules defining string-replacements operations meant to alter the definition of the looped job at every iteration and dependently on the iteration index (0-based). Multiple rules can be defined in a newline separated list. Each rule must have the following syntax: <originalString> <newString>. The <originalString> is the string to be found in the job definition and replaced with the <newString>. The <newString> may also be an expression dependent on the iteration index (i.e., 'x'), for example '${2x-2.5}' for x = 0, 1, 2, 3, etc. would result in values -2.5, -0.5, 1.5, 3.5, etc."
+  }
+]
