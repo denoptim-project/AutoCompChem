@@ -24,6 +24,19 @@
     "doc": "The termination criteria to use. The syntax is <kind> <threshold>. Acceptable kinds are:\n -> 'minInterfragmentDist': the minimum distance between the fragments resulting by removing the stretched bond must be greater than the threshold."
   },
   {
+    "embeddedWorker": "autocompchem.molecule.intcoords.zmatrix.ZMatrixHandler",
+    "task": "convertToZMatrix",
+    "tag": "generation of ZMatrix",
+    "ignorableItems": [
+      "outFile",
+      "inFile2",
+      "nullOnFailure"
+    ],
+    "ignorableWorkers": [
+      "autocompchem.molecule.AtomContainerInputProcessor"
+    ]
+  },
+  {
     "embeddedWorker": "autocompchem.molecule.AtomContainerInputProcessor",
     "tag": "the importing of chemical objects (e.g., molecular geometries)"
   }

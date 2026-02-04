@@ -104,6 +104,17 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
     private final AtomicInteger torCounter = new AtomicInteger(1);
 
     /**
+     * Parameter name controlling whether to return null if the molecule cannot be represented by a ZMatrix.
+     */
+    public static final String PARNULLONFAILURE = "NULLONFAILURE";
+
+    /**
+     * Flag controlling whether to terminate with an error message if the molecule cannot be represented by a ZMatrix.
+     * By default, we terminate with an error message.
+     */ 
+    private boolean terminateOnFailure = true;
+
+    /**
      * String defining the task of generating and printing a ZMatrix
      */
     public static final String CONVERTTOZMATNAME = "convertToZMatrix";
@@ -218,6 +229,12 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
                              + "use only torsions AND a template ZMatrix.", -1);
             }
         }
+
+        if (params.contains(PARNULLONFAILURE))
+        {   
+            String value = params.getParameter(PARNULLONFAILURE).getValue().toString();
+            this.terminateOnFailure = !StringUtils.parseBoolean(value);
+        }
         
         if (params.contains("INFILE2"))
         {
@@ -322,18 +339,21 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
      * ZMatrix.
      */
    
-    public void makeZMatrix(IAtomContainer iac, int i)
+    private void makeZMatrix(IAtomContainer iac, int i)
     {
 	    String molName = MolecularUtils.getNameOrID(iac);
-	    ZMatrix zmat = makeZMatrix(iac, tmplZMat);
-	    zmat.setTitle(molName);
+	    ZMatrix zmat = makeZMatrix(iac, tmplZMat, terminateOnFailure);
+        if (zmat == null) {
+            logger.warn("Returning null ZMatrix. Molecule " + molName + " cannot be represented by a ZMatrix.");
+        } else {
+	        zmat.setTitle(molName);
+            String msg = StringUtils.mergeListToString(
+                zmat.toLinesOfText(useTmpl, onlyTors), 
+                System.getProperty("line.separator"));
+            logger.info(msg); 
+        }
 	    
-	    String msg = StringUtils.mergeListToString(
-	    			zmat.toLinesOfText(useTmpl, onlyTors), 
-	    			System.getProperty("line.separator"));
-	    logger.info(msg);
-	    
-	    if (outFile!=null)
+	    if (outFile!=null && zmat != null)
 	    {
 	    	outFileAlreadyUsed = true;
 	    	IOtools.writeZMatAppend(outFile,zmat,true);
@@ -363,13 +383,38 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
 //------------------------------------------------------------------------------
 
     /**
-     * Creates the Z-Matrix and the corresponding atom index map.
+     * Creates the Z-Matrix and the corresponding atom index map. Causes termination if the molecule cannot be represented by a ZMatrix.
+     * @param iac the molecule to create the ZMatrix for
      * @return the resulting ZMatrix
      */
 
-    public  ZMatrix makeZMatrix(IAtomContainer iac)
+    public ZMatrix makeZMatrix(IAtomContainer iac)
     {
-    	return makeZMatrix(iac, tmplZMat);
+        return makeZMatrix(iac, tmplZMat, true);
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Creates the Z-Matrix and the corresponding atom index map.
+     * @param iac the molecule to create the ZMatrix for
+     * @param terminateOnFailure if true, the method will terminate with an error
+     * if the molecule cannot be represented by a ZMatrix.
+     * @return the resulting ZMatrix
+     */
+
+    public ZMatrix makeZMatrix(IAtomContainer iac, ZMatrix tmplZMat,boolean terminateOnFailure)
+    {
+        try {
+            return makeZMatrix(iac, tmplZMat);
+        } catch (NoReferenceAtomException e) {
+            if (terminateOnFailure) {
+                Terminator.withMsgAndStatus("ERROR! Cannot create ZMatrix for molecule " 
+                    + MolecularUtils.getNameOrID(iac) + ". "
+                    + "No reference atom can be chosen for any atom in the molecule.", -1);
+            }
+            return null;
+        }
     }
     
 //------------------------------------------------------------------------------
@@ -377,13 +422,15 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
     /**
      * Creates the Z-Matrix and the corresponding atom index map.
      * @return the resulting ZMatrix
+     * @throws NoReferenceAtomException if a reference atom cannot be chosen for 
+     * any atom in the molecule, meaning we cannot generate a ZMatrix representation.
+     * @throws ZMatrixTemplateSizeMismatchException if the template ZMatrix and 
+     * the current molecule have different sizes.
      */
 
-    public ZMatrix makeZMatrix(IAtomContainer iac, ZMatrix tmplZMat)
+    public ZMatrix makeZMatrix(IAtomContainer iac, ZMatrix tmplZMat) throws NoReferenceAtomException
     {
         ZMatrix zmat = new ZMatrix();
-
-//TODO: May need to reorder atoms OR change connectivity according to atm list
 
         // Ensure consistency with template
         if (tmplZMat!=null && iac.getAtomCount() != tmplZMat.getZAtomCount())
@@ -1032,9 +1079,10 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
      * @param atmC the atom for which we are making the internal coordinates
      * @param mol the molecule
      * @return the index of the chosen atom
+     * @throws NoReferenceAtomException 
      */
  
-    private int chooseFirstRefAtom(IAtom atmC, IAtomContainer mol)
+    private int chooseFirstRefAtom(IAtom atmC, IAtomContainer mol) throws NoReferenceAtomException
     {
         if (useTmpl)
         {
@@ -1050,19 +1098,11 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
                 candidates.add(cl);
             }
         }
+        if (candidates.size() == 0) {
+            throw new NoReferenceAtomException("Cannot choose a reference atom for atom " 
+                + MolecularUtils.getAtomRef(atmC, mol));
+        }
         Collections.sort(candidates, new ZAtomCandidateComparator());
-        try 
-        {
-            mol.indexOf(candidates.get(0).getAtom());
-        }
-        catch (Throwable t)
-        {
-            Terminator.withMsgAndStatus("Cannot choose a reference atom. "
-                + "Make sure each atoms is connected by any chain of bonds to "
-                + "any other atom in the chemical entity, or reorder the atom "
-                + "list as to follow the connectivity. Candidate for atom " 
-                + MolecularUtils.getAtomRef(atmC, mol) + ": " + candidates,-1);
-        }
         return mol.indexOf(candidates.get(0).getAtom());
     }
 
@@ -1077,9 +1117,11 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
      * @param atmJ reference atom that will be defined by this method
      * @param mol the molecule
      * @return the index of the chosen atom
+     * @throws NoReferenceAtomException if a reference atom cannot be chosen for 
+     * any atom in the molecule, meaning we cannot generate a ZMatrix representation.
      */
 
-    private int chooseSecondRefAtom(IAtom atmC, IAtom atmI, IAtomContainer mol)
+    private int chooseSecondRefAtom(IAtom atmC, IAtom atmI, IAtomContainer mol) throws NoReferenceAtomException
     {
         if (useTmpl)
         {
@@ -1095,6 +1137,10 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
                 ZAtomCandidate cl = new ZAtomCandidate(nbr,1);
                 candidates.add(cl);
             }
+        }
+        if (candidates.size() == 0) {
+            throw new NoReferenceAtomException("Cannot choose a reference atom for atom " 
+                + MolecularUtils.getAtomRef(atmC, mol));
         }
         Collections.sort(candidates, new ZAtomCandidateComparator());
         return mol.indexOf(candidates.get(0).getAtom());
@@ -1117,10 +1163,12 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
      * chosen atom, and the second
      * a string defining the type of the 3rd internal coordinate
      * (0: torsion, -/+1: angle or improper torsion)
+     * @throws NoReferenceAtomException if a reference atom cannot be chosen for 
+     * any atom in the molecule, meaning we cannot generate a ZMatrix representation.
      */
 
     private Object[] chooseThirdRefAtom(IAtom atmC, IAtom atmI, IAtom atmJ,
-                                               IAtomContainer mol, ZMatrix zmat)
+                                               IAtomContainer mol, ZMatrix zmat) throws NoReferenceAtomException
     {
         String typK = "0";
         int idC = mol.indexOf(atmC);
@@ -1213,7 +1261,7 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
                          + "(or close-to-linear) angle. Please consider the "
                          + "use of dummy atoms in proximity "
                          + "of atom " + MolecularUtils.getAtomRef(atmC,mol);
-            Terminator.withMsgAndStatus(msg,-1);
+            throw new NoReferenceAtomException(msg);
         }
 
         IAtom atmK = candidates.get(0).getAtom();

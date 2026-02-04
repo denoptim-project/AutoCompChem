@@ -12,6 +12,12 @@
     "doc": "Requests to use only torsions as 3rd internal coordinate in ZMatrix."
   },
   {
+    "key": "NULLONFAILURE",
+    "casedKey": "nullOnFailure",
+    "type": "",
+    "doc": "Requests to return null if the molecule cannot be represented by a ZMatrix. By default, we terminate with an error message."
+  },
+  {
     "embeddedWorker": "autocompchem.molecule.AtomContainerInputProcessor",
     "tag": "the importing of chemical objects (e.g., molecular geometries)",
     "ignorableItems": [

@@ -1,0 +1,37 @@
+#!/bin/bash
+
+function not_passed() {
+  echo "NOT Passed: check condition leading to line '$1' of '$0'"
+  exit -1
+}
+
+if [ ! -f t163.log ] ; then not_passed $LINENO ; fi
+
+if [ ! -f t163-stretched.sdf ] ; then not_passed $LINENO ; fi
+
+n=0;n=$(grep -c 'Generated 50 scaling factors' t163.log)
+if [ $n != 1 ] ; then not_passed $LINENO ; fi
+
+n=0;n=$(grep -c 'Termination criteria met: minInterfragmentDist' t163.log)
+if [ $n != 1 ] ; then not_passed $LINENO ; fi
+
+# Termination criteria are met before reaching the end of the sequence of scaling factors
+n=0;n=$(grep -c '\$\$\$\$' t163-stretched.sdf)
+if [ $n != 1 ] ; then not_passed $LINENO ; fi
+
+n=0;n=$(grep -c 'stretched by 1.0$' t163-stretched.sdf)
+if [ $n != 0 ] ; then not_passed $LINENO ; fi
+
+n=0;n=$(grep -c 'stretched by 2.1$' t163-stretched.sdf)
+if [ $n != 1 ] ; then not_passed $LINENO ; fi
+
+n=0;n=$(grep " Cl " t163-stretched.sdf | sort --unique | wc -l | awk '{print $1}')
+if [ $n != 4 ] ; then not_passed $LINENO ; fi
+
+if grep -q 'Termination status: 0' t163.log ; then
+  echo Passed
+  exit 0
+else
+  echo NOT Passed 99
+  exit -1
+fi

@@ -1,6 +1,5 @@
 VERBOSITY: 4
 TASK: stretchBond
-#INFILE: ../t161-mol.sdf
 INFILE: ../t161-mol_reordered.sdf
 SMARTSBONDTOSTRETCH: [$([#6]([#1])([#1])~[#44])]-[$([#6]([#1])([#1])~[#44])]
 #  initial_value, final_value, #steps

@@ -50,6 +50,7 @@ import autocompchem.modeling.atomtuple.AtomTupleMatchingRule;
 import autocompchem.molecule.AtomContainerInputProcessor;
 import autocompchem.molecule.BondEditor;
 import autocompchem.molecule.MolecularMeter;
+import autocompchem.molecule.MolecularReorderer;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.molecule.connectivity.BondEditingRule;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
@@ -1124,9 +1125,58 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
 				+ "to stretch.", -1);
 		}
 
+		// Ensure the atom list is ordered in a way compatible with ZMatrix representation
+        logger.info("Initial ZMatrix: ");
+		IAtomContainer reorderedIAC = iac;
+        ParameterStorage locPar = params.copy();
+        locPar.setParameter(WorkerConstants.PARTASK, 
+        		ZMatrixHandler.CONVERTTOZMATTASK.ID);
+        locPar.removeData(WorkerConstants.PAROUTFILE);
+        locPar.removeData(WorkerConstants.PARINFILE);
+        locPar.setParameter(WorkerConstants.PARNOOUTFILEMODE);
+		locPar.setParameter(ZMatrixHandler.PARNULLONFAILURE, "true");
+		locPar.setParameter(ChemSoftConstants.PARGEOM, reorderedIAC);
+        Worker w;
+		try {
+			w = WorkerFactory.createWorker(locPar, this.getMyJob());
+		} catch (ClassNotFoundException e) {
+			throw new IllegalStateException(e);
+		}
+        ZMatrixHandler zmh = (ZMatrixHandler) w;
+        ZMatrix zmatMol = null;
+
+		w.performTask();
+		Object output = w.getMyJob().getOutputCollector().getNamedData(
+			ZMatrixHandler.CONVERTTOZMATTASK.ID + "mol-"+0).getValue();
+		if (output != null) {
+			zmatMol = (ZMatrix) output;
+		} else {
+			logger.warn("Cannot make ZMatrix with input atom list. "
+				+ "Reordering atom list.");
+			MolecularReorderer mr = new MolecularReorderer();
+			reorderedIAC = mr.reorderContainer(iac);
+			locPar.setParameter(ChemSoftConstants.PARGEOM, reorderedIAC);
+			try {
+				w = WorkerFactory.createWorker(locPar, this.getMyJob());
+			} catch (ClassNotFoundException cnf) {
+				throw new IllegalStateException(cnf);
+			}
+			w.performTask();
+			Object output2 = w.getMyJob().getOutputCollector().getNamedData(
+				ZMatrixHandler.CONVERTTOZMATTASK.ID + "mol-"+0).getValue();
+			if (output2 != null) {
+				zmatMol = (ZMatrix) output2;
+			} else {
+				Terminator.withMsgAndStatus("ERROR! Cannot make ZMatrix to " 
+					+ "stretch bond. " 
+					+"Alter the connectivity or the list of atoms to enable " 
+					+ "ZMatrix representation.", -1);
+			}
+		}
+
 		// Identify the bond to stretch
 		Map<String, List<IBond>> bondsToStretch = SMARTSUtils.identifyBondsBySMARTS(
-			iac, Map.of("bondToStretch", smartsBondToStretch));
+			reorderedIAC, Map.of("bondToStretch", smartsBondToStretch));
 		if (bondsToStretch.size() == 0)
 		{
 			Terminator.withMsgAndStatus("ERROR! No match for SMARTS '" 
@@ -1141,38 +1191,16 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
 		}
 		IBond bondToStretch = bondsToStretch.get("bondToStretch").get(0);
 
-		// Make a suitable Zmatrix representation of the molecule
-        ParameterStorage locPar = params.copy();
-        locPar.setParameter(WorkerConstants.PARTASK, 
-        		ZMatrixHandler.CONVERTTOZMATTASK.ID);
-        locPar.removeData(WorkerConstants.PAROUTFILE);
-        locPar.setParameter(WorkerConstants.PARNOOUTFILEMODE);
-        Worker w;
-		try {
-			w = WorkerFactory.createWorker(locPar, this.getMyJob());
-		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException(e);
-		}
-        ZMatrixHandler zmh = (ZMatrixHandler) w;
-        ZMatrix zmatMol = zmh.makeZMatrix(iac);
-        String msg = "Original ZMatrix: " + NL;
-        List<String> txt = zmatMol.toLinesOfText(false,false);
-        for (int i=0; i<txt.size(); i++)
-        {
-        	msg = msg + "  Line-" + i + ": " + txt.get(i) + NL;
-        }
-        logger.debug(msg);
-
 		// Identify the internal coordinate corresponding to the bond to stretch
 		ZMatrixAtom atomToMove = zmatMol.findBondDistance(
-			iac.indexOf(bondToStretch.getBegin()), 
-			iac.indexOf(bondToStretch.getEnd()));
+			reorderedIAC.indexOf(bondToStretch.getBegin()), 
+			reorderedIAC.indexOf(bondToStretch.getEnd()));
 		if (atomToMove == null)
 		{
 			Terminator.withMsgAndStatus("ERROR! No internal coordinate "
 				+ "corresponding to the bond to stretch ("
-				+ MolecularUtils.getAtomRef(bondToStretch.getBegin(), iac)
-				+ "-" + MolecularUtils.getAtomRef(bondToStretch.getEnd(), iac)
+				+ MolecularUtils.getAtomRef(bondToStretch.getBegin(), reorderedIAC)
+				+ "-" + MolecularUtils.getAtomRef(bondToStretch.getEnd(), reorderedIAC)
 				+ ") found.", -1);
 		}
 		int indexOfZAtomToAlter = zmatMol.zatoms().indexOf(atomToMove);
@@ -1195,12 +1223,13 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
 
 			IAtomContainer outMol = null;
 			try {
-				outMol = zmh.convertZMatrixToIAC(zmatMol, iac);
+				outMol = zmh.convertZMatrixToIAC(zmatMol, reorderedIAC);
 			} catch (Throwable e) {
 				Terminator.withMsgAndStatus("ERROR! Exception while "
 					+ "converting ZMatrix to IAC. Cause of the exception: "
 					+ e.getMessage(), -1);
 			}
+			
 			outMol.setProperty(CDKConstants.TITLE, outMolBasename 
 				+ " - stretched by " + scaleFactor );
 			results.addAtomContainer(outMol);

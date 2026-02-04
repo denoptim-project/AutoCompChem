@@ -42,6 +42,12 @@
     "doc": "The pathname to the file where to save the results."
   },
   {
+    "key": "ONLYLASTSTRUCTURE",
+    "casedKey": "onlyLastStructure",
+    "type": "",
+    "doc": "Flag to write to the output file only the last output structure when sets of output structures are available."
+  },
+  {
     "key": "OUTFORMAT",
     "casedKey": "outFormat",
     "type": "<String>",

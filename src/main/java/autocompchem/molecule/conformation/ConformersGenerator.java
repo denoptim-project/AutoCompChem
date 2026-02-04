@@ -231,7 +231,7 @@ public class ConformersGenerator extends AtomContainerInputProcessor
 			// This should never happen unless things are deeply broken
 			throw new IllegalStateException(e);
 		}
-		ZMatrix originalZMat = zmh.makeZMatrix(iac, null);
+		ZMatrix originalZMat = zmh.makeZMatrix(iac, null, true);
 		
 		// Convert conformational coordinates into torsional steps
 		if (!confSpace.containsOnlyTorsions())

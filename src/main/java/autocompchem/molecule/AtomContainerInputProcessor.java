@@ -83,6 +83,11 @@ public class AtomContainerInputProcessor extends Worker
      */
     protected String outFormat = "SDF";
 
+	/**
+	 * Flag to limit to the last output when sets of output structures are available.
+	 */
+	protected boolean onlyLastOne = false;
+
     /**
      * The input molecules
      */
@@ -177,8 +182,22 @@ public class AtomContainerInputProcessor extends Worker
         if (params.contains(ChemSoftConstants.PARGEOM))
         {
             inMols = new ArrayList<IAtomContainer>();
-            ((AtomContainerSet) params.getParameter(ChemSoftConstants.PARGEOM)
-            		.getValue()).atomContainers().forEach(i -> inMols.add(i));
+            Object geomValue = params.getParameter(ChemSoftConstants.PARGEOM).getValue();
+            
+            if (geomValue instanceof AtomContainerSet)
+            {
+                ((AtomContainerSet) geomValue).atomContainers().forEach(i -> inMols.add(i));
+            }
+            else if (geomValue instanceof IAtomContainer)
+            {
+                inMols.add((IAtomContainer) geomValue);
+            }
+            else
+            {
+                throw new IllegalArgumentException("Parameter " + ChemSoftConstants.PARGEOM 
+                        + " must be either IAtomContainer or AtomContainerSet, but got: " 
+                        + geomValue.getClass().getName());
+            }
            
             if (params.contains(WorkerConstants.PARINFILE))
             {
@@ -251,6 +270,11 @@ public class AtomContainerInputProcessor extends Worker
         	this.outFormat = params.getParameter(
         			WorkerConstants.PAROUTFORMAT).getValueAsString();
         }
+
+		if (params.contains(WorkerConstants.PARONLYLASTSTRUCTURE))
+		{
+			this.onlyLastOne = true;
+		}
         
         // If no other input channel is used, then get input from memory of 
         // previous step
@@ -481,7 +505,13 @@ public class AtomContainerInputProcessor extends Worker
     {
         if (outFile!=null)
         {
-			IOtools.writeAtomContainerSetToFile(outFile, iacs, outFormat, true);
+			if (onlyLastOne && iacs.getAtomContainerCount()>0)
+			{
+				IOtools.writeAtomContainerToFile(outFile, iacs.getAtomContainer(
+					iacs.getAtomContainerCount()-1), outFormat, true);
+			} else {
+				IOtools.writeAtomContainerSetToFile(outFile, iacs, outFormat, true);
+			}
         }
     }
     
@@ -496,7 +526,12 @@ public class AtomContainerInputProcessor extends Worker
     {
         if (outFile!=null)
         {
-			IOtools.writeAtomContainerSetToFile(outFile, iacs, outFormat, true);
+			if (onlyLastOne && iacs.size()>0)
+			{
+				IOtools.writeAtomContainerToFile(outFile, iacs.get(iacs.size()-1), outFormat, true);
+			} else {
+				IOtools.writeAtomContainerSetToFile(outFile, iacs, outFormat, true);
+			}
         }
     }
     

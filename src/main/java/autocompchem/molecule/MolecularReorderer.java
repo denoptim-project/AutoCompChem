@@ -1,10 +1,5 @@
 package autocompchem.molecule;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 
 /*   
  *   Copyright (C) 2016  Marco Foscato 
@@ -23,6 +18,11 @@ import java.util.HashSet;
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -139,8 +139,7 @@ public class MolecularReorderer extends AtomContainerInputProcessor
         if (params.contains("SOURCESMARTS"))
         {
             useSmarts = true;
-            String allSamrts = 
-                      params.getParameter("SOURCESMARTS").getValue().toString();
+            String allSamrts = params.getParameter("SOURCESMARTS").getValue().toString();
             String[] parts = allSamrts.split("\\s+");
             for (int i=0; i<parts.length; i++)
             {

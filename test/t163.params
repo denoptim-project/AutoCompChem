@@ -1,0 +1,9 @@
+VERBOSITY: 4
+TASK: stretchBond
+# Will be reordered
+INFILE: ../t163-mol.sdf
+SMARTSBONDTOSTRETCH: [$([#6]([#1])([#1])~[#44])]-[$([#6]([#1])([#1])~[#44])]
+generateScalingFactors: 50 1.0 0.1
+terminationCriteria: minInterfragmentDist 4.0
+OUTFILE: t163-stretched.sdf
+onlyLastStructure
