@@ -262,9 +262,12 @@ public class JobLooper extends Worker
 			currentJob.run();
 
 			// Extract selected data to be exposed as results of the loop
-			String dataName = "EXITCODE";
+
+			//TODO get the namesof the data to expose from input parameters
+			/* 
 			results.putNamedData("iter-" + i, 
 				currentJob.getOutputCollector().getNamedData(dataName));
+				*/
 		}
 
 		return results;
