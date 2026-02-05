@@ -602,7 +602,7 @@ public class NumberUtils
         {
             if (result instanceof Double)
             {
-            newValue = (Double) result;
+                newValue = (Double) result;
             } else {
                 throw new IllegalArgumentException("Evaluation of "
                         + "expression '" + expr + "' "

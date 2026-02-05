@@ -1,5 +1,7 @@
 package autocompchem.run;
 
+import java.io.File;
+
 /*
  *   Copyright (C) 2026  Marco Foscato
  *
@@ -29,7 +31,9 @@ import org.apache.logging.log4j.Logger;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.io.ACCJson;
+import autocompchem.io.IOtools;
 import autocompchem.utils.NumberUtils;
+import autocompchem.utils.StringUtils;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 import jakarta.el.ExpressionFactory;
@@ -88,6 +92,17 @@ public class JobLooper extends Worker
 	 * 
 	 */
 	public static final String PARREPLACEMENTRULES = "REPLACEMENTRULES";
+
+	/**
+	 * Keyword defining the parameter that defines whether to write the iteration JSON files.
+	 * 
+	 */
+	public static final String PARWRITEITERATIONJSONFILES = "WRITEITERATIONJSONFILES";
+
+	/**
+	 * Whether to write the iteration JSON files.
+	 */
+	private boolean writeIterationJSONFiles = false;
 
     
 //-----------------------------------------------------------------------------
@@ -155,6 +170,12 @@ public class JobLooper extends Worker
 				replacementRules.put(parts[0], parts[1]);
 			}
 		}
+
+		if (hasParameter(PARWRITEITERATIONJSONFILES))
+		{
+			String value = params.getParameter(PARWRITEITERATIONJSONFILES).getValueAsString();
+			writeIterationJSONFiles = StringUtils.parseBoolean(value, true);
+		}
 	}
 
 //------------------------------------------------------------------------------
@@ -165,7 +186,8 @@ public class JobLooper extends Worker
     	if (task.equals(LOOPJOBTASK))
     	{
 			NamedDataCollector results = runLoopedJob(loopedJob, maxIterations,
-				replacementRules);
+				replacementRules, writeIterationJSONFiles, 
+				"Job"+getMyJob().getId());
 
 			if (exposedOutputCollector != null)
 			{
@@ -186,10 +208,14 @@ public class JobLooper extends Worker
 	 * @param replacements a map of rules defining string-replacements operations
 	 * typically dependent on the iteration number. These are used to alter the
 	 * job definition at any iteration.
+	 * @param writeIterationJSONFiles set to <code>true</code> to write the job
+	 * @param looperJobName the name of the looper job, used to name the 
+	 * iteration JSON files.
 	 */
 	
     public static NamedDataCollector runLoopedJob(Job jobTmpl, int maxIterations, 
-		Map<String, String> replacementRules)
+		Map<String, String> replacementRules, boolean writeIterationJSONFiles,
+		String looperJobName)
 	{
     	Logger logger = LogManager.getLogger(JobLooper.class);
 
@@ -223,6 +249,11 @@ public class JobLooper extends Worker
 			for (String match : replacements.keySet())
 			{
 				alteredJobJson = alteredJobJson.replace(match, replacements.get(match));
+			}
+
+			if (writeIterationJSONFiles)
+			{
+				IOtools.writeTXTAppend(new File(looperJobName + "_iteration-" + i + ".json"), alteredJobJson, false);
 			}
 
 			// Create and run the altered job
