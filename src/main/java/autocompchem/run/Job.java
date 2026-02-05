@@ -59,6 +59,7 @@ import autocompchem.utils.NumberUtils;
 import autocompchem.utils.StringUtils;
 import autocompchem.wiro.chem.CompChemJob;
 import autocompchem.wiro.chem.Directive;
+import autocompchem.worker.WorkerConstants;
 
 
 /**
@@ -1359,10 +1360,25 @@ public class Job implements Runnable
      */
     public static Object getExposedData(Job job, String[] pathIntoExposedData)
     {
+        Logger logger = LogManager.getLogger(Job.class);
     	Set<String> availableKeys = job.getOutputRefSet();
     	String contentName = pathIntoExposedData[0].stripLeading().stripTrailing();
     	if (!availableKeys.contains(contentName))
-    		return null;
+    	{
+            String taskInfo = "";
+            if (job.hasParameter(WorkerConstants.PARTASK))
+            {
+                taskInfo = " (" 
+                + job.getParameters().getParameter(WorkerConstants.PARTASK) 
+                + ")";
+            }
+            logger.warn("WARNING: the data '" + contentName 
+                + "' is not available in the output exposed by job " 
+                + job.getId() + taskInfo
+                + ". The job exposes only the following data names: " 
+                + availableKeys.toString() + ". Returning null.");
+            return null;
+        }
     	
     	NamedData data = job.getOutput(contentName);
     	Object value = data.getValue();

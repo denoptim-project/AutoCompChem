@@ -598,24 +598,24 @@ public class NumberUtils
   		// Do the actual calculation of the new value
   		Double newValue = null;
   		Object result = valEditingFunct.getValue(context);
-          if (result != null) 
-          {
-              if (result instanceof Double)
-              {
-              	newValue = (Double) result;
-              } else {
-                  throw new IllegalArgumentException("Evaluation of "
-                          + "expression '" + expr + "' "
-                          + "returned '" + result.getClass() + "'). "
-                          + "Check expression.");
-              }
-          } else {
-              throw new IllegalArgumentException("Evaluation of "
-              		+ "Expression Language returned null. "
-                      + "Check expression.");
-          }
-          
-          return newValue;
+        if (result != null) 
+        {
+            if (result instanceof Double)
+            {
+            newValue = (Double) result;
+            } else {
+                throw new IllegalArgumentException("Evaluation of "
+                        + "expression '" + expr + "' "
+                        + "returned '" + result.getClass() + "'). "
+                        + "Check expression.");
+            }
+        } else {
+            throw new IllegalArgumentException("Evaluation of "
+                + "Expression Language returned null. "
+                    + "Check expression.");
+        }
+        
+        return newValue;
   	}
   	
 //------------------------------------------------------------------------------

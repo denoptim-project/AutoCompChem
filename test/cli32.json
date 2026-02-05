@@ -1,0 +1,75 @@
+{
+  "jobType": "ACCJob",
+  "params": [
+    {
+      "reference": "VERBOSITY",
+      "value": "4"
+    }
+  ],
+  "steps": [
+    {
+      "jobType": "ACCJob",
+      "params": [
+        {
+          "reference": "TASK",
+          "value": "MeasureGeomDescriptors"
+        },
+        {
+          "reference": "SMARTS",
+          "value": "[$([#6]([#1])([#1])~[#44])] [$([#6]([#1])([#1])~[#44])] name=CCDist\n[#44] [#44] name=RuRuDist"
+        },
+        {
+          "reference": "inFile",
+          "value": "../cli32-mol.sdf"
+        },
+        {
+          "reference": "VERBOSITY",
+          "value": "4"
+        }
+      ]
+    },
+    {
+      "jobType": "ACCJob",
+      "params": [
+        {
+          "reference": "TASK",
+          "value": "loopJob"
+        },
+        {
+          "reference": "loopedJob",
+          "type": "JOB",
+          "value":
+          {
+            "jobType": "ShellJob",
+            "params": [
+              {
+                "reference": "APP",
+                "value": "SHELL"
+              },
+              {
+                "reference": "VERBOSITY",
+                "value": "4"
+              },
+              {
+                "reference": "CMD",
+                "value": "echo Iteration=ACCITERNUMBER varA=ACCVALEVARA varB=ACCVALEVARB ; exit -ACCITERNUMBER"
+              }
+            ]
+          }
+        },
+        {
+          "reference": "replacementRules",
+          "value": "ACCITERNUMBER ${x}\nACCVALEVARA ${x + getACCJobsData(#-1.0,mol-0_RuRuDist,0)}\nACCVALEVARB getACCJobsData(#-1.0,mol-0_CCDist)"
+        },
+        {
+          "reference": "maxIterations",
+          "value": "12"
+        },
+        {
+          "reference": "VERBOSITY",
+          "value": "4"
+        }
+      ]
+    }
+  ]
+}

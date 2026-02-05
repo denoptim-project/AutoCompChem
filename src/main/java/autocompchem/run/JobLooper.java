@@ -207,9 +207,15 @@ public class JobLooper extends Worker
 			Map<String, String> replacements = new HashMap<String, String>();
 			for (String originalString : replacementRules.keySet())
 			{
-				double newValue = NumberUtils.calculateNewValue(
-					replacementRules.get(originalString),  expFact, Double.valueOf(i+""));
-				replacements.put(originalString, newValue+"");
+				String replacementForIOriginalString = replacementRules.get(originalString);
+				if (replacementForIOriginalString.startsWith("${"))
+				{
+					// Replacement string is an expression
+					Double newValue = NumberUtils.calculateNewValue(
+						replacementForIOriginalString,  expFact, Double.valueOf(i+""));
+					replacementForIOriginalString = newValue.toString();
+				}
+				replacements.put(originalString, replacementForIOriginalString);
 			}
 
 			// Alter job definition according to iteration number
