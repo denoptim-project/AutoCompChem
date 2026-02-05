@@ -339,9 +339,32 @@ public class Job implements Runnable
         Configurator.setLevel(logger.getName(), 
         		LogUtils.verbosityToLevel(Integer.parseInt(str)));
     }
-    
+
 //------------------------------------------------------------------------------
     
+    protected void makeWorkDir()
+    {
+    	if (params.contains(JobConstants.PARWORKDIR))
+        {
+            File workDir = new File(params.getParameter(
+                    JobConstants.PARWORKDIR).getValueAsString());
+            if (!workDir.exists() && !workDir.mkdirs())
+            {
+                Terminator.withMsgAndStatus("ERROR! Could not make the "
+                        + "required subfolder '" + workDir + "'.",-1);
+            }
+            logger.trace("Created work directory '"
+                    + workDir + "'.");
+        }
+    }
+
+//------------------------------------------------------------------------------
+    
+    /**
+     * Processes the information but does not create the work directory. This
+     * because the information needs to be processed upon Job creation, while 
+     * the work directory is actually needed to exist only when the job runs.
+     */
     protected void processWorkDirInstructions()
     {
     	// We might want to run this in a subfolder
@@ -349,13 +372,6 @@ public class Job implements Runnable
     	{
     		File workDir = new File(params.getParameter(
     				JobConstants.PARWORKDIR).getValueAsString());
-    		if (!workDir.exists() && !workDir.mkdirs())
-    		{
-    			Terminator.withMsgAndStatus("ERROR! Could not make the "
-    					+ "required subfolder '" + workDir + "'.",-1);
-    		}
-    		logger.trace("WARNING: setting work directory to '"
-    				+ workDir + "'.");
     		this.setUserDirAndStdFiles(workDir);
     	}
     	
@@ -366,7 +382,6 @@ public class Job implements Runnable
     		String[] list = listAsStr.split(",");
     		for (int i=0; i<list.length; i++)
     		{
-    			
     			File source = new File(list[i].trim());
     			File dest = new File(this.customUserDir 
     					+ System.getProperty("file.separator")
@@ -591,24 +606,14 @@ public class Job implements Runnable
      * NO WAY to change the actual PWD of the JVN, so any file operation should
      * not assume that the PDW is equal to the custom wdir.
      * See <a href="https://stackoverflow.com/questions/840190/changing-the-current-working-directory-in-java#8204584">discussion in the web</a>.
-     * @param customUserDir the new directory
+     * @param customUserDir the new directory which may or may not exist, as it 
+     * might be created when this job is actually run.
      */
     public void setUserDir(File customUserDir)
     {
-    	boolean done = false;
-        if (customUserDir.exists() || customUserDir.mkdirs())
-        {
-        	this.customUserDir = new File(customUserDir.getAbsolutePath());
-        	done = true;
-        }
-        if (done)
-        {
-        	logger.debug("Apparent work directory set to '" 
-        			+ this.customUserDir + "'");
-        } else {
-        	logger.warn("Could not change apparent work directory. Keeping '" 
-        			+ this.customUserDir + "'");
-        }
+        this.customUserDir = new File(customUserDir.getAbsolutePath());
+        logger.debug("Apparent work directory set to '" 
+                + this.customUserDir + "'");
     }
     
 //------------------------------------------------------------------------------
@@ -1017,7 +1022,10 @@ public class Job implements Runnable
     		thrownExc = t;
     		stopJob();
     	}
-    	
+
+    	// Make the work directory
+    	makeWorkDir();
+
     	// Take copies of files than need copying
     	copyFilesToWorkDir();
     	
