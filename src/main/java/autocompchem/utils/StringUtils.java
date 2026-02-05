@@ -520,6 +520,14 @@ public class StringUtils
         		return true;
         	}
     	}
+
+        if (value.equals("null"))
+        {
+            if (nullOrBlankToTrue)
+            {
+                return true;
+            }
+        }
         
         String normalized = value.trim().toUpperCase();
         
