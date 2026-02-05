@@ -26,7 +26,7 @@ import java.util.Collection;
  * @author Marco Foscato
  */
 
-public class NormalModeSet extends ArrayList<NormalMode> implements Cloneable
+public class NormalModeSet extends ArrayList<NormalMode>
 {
 	/**
 	 * Version ID

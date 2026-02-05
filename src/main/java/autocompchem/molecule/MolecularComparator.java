@@ -448,13 +448,14 @@ public class MolecularComparator extends AtomContainerInputProcessor
 
     public void runComparisonOfMoleculesBySuperposition(IAtomContainer iac, int i)
     {
-        GeometryAlignment alignment = null;
+        GeometryAlignment alignment;
 		try {
 			alignment = GeometryAligner.alignGeometries(referenceMol, iac);
 		} catch (IllegalArgumentException | CloneNotSupportedException e) {
 			 Terminator.withMsgAndStatus("ERROR! Could not match reference "
 			 		+ "substructure in geometry to edit. "
 			 		+ "Cannot compare moleculed by superposition.", -1, e);
+			 return; // Unreachable, but satisfies linter
 		}
 		logger.debug("Comparison by superposition - RMSD: " + alignment.getRMSD());
 

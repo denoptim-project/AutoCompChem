@@ -176,14 +176,14 @@ public class OrcaOutputReader extends ChemSoftOutputReader
         		stepGeoms.addAtomContainer(mol);
         	}
         	
-        	if (line.matches(".*" + 
+        	if (line != null && line.matches(".*" + 
         			OrcaConstants.LOGGEOMOPTCONVERGED+ ".*"))
         	{
         	    stepData.putNamedData(new NamedData(
     					ChemSoftConstants.JOBGEOMOPTCONVERGED,true));
         	}
 
-        	if (line.matches(".*" + OrcaConstants.LOGVIBFREQ+ ".*"))
+        	if (line != null && line.matches(".*" + OrcaConstants.LOGVIBFREQ+ ".*"))
         	{
         		ListOfDoubles list = new ListOfDoubles();
         		int skipped = 0;
@@ -218,7 +218,7 @@ public class OrcaOutputReader extends ChemSoftOutputReader
     					ChemSoftConstants.JOBDATAVIBFREQ,list));
         	}
         	
-        	if (line.matches(".*" + OrcaConstants.LOGVIBMODES + ".*"))
+        	if (line != null && line.matches(".*" + OrcaConstants.LOGVIBMODES + ".*"))
         	{
         		NormalModeSet nms = new NormalModeSet();
         		
@@ -269,7 +269,7 @@ public class OrcaOutputReader extends ChemSoftOutputReader
     				ChemSoftConstants.JOBDATAVIBMODES,nms));
            	}
         	
-           	if (line.matches(".*" + OrcaConstants.LOGGIBBSFREEENERGY+ ".*"))
+           	if (line != null && line.matches(".*" + OrcaConstants.LOGGIBBSFREEENERGY+ ".*"))
         	{
         		String[] p = line.trim().split("\\s+");
         	    stepData.putNamedData(new NamedData(
@@ -277,7 +277,7 @@ public class OrcaOutputReader extends ChemSoftOutputReader
     					Double.parseDouble(p[5])));
         	}
         	
-            if (line.matches(".*" + OrcaConstants.LOGTHERMOCHEM_S_ELECTR
+            if (line != null && line.matches(".*" + OrcaConstants.LOGTHERMOCHEM_S_ELECTR
                     + ".*"))
             {
                 String[] p = line.trim().split("\\s+");
@@ -287,7 +287,7 @@ public class OrcaOutputReader extends ChemSoftOutputReader
                         val));
             }
 
-            if (line.matches(".*" + OrcaConstants.LOGTHERMOCHEM_S_VIB
+            if (line != null && line.matches(".*" + OrcaConstants.LOGTHERMOCHEM_S_VIB
                 + ".*"))
             {
                 String[] p = line.trim().split("\\s+");
@@ -297,7 +297,7 @@ public class OrcaOutputReader extends ChemSoftOutputReader
                         val));
             }
 
-            if (line.matches(".*" + OrcaConstants.LOGTHERMOCHEM_S_TRANS
+            if (line != null && line.matches(".*" + OrcaConstants.LOGTHERMOCHEM_S_TRANS
                 + ".*"))
             {
                 String[] p = line.trim().split("\\s+");
@@ -307,7 +307,7 @@ public class OrcaOutputReader extends ChemSoftOutputReader
                         val));
             }
 
-            if (line.matches(".*" + OrcaConstants.LOGTHERMOCHEM_S_ROT
+            if (line != null && line.matches(".*" + OrcaConstants.LOGTHERMOCHEM_S_ROT
                 + ".*"))
             {
                 String[] p = line.trim().split("\\s+");
@@ -317,7 +317,7 @@ public class OrcaOutputReader extends ChemSoftOutputReader
                         val));
             }
 
-            if (line.matches(".*" + OrcaConstants.LOGTHERMOCHEM_H
+            if (line != null && line.matches(".*" + OrcaConstants.LOGTHERMOCHEM_H
                 + ".*"))
             {
                 String[] p = line.trim().split("\\s+");
@@ -327,7 +327,7 @@ public class OrcaOutputReader extends ChemSoftOutputReader
                         val));
             }
 
-            if (line.matches(".*" + OrcaConstants.LOGTHERMOCHEM_ZPE
+            if (line != null && line.matches(".*" + OrcaConstants.LOGTHERMOCHEM_ZPE
                 + ".*"))
             {
                 String[] p = line.trim().split("\\s+");
@@ -337,7 +337,7 @@ public class OrcaOutputReader extends ChemSoftOutputReader
                         val));
             }
 
-            if (line.matches(".*" 
+            if (line != null && line.matches(".*" 
             		+ OrcaConstants.LOGTHERMOCHEM_UCORR_VIB + ".*"))
             {
                 String[] p = line.trim().split("\\s+");
@@ -347,7 +347,7 @@ public class OrcaOutputReader extends ChemSoftOutputReader
                         val));
             }
 
-            if (line.matches(".*" 
+            if (line != null && line.matches(".*" 
             		+ OrcaConstants.LOGTHERMOCHEM_UCORR_ROT + ".*"))
             {
                 String[] p = line.trim().split("\\s+");
@@ -357,7 +357,7 @@ public class OrcaOutputReader extends ChemSoftOutputReader
                         val));
             }
 
-            if (line.matches(".*" 
+            if (line != null && line.matches(".*" 
             		+ OrcaConstants.LOGTHERMOCHEM_UCORR_TRANS + ".*"))
             {
                 String[] p = line.trim().split("\\s+");
@@ -367,7 +367,7 @@ public class OrcaOutputReader extends ChemSoftOutputReader
                         val));
             }
         	
-        	if (line.matches(".*" + OrcaConstants.LOGJOBEXTNAMESPACE + ".*") 
+        	if (line != null && line.matches(".*" + OrcaConstants.LOGJOBEXTNAMESPACE + ".*") 
         			&& stepGeoms.getAtomContainerCount()==0)
         	{
         		String[] p = line.trim().split("\\s+");

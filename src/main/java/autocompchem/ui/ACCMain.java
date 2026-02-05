@@ -88,7 +88,7 @@ public class ACCMain
         
         // Detect kind of run (command line arguments or parameter file)
         // and what is the job to be done
-        Job job = null;
+        Job job;
         if (args.length < 1)
         {
             //TODO eventually here we will launch the gui.
@@ -98,6 +98,7 @@ public class ACCMain
                 + "AutoCompChem requires either command line arguments, or "
                 + "a single argument that is the pathname to a parameters "
                 + "file.",1);
+            return; // should not be reached, but satisfies linter
         }
         else if (args.length == 1)
         {
@@ -116,10 +117,11 @@ public class ACCMain
                 t.printStackTrace();
                 String msg = "ERROR! Exception returned while reading "
                         + "job settings from file '" + pathName + "'.";
-                Terminator.withMsgAndStatus(msg,-1);
+                Terminator.withMsgAndStatus(msg, -1);
+                return; // should not be reached, but satisfies linter
             }
         }
-        else if (args.length > 1)
+        else
         {
             job = parseCLIArgs(args);
             
@@ -164,15 +166,15 @@ public class ACCMain
                 Terminator.withMsgAndStatus("Exception occurred! But 'null' "
                         + "message returned. Please "
                         + "report this to the author.", -1);
-            }
-
-            if (msg.startsWith("ERROR!"))
-            {
-                Terminator.withMsgAndStatus(t.getMessage(), -1);
             } else {
-                t.printStackTrace();
-                Terminator.withMsgAndStatus("Exception occurred! Please "
-                        + "report this to the author.", -1);
+                if (msg.startsWith("ERROR!"))
+                {
+                    Terminator.withMsgAndStatus(t.getMessage(), -1);
+                } else {
+                    t.printStackTrace();
+                    Terminator.withMsgAndStatus("Exception occurred! Please "
+                            + "report this to the author.", -1);
+                }
             }
         }
         
@@ -205,9 +207,7 @@ public class ACCMain
      */
     
     protected static Job parseCLIArgs(String[] args)
-    {
-        Job job = null;
-        
+    {   
         ParameterStorage params = new ParameterStorage();
         
         // First, look for the -t/--task, -j/--job, -p/--params
@@ -303,6 +303,7 @@ public class ACCMain
 	        		+ "You can use only one of the two.",-1);
         }
         
+        Job job = null;
         if (foundTask)
         {
             //NB: this will kill me with an error message in case 
@@ -352,7 +353,12 @@ public class ACCMain
                     params.setParameter(arg);
                 } else if ((!foundTask && foundParams) || (!foundTask && foundJob))
                 {
-                    job.setParameter(arg);
+                    if (job != null) {
+                        job.setParameter(arg);
+                    } else {
+                        Terminator.withMsgAndStatus("ERROR! Job not found. "
+                                + "Cannot set parameter: " + arg, -1);
+                    }
                 }
             }
             else
@@ -389,7 +395,12 @@ public class ACCMain
                     params.setParameter(paramKey, value);
                 } else if ((!foundTask && foundParams) || (!foundTask && foundJob))
                 {
-                    job.setParameter(paramKey, value);
+                    if (job != null) {
+                        job.setParameter(paramKey, value);
+                    } else {
+                        Terminator.withMsgAndStatus("ERROR! Job not found. "
+                                + "Cannot set parameter: " + arg, -1);
+                    }
                 }
             }
         }

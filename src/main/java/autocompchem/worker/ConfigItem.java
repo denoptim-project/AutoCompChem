@@ -282,6 +282,7 @@ public class ConfigItem
   	        JsonObject jsonObject = json.getAsJsonObject();
   	        
   	        String key = null;
+			String casedKey = null;
   	        if (jsonObject.has("key"))
 			{
   	            key = jsonObject.get("key").getAsString();
@@ -291,21 +292,20 @@ public class ConfigItem
                 			ConfigItem.class.getSimpleName()
                 			+ "'s key '" + key + "' is not all upper case.");
                 }
+				if (jsonObject.has("casedKey"))
+				{
+					casedKey = jsonObject.get("casedKey").getAsString();
+					if (!key.equals(casedKey.toUpperCase()))
+					{
+						throw new JsonParseException(
+								ConfigItem.class.getSimpleName()
+								+ "'s key '" + key + "' does not correspond to "
+										+ "casedKey '" + casedKey + "'.");
+					}
+				} else if (jsonObject.has("key")) {
+					casedKey = key;
+				}
 			}
-            String casedKey = null;
-            if (jsonObject.has("casedKey"))
-            {
-                casedKey = jsonObject.get("casedKey").getAsString();
-                if (!key.equals(casedKey.toUpperCase()))
-                {
-                	throw new JsonParseException(
-                			ConfigItem.class.getSimpleName()
-                			+ "'s key '" + key + "' does not correspond to "
-                					+ "casedKey '" + casedKey + "'.");
-                }
-            } else if (jsonObject.has("key")) {
-            	casedKey = key;
-            }
             String type = null;
             if (jsonObject.has("type"))
             {

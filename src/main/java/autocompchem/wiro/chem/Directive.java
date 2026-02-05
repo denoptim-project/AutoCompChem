@@ -1191,6 +1191,10 @@ public class Directive implements IDirectiveComponent, Cloneable
     						DirectiveComponentType.DIRECTIVE))
     				{
     					newComp = ((DirectiveData) dirComp).clone();
+    				} else {
+    					Terminator.withMsgAndStatus("ERROR! Unknown directive component type: "
+    							+ dirComp.getComponentType(), -1);
+    					return; // should not be reached, but satisfies linter
     				}
     				((IValueContainer) newComp).removeValue();
     				((IValueContainer) newComp).setValue(

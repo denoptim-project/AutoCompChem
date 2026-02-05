@@ -1043,6 +1043,7 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 								+ "definition of the system. Yet, the following "
 								+ "contains atom-specific information: " + NL
 								+ dd, -1);
+							return; // should not be reached, but satisfies linter
 						}
 						
 						logger.warn("WARNING: "

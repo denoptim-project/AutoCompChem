@@ -108,7 +108,7 @@ public class GaussianUtilsTest
 		Reader inputString = new StringReader(test);
 		BufferedReader reader = new BufferedReader(inputString);
 		
-		NormalModeSet nms = null;
+		NormalModeSet nms = new NormalModeSet();
 		String line = "";
 		while ((line = reader.readLine()) != null)
         {

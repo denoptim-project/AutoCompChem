@@ -336,13 +336,14 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
 				AtomLabelsGenerator.GENERATEATOMLABELSTASK.ID);
 		labMakerParams.removeData(WorkerConstants.PAROUTFILE);
 		labMakerParams.setParameter(WorkerConstants.PARNOOUTFILEMODE);
-		AtomLabelsGenerator labGenerator = null;
+		AtomLabelsGenerator labGenerator;
 		try {
 			labGenerator = (AtomLabelsGenerator) 
 					WorkerFactory.createWorker(labMakerParams, null);
 		} catch (ClassNotFoundException e) {
 			// Cannot happen... unless there is very serious bug!
-			e.printStackTrace();
+			throw new IllegalStateException("Unable to create worker for "
+					+ "atom labels generation task.", e);
 		}
 		return labGenerator.generateAtomLabels(iac);
     }
@@ -565,7 +566,7 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
 
 				if (r.hasValuelessAttribute(AtomTupleConstants.KEYONLYINTERMOLECULAR))
 				{
-					if (belongToSameList(atoms, molecules.values()))
+					if (molecules != null && belongToSameList(atoms, molecules.values()))
 					{
 						continue;
 					}

@@ -202,13 +202,14 @@ public class AtomSpecificStringGenerator extends AtomContainerInputProcessor
 	        tupleGenParams.setParameter(WorkerConstants.PARNOOUTFILEMODE);
 	        
 	        // Run tuple generator
-	        Worker embeddedWorker = null;
+	        Worker embeddedWorker;
 			try {
 				embeddedWorker = WorkerFactory.createWorker(tupleGenParams, 
 						myJob);
 			} catch (ClassNotFoundException e) {
 				// Cannot happen... unless there is a bug
-				e.printStackTrace();
+				throw new IllegalStateException("Unable to create worker for "
+						+ "tuple generation task.", e);
 			}
 	    	NamedDataCollector outputOfEmbedded = new NamedDataCollector();
 	    	embeddedWorker.setDataCollector(outputOfEmbedded);

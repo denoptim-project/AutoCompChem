@@ -439,13 +439,13 @@ public class FileUtils
         {
             Terminator.withMsgAndStatus("ERROR! Attempt to check for a "
                   + "file but 'null' is given as name",-1);
-        }
-
-        if (outFile.exists())
-        {
-            Terminator.withMsgAndStatus("ERROR! File " +  outFile
-                  + " exists and this software doesn't have rights "
-                  + "to overwrite files.",-1);
+        } else {
+            if (outFile.exists())
+            {
+                Terminator.withMsgAndStatus("ERROR! File " +  outFile
+                    + " exists and this software doesn't have rights "
+                    + "to overwrite files.",-1);
+            }
         }
     }
 

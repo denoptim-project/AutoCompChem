@@ -28,7 +28,7 @@ import autocompchem.run.Terminator;
  * @author Marco Foscato
  */
 
-public class ECPShell extends Shell implements Cloneable
+public class ECPShell extends Shell
 {
 
 //------------------------------------------------------------------------------

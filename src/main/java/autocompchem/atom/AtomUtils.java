@@ -145,6 +145,10 @@ public class AtomUtils
                         + "from atomic number " + an ,-1);
         }
 
+        if (el == null)
+        {
+            return "";
+        }
         return el.getSymbol();
     }
 
@@ -175,6 +179,12 @@ public class AtomUtils
                                         + " (in AtomUtils.getAtomicNumber)",-1);
         }
 
+        if (el == null)
+        {
+            Terminator.withMsgAndStatus("ERROR! Unable to get element for symbol '"
+                    + symbol + "' from IsotopeFactory.",-1);
+            return 0; // Unreachable, but satisfies linter
+        }
         int atmNum = el.getAtomicNumber();
         
         return atmNum;

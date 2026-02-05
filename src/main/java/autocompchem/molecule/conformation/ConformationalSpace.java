@@ -24,7 +24,6 @@ import autocompchem.molecule.conformation.ConformationalCoordinate.Conformationa
  */
 
 public class ConformationalSpace extends TreeSet<ConformationalCoordinate> 
-	implements Cloneable
 {
     /**
 	 * Version ID

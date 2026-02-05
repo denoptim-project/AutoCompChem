@@ -135,9 +135,10 @@ public class AtomUtilsTest
     
     private boolean closeEnough(Point3d pA, Point3d pB)
     {
-    	if (pA==null | pB==null)
+    	if (pA==null)
     		return false;
-    	
+    	if (pB==null)
+    		return false;
     	return pA.distance(pB) < 0.0002;
     }
     

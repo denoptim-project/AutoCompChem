@@ -9,8 +9,7 @@ import java.util.Objects;
 /**
  * An ordered set of atom tuples.
  */
-public class AnnotatedAtomTupleList extends ArrayList<AnnotatedAtomTuple> 
-	implements Cloneable
+public class AnnotatedAtomTupleList extends ArrayList<AnnotatedAtomTuple>
 {
 
 	/**

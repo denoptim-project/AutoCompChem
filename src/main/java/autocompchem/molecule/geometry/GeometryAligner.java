@@ -233,6 +233,7 @@ public class GeometryAligner extends AtomContainerInputProcessor
 			Terminator.withMsgAndStatus("ERROR! Could not align geometries "
 					+ "'" + MolecularUtils.getNameOrID(iac) + "' and '" 
 					+ MolecularUtils.getNameOrID(reference)+ "'.", -1, e);
+			return null; // Unreachable, but satisfies linter
 		}
 		
 		result = alignment.getSecondIAC().iac;
@@ -303,7 +304,7 @@ public class GeometryAligner extends AtomContainerInputProcessor
     		IAtomContainer molA,
     		IAtomContainer molB)
     {
-    	GeometryAlignment alignment = null;
+    	GeometryAlignment alignment;
         try
         {
         	alignment = alignGeometries(
@@ -316,6 +317,7 @@ public class GeometryAligner extends AtomContainerInputProcessor
             IOtools.writeSDFAppend(new File(fileName),molB,true);
             Terminator.withMsgAndStatus("ERROR! Cannot clone mols to calculate "
                 + "best geometry-aware atom mapping. See " + fileName, -1);
+            return null; // Unreachable, but satisfies linter
         }
         return alignment.getMappingIndexes();
     }
@@ -592,6 +594,12 @@ public class GeometryAligner extends AtomContainerInputProcessor
             		+ locRMSDIAD);
         } //End loop over atom mapping
 
+        if (bestAlignment == null)
+        {
+        	throw new IllegalStateException("No valid alignment found for "
+        			+ "geometry matching. All atom mappings failed to produce "
+        			+ "a valid alignment.");
+        }
 
         String msg = "Best atom mapping from Isomorphism: " + NL 
         		+ "RMSD = " + rmsd + NL 
@@ -1056,7 +1064,7 @@ public class GeometryAligner extends AtomContainerInputProcessor
         }
 
         //Calculate rotational matrix and align
-        KabschAlignment sa = null;
+        KabschAlignment sa;
         try
         {
             sa = new KabschAlignment(lstA, lstB, weigths);
@@ -1065,6 +1073,7 @@ public class GeometryAligner extends AtomContainerInputProcessor
         catch (Throwable t)
         {
             Terminator.withMsgAndStatus("ERROR! KabschAlignment failed.", -1, t);
+            return Double.NaN; // should not be reached, but satisfies linter
         }
 
         //Rototranslation of molecule B (origin is in A's center of mass!!!)

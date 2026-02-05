@@ -15,7 +15,7 @@ import autocompchem.utils.NumberUtils;
  */
 
 public class GeomDescriptor extends AnnotatedAtomTuple 
-	implements Comparable<GeomDescriptor>,Cloneable
+	implements Comparable<GeomDescriptor>
 {
 	/**
 	 * Name of this geometric descriptor

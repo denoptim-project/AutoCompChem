@@ -22,6 +22,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -32,7 +33,6 @@ import javax.vecmath.Point3d;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.AtomContainerSet;
 import org.openscience.cdk.CDKConstants;
 import org.openscience.cdk.interfaces.IAtom;
@@ -45,8 +45,6 @@ import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileUtils;
 import autocompchem.geometry.DistanceMatrix;
 import autocompchem.io.IOtools;
-import autocompchem.modeling.atomtuple.AtomTupleConstants;
-import autocompchem.modeling.atomtuple.AtomTupleMatchingRule;
 import autocompchem.molecule.AtomContainerInputProcessor;
 import autocompchem.molecule.BondEditor;
 import autocompchem.molecule.MolecularMeter;
@@ -497,7 +495,7 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
 	@Override
 	public IAtomContainer processOneAtomContainer(IAtomContainer iac, int i) 
 	{
-		AtomContainerSet result = null;
+		AtomContainerSet result = new AtomContainerSet();
     	if (task.equals(MODIFYGEOMETRYTASK))
     	{
     		if (zmtMove!=null && zmtMove.getZAtomCount()>0)
@@ -522,6 +520,7 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
             } else {
                 Terminator.withMsgAndStatus("ERROR! Choose and provide either "
                         + "a Cartesian or a ZMatrix move.", -1);
+                return null; // should not be reached, but satisfies linter
             }
     		
     		if (exposedOutputCollector != null)
@@ -605,13 +604,14 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
                      + "size " + crtMove.size() + ") have different size. ",-1);
             }
             
-            GeometryAlignment alignment = null;
+            GeometryAlignment alignment;
 			try {
 				alignment = GeometryAligner.alignGeometries(refMol, iac);
 			} catch (IllegalArgumentException | CloneNotSupportedException e) {
-				 Terminator.withMsgAndStatus("ERROR! Could not match reference "
+				Terminator.withMsgAndStatus("ERROR! Could not match reference "
 				 		+ "substructure in geometry to edit. "
 				 		+ "Cannot perform Cartesian move.", -1, e);
+				return null; // should not be reached, but satisfies linter
 			}
             Map<Integer,Integer> refToInAtmMap = alignment.getMappingIndexes();
 
@@ -688,14 +688,15 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
     public static IAtomContainer getGeomFromCartesianMove(IAtomContainer mol, 
     		ArrayList<Point3d> actualMove, double sf)
     {
-        IAtomContainer outMol = new AtomContainer();
+        IAtomContainer outMol = null;
         try
         {
             outMol = (IAtomContainer) mol.clone();
         }
         catch (Throwable t)
         {
-            Terminator.withMsgAndStatus("ERROR! Cannot clone molecule.",-1);
+            Terminator.withMsgAndStatus("ERROR! Cannot clone molecule.", -1, t);
+			return null; // should not be reached, but satisfies linter
         }
         for (int i=0; i<outMol.getAtomCount(); i++)
         {
@@ -1176,6 +1177,7 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
 					+ "stretch bond. " 
 					+"Alter the connectivity or the list of atoms to enable " 
 					+ "ZMatrix representation.", -1);
+				return null; // should not be reached, but satisfies linter
 			}
 		}
 
@@ -1232,7 +1234,8 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
 			} catch (Throwable e) {
 				Terminator.withMsgAndStatus("ERROR! Exception while "
 					+ "converting ZMatrix to IAC. Cause of the exception: "
-					+ e.getMessage(), -1);
+					+ e.getMessage(), -1, e);
+				return null; // should not be reached, but satisfies linter
 			}
 			
 			outMol.setProperty(CDKConstants.TITLE, outMolBasename 
@@ -1246,7 +1249,8 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
 				try {
 					clonedResult = (IAtomContainer) outMol.clone();
 				} catch (CloneNotSupportedException e) {
-					throw new IllegalStateException(e);
+					Terminator.withMsgAndStatus("ERROR! Cannot clone molecule.", -1, e);
+					return null; // should not be reached, but satisfies linter
 				}
 
 				// Remove the bond that was stretched
@@ -1261,7 +1265,7 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
 							false,true)), true);
 					
 				double minInterfragmentDist = distances.get("interatomicDistance")
-					.stream().min(Double::compare).orElse(Double.MAX_VALUE);
+					.stream().min(Comparator.comparingDouble(d -> d)).orElse(Double.MAX_VALUE);
 
 				if (minInterfragmentDist > terminationThreshold)
 				{

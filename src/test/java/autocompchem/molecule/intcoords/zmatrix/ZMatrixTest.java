@@ -12,7 +12,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
 
 import autocompchem.molecule.intcoords.InternalCoord;
-import autocompchem.utils.NumberUtils;
 
 public class ZMatrixTest 
 {

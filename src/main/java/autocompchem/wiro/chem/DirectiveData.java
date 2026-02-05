@@ -44,8 +44,7 @@ import autocompchem.wiro.chem.gaussian.GaussianConstants;
  * @author Marco Foscato
  */
 
-public class DirectiveData extends NamedData implements IDirectiveComponent, 
-	IValueContainer, Cloneable
+public class DirectiveData extends NamedData implements IValueContainer
 {
     /**
      * Parameters defining task embedded in this directive data.

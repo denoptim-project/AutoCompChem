@@ -532,7 +532,7 @@ public class Perceptron
 
         // The keys are "a_b_c" where b is the index of the string query
         // in txtQueriesAsStr
-        TreeMap<String,List<String>> allMatches = null;
+        TreeMap<String,List<String>> allMatches;
         BufferedReader br = new BufferedReader(ric.getSourceReader());
         try 
         {   // Extract potentially useful information from text
@@ -547,7 +547,9 @@ public class Perceptron
         	if (!tolerant)
         	{
         		throw new IllegalStateException("Could not read InfoChannel "+ic);
-        	}
+        	} else {
+                allMatches = new TreeMap<String,List<String>>();
+            }
         } finally {
             if (br != null)
             {

@@ -186,7 +186,7 @@ public class NWChemOutputReader extends ChemSoftOutputReader
         	}
         	
         	// Reads only geometries from frequency jobs
-        	if (line.matches(".*" + NWChemConstants.OUTHESSTARTXYZ+ ".*"))
+        	if (line != null && line.matches(".*" + NWChemConstants.OUTHESSTARTXYZ+ ".*"))
         	{
         		IAtomContainer mol = new AtomContainer();
         		int skipped = 0;
@@ -233,15 +233,14 @@ public class NWChemOutputReader extends ChemSoftOutputReader
         		stepGeoms.addAtomContainer(mol);
         	}
         	
-        	
-        	if (line.matches(".*" + 
+        	if (line != null && line.matches(".*" + 
         			NWChemConstants.OUTENDCONVGEOMOPTSTEP+ ".*"))
         	{
         	    stepData.putNamedData(new NamedData(
     					ChemSoftConstants.JOBGEOMOPTCONVERGED,true));
         	}
         	
-        	if (line.matches(".*" + NWChemConstants.OUTPROJFREQ + ".*"))
+        	if (line != null && line.matches(".*" + NWChemConstants.OUTPROJFREQ + ".*"))
         	{
         		ListOfDoubles allFreqs = new ListOfDoubles();
         		NormalModeSet nms = new NormalModeSet();
@@ -318,7 +317,7 @@ public class NWChemOutputReader extends ChemSoftOutputReader
            	    		ChemSoftConstants.JOBDATAGIBBSFREEENERGY,gibbsFreeNRG));
             }
         	
-            if (line.matches(".*" + NWChemConstants.OUTTEMP + ".*"))
+            if (line != null && line.matches(".*" + NWChemConstants.OUTTEMP + ".*"))
             {
                 String[] p = line.trim().replace("K","").split("\\s+");
                 Double val = Double.parseDouble(p[2]);
@@ -327,7 +326,7 @@ public class NWChemOutputReader extends ChemSoftOutputReader
                         val));
             }
 
-            if (line.matches(".*" + NWChemConstants.OUTTOTS + ".*"))
+            if (line != null && line.matches(".*" + NWChemConstants.OUTTOTS + ".*"))
             {
                 String[] p = line.trim().split("\\s+");
                 Double val = Double.parseDouble(p[3]);
@@ -336,7 +335,7 @@ public class NWChemOutputReader extends ChemSoftOutputReader
                         val));
             }
 
-            if (line.matches(".*" + NWChemConstants.OUTVIBS + ".*"))
+            if (line != null && line.matches(".*" + NWChemConstants.OUTVIBS + ".*"))
             {
                 String[] p = line.trim().split("\\s+");
                 Double val = Double.parseDouble(p[3]);
@@ -345,7 +344,7 @@ public class NWChemOutputReader extends ChemSoftOutputReader
                         val));
             }
 
-            if (line.matches(".*" + NWChemConstants.OUTTRAS + ".*"))
+            if (line != null && line.matches(".*" + NWChemConstants.OUTTRAS + ".*"))
             {
                 String[] p = line.trim().split("\\s+");
                 Double val = Double.parseDouble(p[3]);
@@ -354,7 +353,7 @@ public class NWChemOutputReader extends ChemSoftOutputReader
                         val));
             }
 
-            if (line.matches(".*" + NWChemConstants.OUTROTS + ".*"))
+            if (line != null && line.matches(".*" + NWChemConstants.OUTROTS + ".*"))
             {
                 String[] p = line.trim().split("\\s+");
                 Double val = Double.parseDouble(p[3]);
@@ -363,7 +362,7 @@ public class NWChemOutputReader extends ChemSoftOutputReader
                         val));
             }
 
-            if (line.matches(".*" + NWChemConstants.OUTCORRH + ".*"))
+            if (line != null && line.matches(".*" + NWChemConstants.OUTCORRH + ".*"))
             {
                 String[] p = line.trim().split("\\s+");
                 Double val = Double.parseDouble(p[8]);
@@ -372,7 +371,7 @@ public class NWChemOutputReader extends ChemSoftOutputReader
                         val));
             }
 
-            if (line.matches(".*" + NWChemConstants.OUTCORRZPE + ".*"))
+            if (line != null && line.matches(".*" + NWChemConstants.OUTCORRZPE + ".*"))
             {
                 String[] p = line.trim().split("\\s+");
                 Double valInEh = Double.parseDouble(p[8]);
@@ -381,7 +380,6 @@ public class NWChemOutputReader extends ChemSoftOutputReader
                         valInEh));
             }
         	
-    
         	// There is plenty of other data in the NWChem log file. 
         	// So, this list of parsed data will grow as needed...
         	// Here is a template of code to be added to parse some data

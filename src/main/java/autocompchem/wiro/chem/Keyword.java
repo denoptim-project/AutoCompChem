@@ -58,7 +58,7 @@ import autocompchem.text.TextBlock;
  * @author Marco Foscato
  */
 
-public class Keyword extends DirectiveData implements IValueContainer, Cloneable
+public class Keyword extends DirectiveData
 {
     /**
      * Keyword type: either "mute" (false), or "loud" (true).
@@ -124,6 +124,7 @@ public class Keyword extends DirectiveData implements IValueContainer, Cloneable
             		+ ChemSoftConstants.JDLABLOUDKEY + "' or '" 
             		+ ChemSoftConstants.JDLABMUTEKEY + "' in front of key"
             		+ " name '" + line + "'.",-1);
+            return null; // should not be reached, but satisfies linter
         }
         Keyword k = new Keyword(nameAndValue[0], isLoud, nameAndValue[1]);
         k.extractTask();

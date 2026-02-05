@@ -334,7 +334,10 @@ public class JobEvaluator extends Worker
 				try {
 					software = ReaderWriterFactory.detectOutputFormat(jobOutFile);
 				} catch (FileNotFoundException e) {
-					// Cannot happen!
+					Terminator.withMsgAndStatus("ERROR: cannot detect the type of "
+							+ "output to analyze. File not found: "
+							+ jobOutFile.getAbsolutePath(), -1, e);
+					return; // should not be reached, but satisfies linter
 				}
 			} else if (params.contains(WIROConstants.SOFTWAREID)) {
 				software = new SoftwareId(params.getParameter(
@@ -343,8 +346,12 @@ public class JobEvaluator extends Worker
 				SoftwareId temptative = jobBeingEvaluated.getAppID();
 				if (!SoftwareId.UNDEFINED.equals(temptative))
 				{
-					software = new SoftwareId(params.getParameter(
-							WIROConstants.SOFTWAREID).getValueAsString());
+					software = temptative;
+				} else {
+					Terminator.withMsgAndStatus("ERROR: cannot infer the type of "
+							+ "output to analyze from the job being evaluated. "
+							+ "Job claims software ID: '" + temptative + "'.", -1);
+					return; // should not be reached, but satisfies linter
 				}
 			} else {
 				Terminator.withMsgAndStatus("ERROR: cannot infer the type of "
@@ -355,14 +362,14 @@ public class JobEvaluator extends Worker
 						+ "Please, provide one of the above parameters or "
 						+ "manually specify which lists of knwon situations "
 						+ "and info channels to use.", -1);
+				return; // should not be reached, but satisfies linter
 			} 
 			
 			if (sitsDB==null)
 			{
 				logger.info("Trying to use default list of known situations.");
 				try {
-					sitsDB = SituationBase.getDefaultSituationDB(
-							software.toString());
+					sitsDB = SituationBase.getDefaultSituationDB(software.toString());
 				} catch (IOException e) {
 					Terminator.withMsgAndStatus("ERROR: cannot use default "
 							+ "list of known situations when using software '" 

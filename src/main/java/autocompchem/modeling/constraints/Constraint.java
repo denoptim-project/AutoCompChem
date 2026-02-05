@@ -22,7 +22,7 @@ import autocompchem.utils.NumberUtils;
  */
 
 public class Constraint extends AnnotatedAtomTuple 
-	implements Comparable<Constraint>,Cloneable
+	implements Comparable<Constraint>
 {
 	/**
 	 * Classes of the constraints according to the corresponding internal 

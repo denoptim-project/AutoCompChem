@@ -207,7 +207,7 @@ public class XTBOutputReader extends ChemSoftOutputReader
     					ChemSoftConstants.JOBDATAVIBFREQ,list));
         	}
         	
-        	if (line.matches(".*" + XTBConstants.LOGGIBBSFREEENERGY+ ".*"))
+        	if (line != null && line.matches(".*" + XTBConstants.LOGGIBBSFREEENERGY+ ".*"))
         	{
         		String[] p = line.trim().split("\\s+");
         	    stepData.putNamedData(new NamedData(
@@ -217,7 +217,7 @@ public class XTBOutputReader extends ChemSoftOutputReader
         	
         	
         	/*
-            if (line.matches(".*" + XTBConstants.LOGTHERMOCHEM_S_ELECTR
+            if (line != null && line.matches(".*" + XTBConstants.LOGTHERMOCHEM_S_ELECTR
                     + ".*"))
             {
                 String[] p = line.trim().split("\\s+");
@@ -227,7 +227,7 @@ public class XTBOutputReader extends ChemSoftOutputReader
                         val));
             }
 
-            if (line.matches(".*" + XTBConstants.LOGTHERMOCHEM_S_VIB
+            if (line != null && line.matches(".*" + XTBConstants.LOGTHERMOCHEM_S_VIB
                 + ".*"))
             {
                 String[] p = line.trim().split("\\s+");
@@ -237,7 +237,7 @@ public class XTBOutputReader extends ChemSoftOutputReader
                         val));
             }
 
-            if (line.matches(".*" + XTBConstants.LOGTHERMOCHEM_S_TRANS
+            if (line != null && line.matches(".*" + XTBConstants.LOGTHERMOCHEM_S_TRANS
                 + ".*"))
             {
                 String[] p = line.trim().split("\\s+");
@@ -247,7 +247,7 @@ public class XTBOutputReader extends ChemSoftOutputReader
                         val));
             }
 
-            if (line.matches(".*" + XTBConstants.LOGTHERMOCHEM_S_ROT
+            if (line != null && line.matches(".*" + XTBConstants.LOGTHERMOCHEM_S_ROT
                 + ".*"))
             {
                 String[] p = line.trim().split("\\s+");
@@ -257,7 +257,7 @@ public class XTBOutputReader extends ChemSoftOutputReader
                         val));
             }
 
-            if (line.matches(".*" + XTBConstants.LOGTHERMOCHEM_H
+            if (line != null && line.matches(".*" + XTBConstants.LOGTHERMOCHEM_H
                 + ".*"))
             {
                 String[] p = line.trim().split("\\s+");
@@ -267,7 +267,7 @@ public class XTBOutputReader extends ChemSoftOutputReader
                         val));
             }
 
-            if (line.matches(".*" + XTBConstants.LOGTHERMOCHEM_ZPE
+            if (line != null && line.matches(".*" + XTBConstants.LOGTHERMOCHEM_ZPE
                 + ".*"))
             {
                 String[] p = line.trim().split("\\s+");
@@ -277,7 +277,7 @@ public class XTBOutputReader extends ChemSoftOutputReader
                         val));
             }
 
-            if (line.matches(".*" 
+            if (line != null && line.matches(".*" 
             		+ XTBConstants.LOGTHERMOCHEM_UCORR_VIB + ".*"))
             {
                 String[] p = line.trim().split("\\s+");
@@ -287,7 +287,7 @@ public class XTBOutputReader extends ChemSoftOutputReader
                         val));
             }
 
-            if (line.matches(".*" 
+            if (line != null && line.matches(".*" 
             		+ XTBConstants.LOGTHERMOCHEM_UCORR_ROT + ".*"))
             {
                 String[] p = line.trim().split("\\s+");
@@ -297,7 +297,7 @@ public class XTBOutputReader extends ChemSoftOutputReader
                         val));
             }
 
-            if (line.matches(".*" 
+            if (line != null && line.matches(".*" 
             		+ XTBConstants.LOGTHERMOCHEM_UCORR_TRANS + ".*"))
             {
                 String[] p = line.trim().split("\\s+");
@@ -309,7 +309,7 @@ public class XTBOutputReader extends ChemSoftOutputReader
         	*/
         	
         	
-        	if (line.matches(".*" + XTBConstants.LOGOPTTRJFILENAME + ".*"))
+        	if (line != null && line.matches(".*" + XTBConstants.LOGOPTTRJFILENAME + ".*"))
         	{
         		String[] p = line.trim().split("\\s+");
         		String optGeomFileName = p[5];
@@ -337,7 +337,7 @@ public class XTBOutputReader extends ChemSoftOutputReader
         		foundOptTrajectory = true;
         	}
         	
-        	if (line.matches(".*" + XTBConstants.LOGOPTGEOMFILENAME+ ".*"))
+        	if (line != null && line.matches(".*" + XTBConstants.LOGOPTGEOMFILENAME+ ".*"))
         	{
         		String[] p = line.trim().split("\\s+");
         		String optGeomFileName = p[4];

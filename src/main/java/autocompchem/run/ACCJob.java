@@ -92,7 +92,7 @@ public class ACCJob extends Job
         logger.debug("AutoCompChem is initiating the ACC task '" 
                             + task + "' - " + TimeUtils.getTimestamp());
 
-        Worker worker = null;
+        Worker worker;
 		try {
 			worker = WorkerFactory.createWorker(this);
 		} catch (Throwable t) {
@@ -100,6 +100,7 @@ public class ACCJob extends Job
 			thrownExc = new Error("Unable to make worker for " 
 					+ params.getParameterValue(WorkerConstants.PARTASK), t);
 			stopJob();
+			return; // should not be reached, but satisfies linter
 		}
 		try {
 			worker.performTask();

@@ -89,7 +89,7 @@ import autocompchem.text.TextBlockIndexed;
  * @author Marco Foscato
  */
 
-public class ParameterStorage extends NamedDataCollector implements Cloneable
+public class ParameterStorage extends NamedDataCollector
 {
 	
 //------------------------------------------------------------------------------
@@ -384,7 +384,7 @@ public class ParameterStorage extends NamedDataCollector implements Cloneable
     	for (String ref: super.getAllNamedData().keySet())
     	{
     		NamedData nd =  super.getNamedData(ref);
-    		NamedData ndClone = null;
+    		NamedData ndClone = new NamedData();
 			try { 
 				ndClone= nd.clone();
 			} catch (CloneNotSupportedException e) {

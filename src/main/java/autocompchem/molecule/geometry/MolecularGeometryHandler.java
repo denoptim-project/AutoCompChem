@@ -185,39 +185,41 @@ public class MolecularGeometryHandler extends AtomContainerInputProcessor
 				labelsParams.removeData(WorkerConstants.PAROUTFILE);
 				labelsParams.setParameter(WorkerConstants.PARNOOUTFILEMODE);
 				
-				AtomLabelsGenerator labGenerator = null;
+				AtomLabelsGenerator labGenerator;
 				try {
 					labGenerator = (AtomLabelsGenerator) 
 		    			WorkerFactory.createWorker(labelsParams, myJob);
 				} catch (Throwable t) {
 					//Cannot happen!
-					t.printStackTrace();
+					throw new IllegalStateException("Unable to create worker for "
+							+ "atom labels generation task.", t);
 				}
 				List<String> atomTags = labGenerator.generateAtomLabels(iac);
 				iacPossiblyLabelled = MolecularUtils.makeSimpleCopyWithAtomTags(
-						iac, 
-						atomTags);
+					iac, 
+					atomTags);
 			}
 			
 			switch (coordsType)
-	    	{    
+			{    
 	        	case ZMAT:
 	        	{
 	        		ParameterStorage zmatMakerTask = params.copy();
 	        		zmatMakerTask.setParameter(WorkerConstants.PARTASK, 
 	        				ZMatrixHandler.CONVERTTOZMATTASK.ID);
-	        		zmatMakerTask.removeData(WorkerConstants.PAROUTFILE);
-	        		zmatMakerTask.setParameter(WorkerConstants.PARNOOUTFILEMODE);
-	        		
-	                Worker w = null;
+		        	zmatMakerTask.removeData(WorkerConstants.PAROUTFILE);
+					zmatMakerTask.setParameter(WorkerConstants.PARNOOUTFILEMODE);
+						
+					Worker w;
 					try {
 						w = WorkerFactory.createWorker(zmatMakerTask,myJob);
 					} catch (ClassNotFoundException e1) {
 						//Cannot happen!
-						e1.printStackTrace();
+						throw new IllegalStateException("Unable to create worker for "
+								+ "ZMatrix conversion task.", e1);
 					}
-	                ZMatrixHandler zmh = (ZMatrixHandler) w;
-	                ZMatrix zmat = zmh.makeZMatrix(iacPossiblyLabelled);
+					ZMatrixHandler zmh = (ZMatrixHandler) w;
+					ZMatrix zmat = zmh.makeZMatrix(iacPossiblyLabelled);
 	                
 	                if (params.contains(ZMatrixConstants.SELECTORMODE))
 	                {
@@ -227,15 +229,16 @@ public class MolecularGeometryHandler extends AtomContainerInputProcessor
 	                	cnstMakerTask.removeData(WorkerConstants.PAROUTFILE);
 	                	cnstMakerTask.setParameter(WorkerConstants.PARNOOUTFILEMODE);
 	
-	                    ConstraintsGenerator cnstrg = null;
-						try {
-							cnstrg = (ConstraintsGenerator)
-									WorkerFactory.createWorker(cnstMakerTask, 
-											myJob);
-						} catch (ClassNotFoundException e1) {
-							//Cannot happen!
-							e1.printStackTrace();
-						}
+	                	ConstraintsGenerator cnstrg;
+	                	try {
+	                		cnstrg = (ConstraintsGenerator)
+	                				WorkerFactory.createWorker(cnstMakerTask, 
+	                						myJob);
+	                	} catch (ClassNotFoundException e1) {
+	                		//Cannot happen!
+	                		throw new IllegalStateException("Unable to create worker for "
+	                				+ "constraints generation task.", e1);
+	                	}
 	                	ConstraintsSet cs = new ConstraintsSet();
 	                	try {
 	    					cs = cnstrg.createConstraints(iac);

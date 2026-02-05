@@ -325,6 +325,7 @@ public class ChelateAnalyzer extends AtomContainerInputProcessor
             {
                 Terminator.withMsgAndStatus("ERROR! ChelateAnalyzer cannot make "
                 + " clone of ligand.", -1);
+                return null; // should not be reached, but satisfies linter
             }
 
             // remove all atoms with different ligand ID
@@ -338,6 +339,7 @@ public class ChelateAnalyzer extends AtomContainerInputProcessor
                     Terminator.withMsgAndStatus("ERROR! Label '" + label + "' "
                         + "is null for " + MolecularUtils.getAtomRef(atm,wMol)
                         + ". Please report this bug to the authors.",-1);
+                    return null; // should not be reached, but satisfies linter
                 }
 
                 if (!prop.equals(lab))

@@ -364,7 +364,9 @@ public class MolecularUtils
             try {
                 if (have2D)
                 {
-                      pointer.add(p2d.x);
+                    if (p2d==null)
+                        return not2or3D;
+                    pointer.add(p2d.x);
                     pointer.add(p2d.y);
                     numOf2D++;
                 } else {

@@ -29,7 +29,7 @@ import autocompchem.molecule.intcoords.InternalCoord;
 /**
  * An ordered collection of constraints.
  */
-public class ConstraintsSet extends TreeSet<Constraint> implements Cloneable
+public class ConstraintsSet extends TreeSet<Constraint>
 {
 	/**
 	 * Version ID

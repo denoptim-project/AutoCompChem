@@ -1814,7 +1814,7 @@ public class Job implements Runnable
             String typ = context.deserialize(jsonObject.get(JSONJOBTYPE),
                     String.class);
             
-            Job job = null;
+            Job job;
             switch (typ)
             {
                 case "Job":
@@ -1866,6 +1866,9 @@ public class Job implements Runnable
                 	}
                 	break;
                 }
+
+                default:
+                    throw new JsonParseException("Unknown job type: " + typ);
             }
             
         	if (jsonObject.has(JSONSUBJOBS))

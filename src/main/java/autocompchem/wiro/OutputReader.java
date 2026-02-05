@@ -299,9 +299,14 @@ public class OutputReader extends Worker
     {	
         //Read and parse log files (typically called "output file")
     	File logFile = getLogPathName();
+		if (logFile == null)
+		{
+			Terminator.withMsgAndStatus("ERROR! Log file is null.", -1);
+			return;
+		}
     	LogReader logReader = null;
     	try {
-    		if (logFile!=null && logFile.exists())
+    		if (logFile.exists())
     		{
 	    		// This encapsulated any perception-related parsing of strings
 	    		logReader = new LogReader(new FileReader(logFile));

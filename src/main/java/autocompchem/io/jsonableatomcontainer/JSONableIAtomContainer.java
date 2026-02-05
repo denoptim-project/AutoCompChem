@@ -48,17 +48,14 @@ public class JSONableIAtomContainer
 	public boolean equals(Object o)
 	{
 		IAtomContainer otherIAC = null;
-		boolean otherIsCastable = false;
 		if (o instanceof IAtomContainer)
 		{
 			otherIAC = (IAtomContainer) o;
-			otherIsCastable = true;
 		} else if (o instanceof JSONableIAtomContainer) {
 			otherIAC = ((JSONableIAtomContainer) o).iac;
-			otherIsCastable = true;
-		}
-		if (!otherIsCastable)
+		} else {
 			return false;
+		}
 		
 		if (iac.getAtomCount()!= otherIAC.getAtomCount())
 			return false;

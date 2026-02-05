@@ -36,7 +36,6 @@ import autocompchem.utils.NumberUtils;
  */
 
 public class ConformationalCoordinate extends AnnotatedAtomTuple 
-	implements Cloneable
 {
     /**
      * The number that specifies how extensively the coordinate is explored. 

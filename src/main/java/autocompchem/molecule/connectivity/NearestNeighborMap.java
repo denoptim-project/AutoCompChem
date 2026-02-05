@@ -1,6 +1,5 @@
 package autocompchem.molecule.connectivity;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -26,37 +25,10 @@ import java.util.HashMap;
 
 import java.util.List;
 
-import org.openscience.cdk.AtomContainerSet;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import com.google.common.collect.Lists;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
-import com.google.gson.reflect.TypeToken;
-
-import autocompchem.datacollections.NamedData;
-import autocompchem.datacollections.ParameterStorage;
-import autocompchem.datacollections.NamedData.NamedDataType;
-import autocompchem.modeling.atomtuple.AnnotatedAtomTupleList;
-import autocompchem.modeling.basisset.BasisSet;
-import autocompchem.modeling.constraints.ConstraintsSet;
-import autocompchem.molecule.conformation.ConformationalSpace;
-import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
-import autocompchem.perception.infochannel.InfoChannel;
-import autocompchem.perception.infochannel.InfoChannelBase;
-import autocompchem.perception.situation.Situation;
-import autocompchem.perception.situation.SituationBase;
-import autocompchem.run.Job;
-import autocompchem.run.jobediting.Action;
-import autocompchem.text.TextBlock;
-import autocompchem.utils.StringUtils;
 
 /** 
  * Map of neighbors defining which item is connected to with other items. 
@@ -67,7 +39,6 @@ import autocompchem.utils.StringUtils;
 
 
 public class NearestNeighborMap extends HashMap<Integer, List<Integer>>
-	 implements Cloneable
 {
 	
     /**
