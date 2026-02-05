@@ -106,7 +106,9 @@ cat <<EOF
 
   -l          prints the log of any functionality test that is run.
 
-  -j <path/bin>     specifies the pathname of a specific Java bin folder. 
+  -j <path/bin>     specifies the pathname of a specific Java bin folder.
+
+  --nocleanup       prevents cleanup of the results folder before running tests.
 
 EOF
 }
@@ -195,7 +197,10 @@ function functionalityTesting() {
       mkdir $tst/results
     fi
     cd $tst/results
-    rm -rf $tst/results/*
+    if $doCleanup
+    then
+        rm -rf $tst/results/*
+    fi
 
     # We run all tests unless a specific list of test IDs was given
     if [ ${#chosenTests[@]} -eq 0 ]
@@ -256,7 +261,10 @@ function cliTesting() {
       mkdir $tst/results
     fi
     cd $tst/results
-    rm -rf $tst/results/*
+    if $doCleanup
+    then
+        rm -rf $tst/results/*
+    fi
 
     # We run all tests unless a specific list of test IDs was given
     if [ ${#chosenCliTests[@]} -eq 0 ]
@@ -318,6 +326,7 @@ runCliTesting=false
 runFunctionalityTests=false
 printFuncTestLog=false
 interactiveRun=false
+doCleanup=true
 chosenUnitTests=()
 chosenCliTests=()
 chosenTests=()
@@ -362,10 +371,11 @@ do
                       break
                   fi
               done;;
-	"-l") printFuncTestLog=true;;
+	    "-l") printFuncTestLog=true;;
         "-i") interactiveRun=true;;
         "-j") getArg "$i" "$#"
               javaDir="$argument";;
+        "--nocleanup") doCleanup=false;;
         -[a-z,A-Z,0-9]) echo "ERROR! Unrecognized option '$arg'";
               printUsage; exit 1;;
         *);;
