@@ -509,7 +509,7 @@ public class JobTest
     	assertTrue(NumberUtils.closeEnough(3.3, 
     			(Double) job.getParameter("Key3").getValue()));
     	
-    	// Test fetching from within the job (which useless spaces)
+    	// Test fetching from within the job (with useless spaces)
     	job.setParameter("KEY4", "value is "+Job.GETACCJOBSDATA+"( #0 , DataName )_other");
     	Job.fetchValuesFromJobsTree(job, job.params, Job.GETACCJOBSDATA);
     	String modifiedValue = job.getParameter("Key4").getValueAsString();

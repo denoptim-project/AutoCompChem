@@ -1267,15 +1267,10 @@ public class Job implements Runnable
     public static Object getExposedData(Job job, String pathToOtherJob, 
     		String[] pathIntoExposedData)
     {
-    	// Take away the pound sign
-    	if (pathToOtherJob.startsWith("#"))
-    		pathToOtherJob = pathToOtherJob.substring(1);
-    	String[] parts = pathToOtherJob.split("\\.");
-    	int[] pathAsInts = new int[parts.length];
-        for (int i = 0; i < parts.length; i++) {
-        	pathAsInts[i] = Integer.parseInt(parts[i].stripLeading().stripTrailing());
-        }
-        return getExposedData(job, pathAsInts, pathIntoExposedData);
+        Job targetJob = navigateToJob(job, pathToOtherJob);
+        if (targetJob == null)
+            return null;
+        return getExposedData(targetJob, pathIntoExposedData);
     }
     
 //------------------------------------------------------------------------------
@@ -1299,6 +1294,63 @@ public class Job implements Runnable
     public static Object getExposedData(Job job, int[] pathToOtherJob, 
     		String[] pathIntoExposedData)
     {
+        Job targetJob = navigateToJob(job, pathToOtherJob);
+        if (targetJob == null)
+            return null;
+        return getExposedData(targetJob, pathIntoExposedData);
+    }
+
+//------------------------------------------------------------------------------
+    
+    /**
+     * Navigates the job tree to the job identified by the given path.
+     * @param job the job on which we sit when looking at the job tree. Could be
+     * anywhere in the job tree.
+     * @param pathToOtherJob this is pointer to a job relative to the job given as
+     * parameter. 
+     * The expected syntax is <code>#S.L.M.N....Z</code> where S is 0 or a 
+     * negative integer, while L, ..., Z are strictly positive integers. 
+     * The first integer, i.e., <code>S</code>,
+     * indicates how many steps to move back in the chain of container jobs. 
+     * The other integers indicate which step (0-based) to take among the steps 
+     * of the job identified by the previous index. Negative values are, therefore,
+     * permitted only for the first index and indicate how many levels relative 
+     * to the present jobs to move to identify the outermost job from which
+     * we start looking at the contained steps. A value of 0 indicated that 
+     * the job given as parameter is the one where to start looking into the steps.
+     * @return the job identified by the given path or <code>null</code> if the
+     * given path cannot be satisfied by any job in the job tree.
+     */
+    public static Job navigateToJob(Job job, String pathToOtherJob)
+    {
+    	// Take away the pound sign
+    	if (pathToOtherJob.startsWith("#"))
+    		pathToOtherJob = pathToOtherJob.substring(1);
+    	String[] parts = pathToOtherJob.split("\\.");
+    	int[] pathAsInts = new int[parts.length];
+        for (int i = 0; i < parts.length; i++) {
+        	pathAsInts[i] = Integer.parseInt(parts[i].stripLeading().stripTrailing());
+        }
+        return navigateToJob(job, pathAsInts);
+    }
+
+//------------------------------------------------------------------------------
+    /**
+     * Navigates the job tree to the job identified by the given path.
+     * @param job the job on which we sit when looking at the job tree. Could be
+     * anywhere in the job tree.
+     * @param pathToOtherJob list of pointers to jobs. The first one indicates 
+     * how many steps to take up along the chain of containing jobs from the job 
+     * given as parameter. 
+     * Zero indicated that
+     * we look at a job that is contained (at any level) in the job given as 
+     * parameter. 
+     * Positive values take no effect as they are interpreted as a 0.
+     * @return the job identified by the given path or <code>null</code> if the
+     * given path cannot be satisfied by any job in the job tree.
+     */
+    public static Job navigateToJob(Job job, int[] pathToOtherJob)
+    {
     	if (pathToOtherJob.length<1)
     		return null;
     	
@@ -1313,8 +1365,7 @@ public class Job implements Runnable
         	{
         		return null;
         	}
-        	return getExposedData(job.getContainer(), newPath, 
-        			pathIntoExposedData);
+        	return navigateToJob(job.getContainer(), newPath);
         }
         
         // So, the job we look after is contained in this very job
@@ -1343,10 +1394,10 @@ public class Job implements Runnable
         		return null;
         	
         	Job step = job.getStep(pathToOtherJob[1]);
-        	return getExposedData(step, newPath, pathIntoExposedData);
+        	return navigateToJob(step, newPath);
         } else {
-        	// The target job this job
-        	return getExposedData(job, pathIntoExposedData);
+        	// The target job is this job
+        	return job;
         }
     }
     
@@ -1678,58 +1729,96 @@ public class Job implements Runnable
     		// stored within the named data because with the JSON operation
     		// we create a new instance, rather then modifying the existing one
     		String jsonStr = jsonWriter.toJson(data);
-    		List<Integer> indexes = new ArrayList<Integer>();
-    		boolean edited = false;
-    		int fromIdx=0;
-    		while (fromIdx>-1)
-    		{
-    			fromIdx = jsonStr.toUpperCase().indexOf(commandCall, fromIdx);
-    			if (fromIdx>-1)
-    			{
-        			indexes.add(fromIdx);
-    				edited = true;
-    				fromIdx++;
-    			}
-    		}
-    		StringBuilder newJson = new StringBuilder();
-    		int maxEnd = jsonStr.length();
-    		int startCopying = 0;
-    		for (int i=0; i<indexes.size(); i++)
-    		{
-    			int beginMatch = indexes.get(i);
-    			int end = maxEnd;
-    			if (indexes.size()>i+1)
-    				end = indexes.get(i+1);
-    			String argStr = StringUtils.getParenthesesContent(
-    					jsonStr.substring(beginMatch, end));
-    			String[] args = argStr.split(",");
-    			String pathToOtherJob = "#0";
-    			String[] pathIntoExposedData = args;
-    			if (args[0].stripLeading().startsWith("#"))
-    			{
-    				pathToOtherJob = args[0].stripLeading().stripTrailing();
-    				pathIntoExposedData = Arrays.copyOfRange(args, 1, args.length);
-    			}
-    			
-    			Object value = getExposedData(job, pathToOtherJob, 
-    					pathIntoExposedData);
-    			
-    			String init = jsonStr.substring(startCopying, beginMatch);
-    			int beginningLeftOver = beginMatch + commandCall.length() 
-    				+ 2 + argStr.length();
-    			String leftover = jsonStr.substring(beginningLeftOver, end);
-    			newJson.append(init);
-    			newJson.append(value);
-    			newJson.append(leftover);
-    			
-    			startCopying = end;
-    		}
-    		
-    		if (edited)
-    		{
-    			dataToUpdate.getAllNamedData().put(paramKey, jsonReader.fromJson(
-    					newJson.toString(), NamedData.class));
-    		}
+
+            if (!jsonStr.toUpperCase().contains(commandCall.toUpperCase()))
+            {
+                continue;
+            }
+
+            // See if the part to replace corresponds to the entire content of
+            // the data value
+            boolean replaceEntireValue = false;
+            Object dataValue = data.getValue();
+            String dataValueStr = (String) dataValue;
+            if (dataValue instanceof String)
+            {
+                replaceEntireValue = StringUtils.hasSyntaxOfCommandCallWithParenthesesContent(
+                    dataValueStr, commandCall);
+            }
+
+            if (replaceEntireValue)
+            {
+                // Replace the entire value with the result of the command call
+                String argStr = StringUtils.getParenthesesContent(dataValueStr);
+                String[] args = argStr.split(",");
+                String pathToOtherJob = "#0";
+                String[] pathIntoExposedData = args;
+                if (args[0].stripLeading().startsWith("#"))
+                {
+                    pathToOtherJob = args[0].stripLeading().stripTrailing();
+                    pathIntoExposedData = Arrays.copyOfRange(args, 1, args.length);
+                }
+                
+                Object value = getExposedData(job, pathToOtherJob, 
+                        pathIntoExposedData);
+
+                dataToUpdate.getAllNamedData().put(paramKey, new NamedData(paramKey, value));
+            } else {
+                // Replace only the parts of the value that corresponds to command calls
+                List<Integer> indexes = new ArrayList<Integer>();
+                boolean edited = false;
+                int fromIdx=0;
+                while (fromIdx>-1)
+                {
+                    fromIdx = jsonStr.toUpperCase().indexOf(commandCall, fromIdx);
+                    if (fromIdx>-1)
+                    {
+                        indexes.add(fromIdx);
+                        edited = true;
+                        fromIdx++;
+                    }
+                }
+
+                StringBuilder newJson = new StringBuilder();
+                int maxEnd = jsonStr.length();
+                int startCopying = 0;
+                for (int i=0; i<indexes.size(); i++)
+                {
+                    int beginMatch = indexes.get(i);
+                    int end = maxEnd;
+                    if (indexes.size()>i+1)
+                        end = indexes.get(i+1);
+                    String argStr = StringUtils.getParenthesesContent(
+                            jsonStr.substring(beginMatch, end));
+                    String[] args = argStr.split(",");
+                    String pathToOtherJob = "#0";
+                    String[] pathIntoExposedData = args;
+                    if (args[0].stripLeading().startsWith("#"))
+                    {
+                        pathToOtherJob = args[0].stripLeading().stripTrailing();
+                        pathIntoExposedData = Arrays.copyOfRange(args, 1, args.length);
+                    }
+                    
+                    Object value = getExposedData(job, pathToOtherJob, 
+                            pathIntoExposedData);
+
+                    String init = jsonStr.substring(startCopying, beginMatch);
+                    int beginningLeftOver = beginMatch + commandCall.length() 
+                        + 2 + argStr.length();
+                    String leftover = jsonStr.substring(beginningLeftOver, end);
+                    newJson.append(init);
+                    newJson.append(value);
+                    newJson.append(leftover);
+                    
+                    startCopying = end;
+                }
+                
+                if (edited)
+                {
+                    dataToUpdate.getAllNamedData().put(paramKey, jsonReader.fromJson(
+                            newJson.toString(), NamedData.class));
+                }
+            }
     	}
     }
     

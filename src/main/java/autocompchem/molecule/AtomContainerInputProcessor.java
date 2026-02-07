@@ -438,12 +438,12 @@ public class AtomContainerInputProcessor extends Worker
     protected void processInput()
     {
     	// We must ensure inMols != null when inFile is null
-        if (inFile==null && inMols==null)
+        if (inFile==null && (inMols==null || inMols.size()==0))
         {
             Terminator.withMsgAndStatus("ERROR! Missing parameter defining the "
             		+ "input geometries (" + ChemSoftConstants.PARGEOM + ") or "
             		+ "an input file to read geometries from. "
-            		+ "Cannot perform task " + task + " from "
+            		+ "No input to task " + task + " from "
             		+ this.getClass().getSimpleName() + ".", -1);
         }
 

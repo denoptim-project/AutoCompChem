@@ -1,0 +1,92 @@
+{
+  "jobType": "ACCJob",
+  "params": [
+    {
+      "reference": "VERBOSITY",
+      "value": "4"
+    }
+  ],
+  "steps": [
+    {
+      "jobType": "ACCJob",
+      "params": [
+        {
+          "reference": "TASK",
+          "value": "loopJob"
+        },
+        {
+          "reference": "loopedJob",
+          "type": "JOB",
+          "value":
+          {
+            "jobType": "ACCJob",
+            "params": [
+              {
+                "reference": "TASK",
+                "value": "AnalyseXTBOutput"
+              },
+              {
+                "reference": "VERBOSITY",
+                "value": "4"
+              },
+              {
+                "reference": "JOBOUTPUTFILE",
+                "value": "../cli34_data/step_ACCITERNUMBER/xtb.out"
+              },
+              {
+                "reference": "GETENERGY",
+                "value": "getEnergy"
+              }
+            ]
+          }
+        },
+        {
+          "reference": "replacementRules",
+          "value": "ACCITERNUMBER ${format('0', x)}"
+        },
+        {
+          "reference": "maxIterations",
+          "value": "3"
+        }
+      ]
+    },
+    {
+      "jobType": "ACCJob",
+      "params": [
+        {
+          "reference": "TASK",
+          "value": "listJobData"
+        },
+        {
+          "reference": "JOBPOINTER",
+          "value": "#-1.0"
+        }
+      ]
+    },
+    {
+      "jobType": "ACCJob",
+      "params": [
+        {
+          "reference": "TASK",
+          "value": "readAtomContainers"
+        },
+        {
+          "reference": "inputGeometries",
+          "value": "getACCJobsData(#-1.0,LOOPJOB,Iteration_2,JOBOUTPUTDATA,0,GEOMETRIES)"
+        },
+        {
+          "reference": "useGeomAtIndex",
+          "value": "15"
+        },
+        {
+          "reference": "setProperties",
+          "value": "SCF_0: getACCJobsData(#-1.0,LOOPJOB,Iteration_0,JOBOUTPUTDATA,0,FINALSCFENERGY) Eh\nSCF_1: getACCJobsData(#-1.0,LOOPJOB,Iteration_1,JOBOUTPUTDATA,0,FINALSCFENERGY) Eh\nSCF_2: getACCJobsData(#-1.0,LOOPJOB,Iteration_2,JOBOUTPUTDATA,0,FINALSCFENERGY) Eh\n"
+        },
+        {
+          "reference": "outFile",
+          "value": "cli34_collector.sdf"
+        }
+      ]
+    }
+  ]
+}

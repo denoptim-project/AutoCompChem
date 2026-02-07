@@ -1,0 +1,8 @@
+[
+  {
+    "key": "JOBPOINTER",
+    "casedKey": "jobPointer",
+    "type": "<String>",
+    "doc": "The pointer to the job the output of which is to be processed. The pointer is relative to the Job asked to perform any handling of the data (let's call it the 'handler job'). The handler job is the one in which this pointer is given as parameter. The pointer is a string that must start with '#' and indicats how to navigate the job tree to locate a target job, i.e., the job from which we want to extract data. For example, string '#-2.1.0' indicated that the target job is the first step (as defined by the last integer, i.e., '0' in '#-2.1.0') in a container job that is the second step (defined by the second-last integer, i.e., '1' in '#-2.1.0') in a container job that contains the container of the handler job (i.e., the '-2' indicated to move to the container job twice from the handler job). Hence '#0' indicated the handler job, and '#-1' indicates the job containing the handler job, '#-1.0' indicates the first step of the job containing the handler job."
+  }
+]

@@ -237,9 +237,8 @@ public class JobLooper extends Worker
 				if (replacementForIOriginalString.startsWith("${"))
 				{
 					// Replacement string is an expression
-					Double newValue = NumberUtils.calculateNewValue(
+					replacementForIOriginalString = NumberUtils.calculateNewFotmattedValue(
 						replacementForIOriginalString,  expFact, Double.valueOf(i+""));
-					replacementForIOriginalString = newValue.toString();
 				}
 				replacements.put(originalString, replacementForIOriginalString);
 			}
@@ -261,13 +260,16 @@ public class JobLooper extends Worker
 			currentJob.setParameter("JobLoopIteration", i);
 			currentJob.run();
 
-			// Extract selected data to be exposed as results of the loop
+			// Extract all data to be exposed as results of the loop
+			/*
+			for (String dataName : currentJob.getOutputCollector().getAllNamedData().keySet())
+			{
+				results.putNamedData("iter-" + i + "-" + dataName, 
+					currentJob.getOutputCollector().getNamedData(dataName));
+			}
+			*/
 
-			//TODO get the namesof the data to expose from input parameters
-			/* 
-			results.putNamedData("iter-" + i, 
-				currentJob.getOutputCollector().getNamedData(dataName));
-				*/
+			results.putNamedData("Iteration_" + i, new NamedData("Iteration_" + i, currentJob.getOutputCollector()));
 		}
 
 		return results;

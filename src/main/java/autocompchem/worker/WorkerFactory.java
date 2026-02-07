@@ -57,6 +57,7 @@ import autocompchem.run.JobAssistant;
 import autocompchem.run.JobDefinitionConverter;
 import autocompchem.run.JobEvaluator;
 import autocompchem.run.JobLooper;
+import autocompchem.run.JobOutputHandler;
 import autocompchem.wiro.InputWriter;
 import autocompchem.wiro.OutputReader;
 import autocompchem.wiro.acc.ACCInputWriter;
@@ -154,6 +155,7 @@ public final class WorkerFactory
         registerType(new MoleculeExtractor());
         registerType(new JobAssistant());
         registerType(new JobLooper());
+        registerType(new JobOutputHandler());
 	}
 
 //-----------------------------------------------------------------------------
