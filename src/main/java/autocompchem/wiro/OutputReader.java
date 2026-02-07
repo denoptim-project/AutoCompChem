@@ -308,6 +308,12 @@ public class OutputReader extends Worker
     	try {
     		if (logFile.exists())
     		{
+				if (logFile.isDirectory())
+				{
+					Terminator.withMsgAndStatus("ERROR! Log file pathname points to a directory: " 
+        					+ logFile.getAbsolutePath() + ". Please, provide a file pathname.",-1);
+					return;
+				}
 	    		// This encapsulated any perception-related parsing of strings
 	    		logReader = new LogReader(new FileReader(logFile));
 	    		// This encapsulated any software-specificity in the log format
