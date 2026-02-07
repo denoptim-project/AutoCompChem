@@ -377,5 +377,86 @@ public class StringUtilsTest
     }
     			
 //------------------------------------------------------------------------------
-
+    
+    @Test
+    public void testHasSyntaxOfCommandCallWithParenthesesContent() throws Exception
+    {
+        String commandCall = "GETDATA";
+        
+        // Test 1: Valid - simple command with parentheses content
+        assertTrue(StringUtils.hasSyntaxOfCommandCallWithParenthesesContent(
+            "GETDATA(arg1, arg2)", commandCall));
+        
+        // Test 2: Valid - case insensitive
+        assertTrue(StringUtils.hasSyntaxOfCommandCallWithParenthesesContent(
+            "getdata(arg1, arg2)", commandCall));
+        assertTrue(StringUtils.hasSyntaxOfCommandCallWithParenthesesContent(
+            "GetData(arg1, arg2)", commandCall));
+        
+        // Test 3: Valid - with leading/trailing whitespace
+        assertTrue(StringUtils.hasSyntaxOfCommandCallWithParenthesesContent(
+            "  GETDATA(arg1, arg2)  ", commandCall));
+        // Test 3b: Valid - with space between command and '(' (stripped)
+        assertTrue(StringUtils.hasSyntaxOfCommandCallWithParenthesesContent(
+            "GETDATA (arg1, arg2)", commandCall));
+        
+        // Test 4: Valid - empty parentheses content
+        assertTrue(StringUtils.hasSyntaxOfCommandCallWithParenthesesContent(
+            "GETDATA()", commandCall));
+        
+        // Test 5: Valid - nested parentheses
+        assertTrue(StringUtils.hasSyntaxOfCommandCallWithParenthesesContent(
+            "GETDATA(arg1, (nested, content))", commandCall));
+        
+        // Test 6: Valid - single argument
+        assertTrue(StringUtils.hasSyntaxOfCommandCallWithParenthesesContent(
+            "GETDATA(arg1)", commandCall));
+        
+        // Test 7: Invalid - no parentheses
+        assertFalse(StringUtils.hasSyntaxOfCommandCallWithParenthesesContent(
+            "GETDATA", commandCall));
+        
+        // Test 8: Invalid - no parentheses content after command
+        assertFalse(StringUtils.hasSyntaxOfCommandCallWithParenthesesContent(
+            "GETDATA ", commandCall));
+        
+        // Test 9: Invalid - wrong command
+        assertFalse(StringUtils.hasSyntaxOfCommandCallWithParenthesesContent(
+            "OTHER(arg1, arg2)", commandCall));
+        
+        // Test 10: Invalid - text after parentheses
+        assertFalse(StringUtils.hasSyntaxOfCommandCallWithParenthesesContent(
+            "GETDATA(arg1, arg2) extra", commandCall));
+        
+        // Test 11: Invalid - text before command
+        assertFalse(StringUtils.hasSyntaxOfCommandCallWithParenthesesContent(
+            "prefix GETDATA(arg1, arg2)", commandCall));
+        
+        // Test 12: Invalid - no opening parenthesis
+        assertFalse(StringUtils.hasSyntaxOfCommandCallWithParenthesesContent(
+            "GETDATA arg1, arg2", commandCall));
+        
+        // Test 13: Invalid - no closing parenthesis (unclosed)
+        assertFalse(StringUtils.hasSyntaxOfCommandCallWithParenthesesContent(
+            "GETDATA(arg1, arg2", commandCall));
+        
+        // Test 14: Valid - complex content with commas and spaces
+        assertTrue(StringUtils.hasSyntaxOfCommandCallWithParenthesesContent(
+            "GETDATA(#0, path, to, data)", commandCall));
+        
+        // Test 15: Valid - with trailing whitespace after closing paren
+        assertTrue(StringUtils.hasSyntaxOfCommandCallWithParenthesesContent(
+            "GETDATA(arg1)   ", commandCall));
+        
+        // Test 16: Invalid - content after closing paren (even with whitespace)
+        assertFalse(StringUtils.hasSyntaxOfCommandCallWithParenthesesContent(
+            "GETDATA(arg1) more text", commandCall));
+        
+		// Test 17: Invalid - content has no command
+		assertFalse(StringUtils.hasSyntaxOfCommandCallWithParenthesesContent(
+			"(arg1, arg2) more text", commandCall));
+    }
+    
+//------------------------------------------------------------------------------
+			
 }

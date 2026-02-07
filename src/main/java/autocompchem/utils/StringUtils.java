@@ -558,6 +558,65 @@ public class StringUtils
             return false;
         }
     }
+
+//------------------------------------------------------------------------------
+    
+    /**
+     * Checks if the given string has the syntax of a command call with 
+     * parentheses content, i.e., <code>command(...)</code>. 
+     * For example, the string "getACCJobsData(arg,arg)" 
+     * mathces the syntax od a command <code>getACCJobsData</code> with the 
+     * parentheses content <code>arg,arg</code>.
+     * @param txt the string to check
+     * @param commandCall the command call to check for
+     * @return <code>true</code> if the string has the syntax of a command call 
+     * with parentheses content possibly with white spaces around the command call.
+     */
+    public static boolean hasSyntaxOfCommandCallWithParenthesesContent(
+        String txt, String commandCall) 
+    {
+        String trimmed = txt.strip();
+        String commandCallUpper = commandCall.toUpperCase();
+        String trimmedUpper = trimmed.toUpperCase();
+        if (trimmedUpper.startsWith(commandCallUpper))
+        {
+            int commandCallEnd = commandCall.length();
+            String withoutCommand = trimmed.substring(commandCallEnd).strip();
+            if (withoutCommand.isEmpty())
+            {
+                // No parentheses content
+                return false;
+            }
+            String parenthesesContent = StringUtils.getParenthesesContent(
+                withoutCommand);
+            if (parenthesesContent == null)
+            {
+                return false;
+            }
+            // Find the position of the opening parenthesis
+            int openParenPos = withoutCommand.indexOf('(');
+            if (openParenPos == -1)
+            {
+                return false;
+            }
+            // Calculate what should remain after: opening paren + content + closing paren
+            // After extracting content, we should have: ( + content + )
+            int expectedEndPos = openParenPos + 1 + parenthesesContent.length() + 1;
+            if (expectedEndPos > withoutCommand.length())
+            {
+                return false;
+            }
+            String withoutCommandAndParenthesis = withoutCommand.substring(
+                expectedEndPos).strip();
+            if (!withoutCommandAndParenthesis.isEmpty())
+            {
+                // There is something after the parentheses content
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
     
 //------------------------------------------------------------------------------
 
