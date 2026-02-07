@@ -167,18 +167,7 @@ public class AtomContainerInputProcessor extends Worker
     public void initialize()
     {
     	super.initialize();
-        if (params.contains(WorkerConstants.PARINFILE))
-        {
-        	String value = params.getParameter(WorkerConstants.PARINFILE)
-            		.getValueAsString();
-        	processInputFileParameter(value);
-        }
-        if (params.contains(ChemSoftConstants.PARGEOMFILE))
-        {
-        	String value = params.getParameter(ChemSoftConstants.PARGEOMFILE)
-            		.getValueAsString();
-        	processInputFileParameter(value);
-        }
+
         if (params.contains(ChemSoftConstants.PARGEOM))
         {
             inMols = new ArrayList<IAtomContainer>();
@@ -199,16 +188,50 @@ public class AtomContainerInputProcessor extends Worker
                         + geomValue.getClass().getName());
             }
            
-            if (params.contains(WorkerConstants.PARINFILE))
+            if (params.contains(WorkerConstants.PARINFILE) || params.contains(ChemSoftConstants.PARGEOMFILE))
             {
+				String existing = "";
+				if (params.contains(WorkerConstants.PARINFILE))
+				{
+					existing = WorkerConstants.PARINFILE;
+				}
+				if (params.contains(ChemSoftConstants.PARGEOMFILE))
+				{
+					existing = ChemSoftConstants.PARGEOMFILE;
+				}
+
             	logger.warn("WARNING: found both "
-            			+ WorkerConstants.PARINFILE + " and "
+            			+ existing + " and "
             			+ ChemSoftConstants.PARGEOM + ". Using geometries from "
-            			+ ChemSoftConstants.PARGEOM + " as input for "
+            			+ existing + " as input for "
             			+ this.getClass().getSimpleName() + ".");
             	this.inFile = null;
             }
         }
+
+        if (params.contains(WorkerConstants.PARINFILE))
+		{
+			String value = params.getParameter(WorkerConstants.PARINFILE)
+					.getValueAsString();
+			processInputFileParameter(value);
+		}
+
+		if (params.contains(ChemSoftConstants.PARGEOMFILE))
+		{
+			String value = params.getParameter(ChemSoftConstants.PARGEOMFILE)
+					.getValueAsString();
+			processInputFileParameter(value);
+
+			if (params.contains(WorkerConstants.PARINFILE))
+			{
+				logger.warn("WARNING: found both "
+						+ WorkerConstants.PARINFILE + " and "
+						+ ChemSoftConstants.PARGEOMFILE + ". Using geometries from "
+						+ ChemSoftConstants.PARGEOMFILE + " as input for "
+						+ this.getClass().getSimpleName() + ".");
+				this.inFile = null;
+			}
+		}
         
         if (params.contains(ChemSoftConstants.PARMULTIGEOMMODE))
         {

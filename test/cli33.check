@@ -1,0 +1,38 @@
+#!/bin/bash
+
+function not_passed() {
+  echo "NOT Passed: check condition leading to line '$1' of '$0'"
+  exit -1
+}
+
+if [ ! -f cli33.log ] ; then not_passed $LINENO ; fi
+
+if ! grep -q -i " found both INFILE and INPUTGEOMETRIES" cli33.log ; then not_passed $LINENO ; fi
+if ! grep -q -i " found both INPUTGEOMETRIESFILE and INPUTGEOMETRIES" cli33.log ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c -i " Dst.RuCl_A .* 2\.22" cli33.log)
+if [ 2 != "$n" ] ; then not_passed $LINENO ; exit 0 ; fi
+
+n=0; n=$(grep -c -i " Dst.RuCl_B .* 2\.22" cli33.log)
+if [ 2 != "$n" ] ; then not_passed $LINENO ; exit 0 ; fi
+
+# The input is generated with a structure that does have the Ru-Cl bonds,
+# but constraints ans neighbors list are generated with a reference structure that does not
+# have Ru-Cl bonds so, the constrains do not include Ru-Cl distance, but 
+# the coordinates in the coord file should be the ones of the structure with Ru-Cl bonds
+
+if [ ! -f cli33-inp.xcontrol ] ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c -i " distance:" cli33-inp.xcontrol)
+if [ 2 != "$n" ] ; then not_passed $LINENO ; exit 0 ; fi
+
+if ! grep -q -i " *nb = 1:4, 7$" cli33-inp.xcontrol ; then not_passed $LINENO ; fi
+
+if [ ! -f cli33-coord.xyz ] ; then not_passed $LINENO ; fi
+
+if ! grep -q -i "Ru[[:space:]]*-1\.356.*[[:space:]]*-1\.62.*[[:space:]]*-14\.439" cli33-coord.xyz ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c -i "Termination status: 0" cli33.log)
+if [ 1 == "$n" ] ; then echo Passed ; exit 0 ; fi
+not_passed $LINENO
+exit -1

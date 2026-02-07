@@ -1,0 +1,126 @@
+{
+  "jobType": "ACCJob",
+  "params": [
+    {
+      "reference": "VERBOSITY",
+      "value": "4"
+    }
+  ],
+  "steps": [
+    {
+      "jobType": "ACCJob",
+      "params": [
+        {
+          "reference": "TASK",
+          "value": "MeasureGeomDescriptors"
+        },
+        {
+          "reference": "SMARTS",
+          "value": "[#44] [Cl] name=RuCl_A onlybonded"
+        },
+        {
+          "reference": "inFile",
+          "value": "../cli33-mol.sdf"
+        },
+        {
+          "reference": "VERBOSITY",
+          "value": "4"
+        }
+      ]
+    },
+    {
+      "jobType": "ACCJob",
+      "params": [
+        {
+          "reference": "TASK",
+          "value": "prepareinput"
+        },
+        {
+          "reference": "SOFTWAREID",
+          "value": "XTB"
+        },
+        {
+          "reference": "pathnameOutput",
+          "value": "cli33-inp"
+        },
+        {
+          "reference": "coordFile",
+          "value": "cli33-coord.xyz"
+        },
+        {
+          "reference": "jobDetails",
+          "type": "JOB",
+          "value":
+          {
+            "jobType": "CompChemJob",
+            "directives": [
+              {
+                "name": "constrain",
+                "keywords": [
+                   {
+                     "reference":"force constant",
+                      "value" : 1.5
+                   }
+                 ],
+                "dirData": [
+                  {
+                    "accTaskParams": [
+                      {
+                        "reference": "TASK",
+                        "value": "GenerateConstraints"
+                      },
+                      {
+                        "reference": "inFile",
+                        "value": "../cli33-ref.sdf"
+                      },
+                      {
+                        "reference": "SMARTS",
+                        "value": "[#44] [$([*]~[#44])] onlybonded GetCurrentValue"
+                      }
+                    ],
+                    "reference": "constrain-generation task with input from file"
+                  }
+                ]
+              },
+              {
+                "name": "ffnb",
+                "dirData": [
+                  {
+                    "accTaskParams": [
+                      {
+                        "reference": "TASK",
+                        "value": "makeNearestNeighborMap"
+                      },
+                      {
+                        "reference": "INPUTGEOMETRIESFILE",
+                        "value": "../cli33-ref.sdf"
+                      }
+                    ],
+                    "reference": "nearest neighbor map generation with input from file"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "jobType": "ACCJob",
+      "params": [
+        {
+          "reference": "TASK",
+          "value": "MeasureGeomDescriptors"
+        },
+        {
+          "reference": "SMARTS",
+          "value": "[#44] [Cl] name=RuCl_B onlybonded"
+        },
+        {
+          "reference": "VERBOSITY",
+          "value": "4"
+        }
+      ]
+    }
+  ]
+}
