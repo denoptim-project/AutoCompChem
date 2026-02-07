@@ -320,5 +320,89 @@ public class NumberUtilsTest
     }
     
 //------------------------------------------------------------------------------
+    
+    @Test
+    public void testCalculateNewFotmattedValue() throws Exception
+    {
+    	ExpressionFactory expFact = ExpressionFactory.newInstance();
+    	
+    	// Test 1: Simple expression without formatting
+    	String expr = "${x + 2}";
+    	Double oldVal = 10.0;
+    	String result = NumberUtils.calculateNewFotmattedValue(expr, expFact, oldVal);
+    	// Should return "12.0" as string (default formatting)
+    	assertTrue(result.contains("12"));
+    	
+    	// Test 2: Using format function with fixed decimal places
+    	expr = "${format('0.00', x + 2)}";
+    	result = NumberUtils.calculateNewFotmattedValue(expr, expFact, oldVal);
+    	assertEquals("12.00", result);
+    	
+    	// Test 3: Using format function with up to 2 decimal places
+    	expr = "${format('#.##', x * 1.234)}";
+    	oldVal = 10.0;
+    	result = NumberUtils.calculateNewFotmattedValue(expr, expFact, oldVal);
+    	assertEquals("12.34", result);
+
+    	// Test 3b: Using format function to round to integer
+    	expr = "${format('0', x * 1.289)}";
+    	oldVal = 10.0;
+    	result = NumberUtils.calculateNewFotmattedValue(expr, expFact, oldVal);
+		// NB: rounding!
+    	assertEquals("13", result);
+
+    	// Test 3b: Using format function to round
+    	expr = "${format('0.0', 12.89)}";
+    	oldVal = 10.0;
+    	result = NumberUtils.calculateNewFotmattedValue(expr, expFact, oldVal);
+		// NB: rounding!
+    	assertEquals("12.9", result);
+    	
+    	// Test 4: Using format function with scientific notation
+    	expr = "${format('0.0E0', x * 100)}";
+    	result = NumberUtils.calculateNewFotmattedValue(expr, expFact, 1.0);
+    	assertTrue(result.contains("E"));
+    	assertTrue(result.contains("1"));
+    	
+    	// Test 5: Complex expression with formatting
+    	expr = "${format('0.000', x * 2.5 + 1)}";
+    	oldVal = 3.0;
+    	result = NumberUtils.calculateNewFotmattedValue(expr, expFact, oldVal);
+    	assertEquals("8.500", result);
+    	
+    	// Test 6: Negative numbers with formatting
+    	expr = "${format('0.00', x - 5)}";
+    	oldVal = 2.0;
+    	result = NumberUtils.calculateNewFotmattedValue(expr, expFact, oldVal);
+    	assertEquals("-3.00", result);
+    	
+    	// Test 7: Zero with formatting
+    	expr = "${format('0.00', x - x)}";
+    	oldVal = 5.5;
+    	result = NumberUtils.calculateNewFotmattedValue(expr, expFact, oldVal);
+    	assertEquals("0.00", result);
+    	
+    	// Test 8: Large number with formatting
+    	expr = "${format('#,##0.00', x * 1000)}";
+    	oldVal = 1234.567;
+    	result = NumberUtils.calculateNewFotmattedValue(expr, expFact, oldVal);
+    	// Format adds commas, so check for the digits without commas
+		assertTrue(result.contains("1,234,567"));
+		assertTrue(result.replace(",", "").contains("1234567"));
+    	
+    	// Test 9: Small number with formatting
+    	expr = "${format('0.0000', x / 1000)}";
+    	oldVal = 1.23456;
+    	result = NumberUtils.calculateNewFotmattedValue(expr, expFact, oldVal);
+    	assertTrue(result.contains("0.0012"));
+    	
+    	// Test 10: Simple expression (no format function) - should still work
+    	expr = "${x * 2}";
+    	oldVal = 5.0;
+    	result = NumberUtils.calculateNewFotmattedValue(expr, expFact, oldVal);
+    	assertTrue(result.contains("10"));
+    }
+    
+//------------------------------------------------------------------------------
 
 }
