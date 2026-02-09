@@ -1,0 +1,24 @@
+#!/bin/bash
+
+function not_passed() {
+  echo "NOT Passed: check condition leading to line '$1' of '$0'"
+  exit -1
+}
+
+if [ ! -f t164.log ] ; then not_passed $LINENO ; fi
+
+if [ ! -f t164_last.sdf ] ; then not_passed $LINENO ; fi
+
+n=0;n=$(grep -c '\$\$\$\$' t164_last.sdf)
+if [ $n != 1 ] ; then not_passed $LINENO ; fi
+
+n=0;n=$(grep -c '\-45\.479541869311' t164_last.sdf)
+if [ $n != 1 ] ; then not_passed $LINENO ; fi
+
+if grep -q 'Termination status: 0' t164.log ; then
+  echo Passed
+  exit 0
+else
+  echo NOT Passed 99
+  exit -1
+fi

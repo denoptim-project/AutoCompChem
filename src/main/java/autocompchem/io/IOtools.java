@@ -619,14 +619,38 @@ public class IOtools
      */
     public static List<IAtomContainer> readMultiMolFiles(File file)
     {
+        return readMultiMolFiles(file, null);
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Read a molecular structure file that might contain multiple structures.
+     * Accepts SDF, XYZ files, or any output file that can be analyzed by 
+     * any registered implementation of {@link ChemSoftOutputReader}.
+     * @param file file to be read
+     * @param format the format of the file irrespectivly on its extension.
+     * If <code>format</code> is <code>null</code>, we infer it from the extension.
+     * @return all the chemical objects into an <code>ArrayList</code>
+     */
+    public static List<IAtomContainer> readMultiMolFiles(File file, String format)
+    {
 		ReaderWriterFactory builder = 
 				ReaderWriterFactory.getInstance();
 		
+        // We can ask for the format, but if not given, we infer it from the extension.
+        String extension = file.getName().trim().substring(
+            file.getName().trim().lastIndexOf(".") + 1);
+        if (format != null)
+        {
+            extension = format.toLowerCase();
+        }
+
         List<IAtomContainer> mols = new ArrayList<IAtomContainer>();
-        if (file.getName().endsWith(".sdf"))
+        if (extension.equals("sdf"))
         {
             mols = IOtools.readSDF(file);
-        } else if (file.getName().endsWith(".xyz"))
+        } else if (extension.equals("xyz"))
         {
             mols = IOtools.readXYZ(file);
         } else {

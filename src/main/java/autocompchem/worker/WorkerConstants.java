@@ -35,6 +35,13 @@ public class WorkerConstants
 	 * Key for parameter defining the pathname to any input file.
 	 */
 	public static final String PARINFILE = "INFILE";
+
+	/**
+	 * Key for parameter defining the format of the input file.
+	 * Usially not needed, but gives the change to specify the format of the input file
+	 * irrespectivly on its extension.
+	 */
+	public static final String PARINFORMAT = "INFORMAT";
 	
 	/**
 	 * Key for parameter defining the pathname to the main output file. If more

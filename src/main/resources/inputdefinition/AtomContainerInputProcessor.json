@@ -26,8 +26,8 @@
   {
     "key": "USEGEOMATINDEX",
     "casedKey": "useGeomAtIndex",
-    "type": "<int>",
-    "doc": "Specifies which geometry to use by the index of that item in the given list of geometries. If this parameter is given, the value of MULTIGEOMMODE is ignored."
+    "type": "<String>",
+    "doc": "Specifies which geometry to use by the index of that item in the given list of geometries. The value may be an integer to choose the index of the geometry in the list, or the string 'last' to choose the last geometry in the list. If this parameter is given, the value of MULTIGEOMMODE is ignored."
   },
   {
     "key": "SETPROPERTIES",
@@ -45,7 +45,7 @@
     "key": "ONLYLASTSTRUCTURE",
     "casedKey": "onlyLastStructure",
     "type": "",
-    "doc": "Flag to write to the output file only the last output structure when sets of output structures are available."
+    "doc": "Flag to write to the output file only the last output structure when sets of output structures are available. Does not affect the reading and processing of the input structures."
   },
   {
     "key": "OUTFORMAT",

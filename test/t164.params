@@ -1,0 +1,6 @@
+task: imposeConnectionTable
+inFile: ../t164-xtb.log
+inFormat: xYz
+template: ../t164-tmpl.sdf
+outfile: t164_last.sdf
+useGeomAtIndex: last

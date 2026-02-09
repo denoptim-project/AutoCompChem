@@ -213,7 +213,13 @@ public class AtomContainerInputProcessor extends Worker
 		{
 			String value = params.getParameter(WorkerConstants.PARINFILE)
 					.getValueAsString();
-			processInputFileParameter(value);
+			String format = null;
+			if (params.contains(WorkerConstants.PARINFORMAT))
+			{	
+				format = params.getParameter(WorkerConstants.PARINFORMAT)
+						.getValueAsString();
+			}
+			processInputFileParameter(value, format);
 		}
 
 		if (params.contains(ChemSoftConstants.PARGEOMFILE))
@@ -243,8 +249,19 @@ public class AtomContainerInputProcessor extends Worker
         
         if (params.contains(ChemSoftConstants.PARMULTIGEOMID))
         {
-        	chosenGeomIdx = Integer.parseInt(params.getParameter(
-        			ChemSoftConstants.PARMULTIGEOMID).getValueAsString());
+			String value = params.getParameter(
+					ChemSoftConstants.PARMULTIGEOMID).getValueAsString();
+			if (NumberUtils.isParsableToInt(value))
+			{
+				chosenGeomIdx = Integer.parseInt(value);
+			} else if(value.toUpperCase().equals("LAST")) {
+				chosenGeomIdx = inMols.size() - 1;
+			} else {
+				Terminator.withMsgAndStatus("ERROR! Unable to "
+						+ "understand option '" + value + "' for "
+						+ ChemSoftConstants.PARMULTIGEOMID + ". Check your input.",-1); 
+			}
+
         	if (multiGeomMode!=MultiGeomMode.INDEPENDENTJOBS)
         	{
 	        	multiGeomMode = MultiGeomMode.INDEPENDENTJOBS;
@@ -378,18 +395,35 @@ public class AtomContainerInputProcessor extends Worker
 //-----------------------------------------------------------------------------
 	
 	/**
-	 * NB: if we are reading a huge file, this code will cause problems, but
-	 * we can assume no huge file will be read here.
+	 * Processes the input file parameter reading chemical structures from the 
+	 * file. NB: if we are reading a huge file, this code will cause problems, 
+	 * but we can assume no huge file will be read here.
+	 * @param value the value of the parameter.
 	 */
-    
+
 	protected void processInputFileParameter(String value)
+	{
+		processInputFileParameter(value, null);
+	}
+
+//-----------------------------------------------------------------------------
+    
+	/**
+	 * Processes the input file parameter reading chemical structures from the 
+	 * file. NB: if we are reading a huge file, this code will cause problems, 
+	 * but we can assume no huge file will be read here.
+	 * @param value the value of the parameter.
+	 * @param format the format of the file to be read. If <code>null</code>, 
+	 * we infer it from the extension.
+	 */
+	protected void processInputFileParameter(String value, String format)
 	{
         String[] words = value.trim().split("\\s+");
         String pathname = words[0];
         inFile = getNewFile(pathname);
         FileUtils.foundAndPermissions(inFile,true,false,false);
         
-        List<IAtomContainer> iacs = IOtools.readMultiMolFiles(inFile);
+        List<IAtomContainer> iacs = IOtools.readMultiMolFiles(inFile, format);
         inMols = new ArrayList<IAtomContainer>();
         if (words.length > 1)
         {
