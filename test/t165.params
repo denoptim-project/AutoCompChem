@@ -1,0 +1,4 @@
+TASK: generateConstraints
+verbosity: 6
+INFILE: ../t165-mol.sdf
+SMARTS: [Cl] [#44] [#7] [$([#6]([#1])([#1])([#1])[#7])] type=dihedral value=1.23456 

@@ -31,10 +31,17 @@ public class ConstraintDefinition extends AtomTupleMatchingRule
      * constraint (whatever it is) will be applied to all atoms, and not to
      * the internal coordinate type defined by the number of identifiers (e,g,
      * distance from two ids, angle from 3, and so on).
-     * For example, the constraint could be a potential applies to displacements 
+     * For example, the constraint could be a potential applied to displacements 
      * from the initial position of the identified atoms.
      */
     public static final String KEYNOINTCOORD = "NOTANIC";
+
+    /**
+     * Keyword used to assign a specific type of internal coordinate defined 
+     * by the matched atoms if possible. For example, force the definition of 
+     * dihedral constrain even if the matched atoms are not connected as a chain.
+     */
+    public static final String KEYTYPE = "TYPE";
     
 	/**
 	 * Keywords that expect values and are used to annotate constraints.
@@ -42,7 +49,7 @@ public class ConstraintDefinition extends AtomTupleMatchingRule
     // WARNING: if you change this list you must update also the documentation
     // at the resource inputdefinition/ConstraintsGenerator.json.
 	public static final List<String> DEFAULTVALUEDKEYS = Arrays.asList(
-			KEYVALUES, AtomTupleConstants.KEYPREFIX, 
+			KEYVALUES, KEYTYPE, AtomTupleConstants.KEYPREFIX, 
 			AtomTupleConstants.KEYSUFFIX);
 
 	/**

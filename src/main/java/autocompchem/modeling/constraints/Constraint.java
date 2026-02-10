@@ -86,7 +86,13 @@ public class Constraint extends AnnotatedAtomTuple
 				tuple.getNumAtoms());
 		if (!hasValuelessAttribute(ConstraintDefinition.KEYNOINTCOORD))
 		{
-			defineType();
+			if (hasValueledAttribute(ConstraintDefinition.KEYTYPE))
+			{
+				type = ConstraintType.valueOf(getValueOfAttribute(
+					ConstraintDefinition.KEYTYPE).toUpperCase());
+			} else {
+				defineType();
+			}
 		}
 	}
 	
