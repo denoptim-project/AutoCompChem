@@ -12,6 +12,12 @@
     "doc": "The pathname to the file containing the geometries of the chemical system/s given as input. Acceptable formats are SDF, XYZ, ZMAT, and any output file that can be analyzed by any registered implementation of ChemSoftOutputReader. Optionally, a set of integers can be used to select which geometries from a multigeometry input (0-based idex). Optionally, the string 'last' can be used to retain only the last geometry from a multigeometry input. Ignored if parameter 'inFile' is present."
   },
   {
+    "key": "INFORMAT",
+    "casedKey": "inFormat",
+    "type": "<String>",
+    "doc": "Spcifies the format of the input file. By default, format is inferred from the extension of the file name. This parameter takes priority over the extension of the file name."
+  },
+  {
     "key": "INPUTGEOMETRIES",
     "casedKey": "inputGeometries",
     "type": "List<IAtomContainer>",

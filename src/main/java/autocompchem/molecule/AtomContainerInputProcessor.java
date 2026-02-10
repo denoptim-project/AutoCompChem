@@ -226,7 +226,13 @@ public class AtomContainerInputProcessor extends Worker
 		{
 			String value = params.getParameter(ChemSoftConstants.PARGEOMFILE)
 					.getValueAsString();
-			processInputFileParameter(value);
+			String format = null;
+			if (params.contains(WorkerConstants.PARINFORMAT))
+			{	
+				format = params.getParameter(WorkerConstants.PARINFORMAT)
+						.getValueAsString();
+			}
+			processInputFileParameter(value, format);
 
 			if (params.contains(WorkerConstants.PARINFILE))
 			{
