@@ -37,6 +37,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.EnumUtils;
 import org.openscience.cdk.AtomContainerSet;
+import org.openscience.cdk.CDKConstants;
 import org.openscience.cdk.ChemFile;
 import org.openscience.cdk.ChemObject;
 import org.openscience.cdk.exception.CDKException;
@@ -61,6 +62,7 @@ import autocompchem.files.FileUtils;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrixConstants;
+import autocompchem.molecule.intcoords.zmatrix.ZMatrixHandler;
 import autocompchem.run.ACCJob;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
@@ -653,6 +655,24 @@ public class IOtools
         } else if (extension.equals("xyz"))
         {
             mols = IOtools.readXYZ(file);
+        } else if (extension.equals("zmat"))
+        {
+            List<ZMatrix> zmats = IOtools.readZMatrixFile(file);
+            for (int i = 0; i < zmats.size(); i++)
+            {
+                ZMatrix zmat = zmats.get(i);
+				try {
+					IAtomContainer iac = ZMatrixHandler.convertZMatrixToIAC(zmat);
+                    iac.setProperty(CDKConstants.TITLE,zmat.getTitle());
+                    iac.setProperty(ZMatrixHandler.ZMATRIXPROPERTYNAME, zmat);
+                    mols.add(iac);
+				} catch (Throwable e) {
+                    Terminator.withMsgAndStatus("ERROR! Exception while "
+                    + "converting ZMatrix " + i + ". You might need dummy "
+                    + "atoms to define an healthier ZMatrix. Cause of the "
+                    + "exception: " + e.getMessage(), -1);
+				}
+            }
         } else {
         	try {
 				OutputReader reader = builder.makeOutputReaderInstance(file);

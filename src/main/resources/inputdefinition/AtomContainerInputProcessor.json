@@ -3,13 +3,13 @@
     "key": "INFILE",
     "casedKey": "inFile",
     "type": "<String> [<int> ...] [<String>]",
-    "doc": "Shortcut for 'INPUTGEOMETRIESFILE'. The pathname to the file containing the geometries of the chemical system/s given as input. Optionally, a set of integers can be used to select which geometries from a multigeometry input (0-based idex). Optionally, the string 'last' can be used to retain only the last geometry from a multigeometry input. Takes priority over other parameters 'inputGeometries' and 'INPUTGEOMETRIESFILE'."
+    "doc": "Shortcut for 'INPUTGEOMETRIESFILE'. The pathname to the file containing the geometries of the chemical system/s given as input (Acceptable formats are SDF, XYZ, ZMAT, and any output file that can be analyzed by any registered implementation of ChemSoftOutputReader). Optionally, a set of integers can be used to select which geometries from a multigeometry input (0-based idex). Optionally, the string 'last' can be used to retain only the last geometry from a multigeometry input. Takes priority over other parameters 'inputGeometries' and 'INPUTGEOMETRIESFILE'."
   },
   {
     "key": "INPUTGEOMETRIESFILE",
     "casedKey": "inputGeometriesFile",
     "type": "<String> [<int> ...] [<String>]",
-    "doc": "The pathname to the file containing the geometries of the chemical system/s given as input. Optionally, a set of integers can be used to select which geometries from a multigeometry input (0-based idex). Optionally, the string 'last' can be used to retain only the last geometry from a multigeometry input. Ignored if parameter 'inFile' is present."
+    "doc": "The pathname to the file containing the geometries of the chemical system/s given as input. Acceptable formats are SDF, XYZ, ZMAT, and any output file that can be analyzed by any registered implementation of ChemSoftOutputReader. Optionally, a set of integers can be used to select which geometries from a multigeometry input (0-based idex). Optionally, the string 'last' can be used to retain only the last geometry from a multigeometry input. Ignored if parameter 'inFile' is present."
   },
   {
     "key": "INPUTGEOMETRIES",

@@ -30,6 +30,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.vecmath.Point3d;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.Bond;
 import org.openscience.cdk.CDKConstants;
@@ -82,7 +84,12 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
      * Flag selection of third intrinsic coordinate
      */
     private boolean onlyTors = false;
-    
+
+    /**
+     * Property used to store the zmatrix in a {@link IAtomContainer} created from it.
+     */
+    public static final String ZMATRIXPROPERTYNAME = "ZMATRIX";
+
     /**
      * Property used to stamp visited bonds
      */
@@ -275,25 +282,6 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
                 }
             }
         }
-    }
-    
-//-----------------------------------------------------------------------------
-    
-    /**
-     * Process any molecular structure file as usual, but ignore zmat files
-     */
-    @Override
-    protected void processInputFileParameter(String value)
-    {
-    	String[] words = value.trim().split("\\s+");
-        String pathname = words[0];
-    	if (!pathname.endsWith(".zmat"))
-        {
-    		super.processInputFileParameter(pathname);
-        } else {
-        	this.inFile = getNewFile(pathname);
-        }
-        FileUtils.foundAndPermissions(inFile,true,false,false);
     }
     
 //-----------------------------------------------------------------------------
@@ -665,13 +653,12 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
 
     private void processZMatrixInput()
     {
-    	//TODO: enable input from feed instead of file
         if (null != inFile)
         {
-            List<ZMatrix> zmats = IOtools.readZMatrixFile(inFile);
 	        boolean breakAfterThis = false;
-            for (int i=0; i<zmats.size(); i++)
+            for (int i=0; i<inMols.size(); i++)
             {
+                IAtomContainer iac = inMols.get(i);
             	if (chosenGeomIdx!=null)
 	            {
             		if (i==chosenGeomIdx)
@@ -681,9 +668,9 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
             			continue;
             		}
 	            }
-            	ZMatrix zmat = zmats.get(i);
+            	ZMatrix zmat = (ZMatrix) iac.getProperty(ZMatrixHandler.ZMATRIXPROPERTYNAME);
       			logger.info("# " + zmat.getTitle());
-            	processOneZMatrix(zmat, i);
+            	processOneZMatrix(iac, zmat, i);
             	if (breakAfterThis)
             		break;
             }
@@ -697,33 +684,20 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
     
 //------------------------------------------------------------------------------
     
-    private void processOneZMatrix(ZMatrix zmat, int i)
+    private void processOneZMatrix(IAtomContainer iac, ZMatrix zmat, int i)
     {
     	if (task.equals(CONVERTFROMZMATTASK)) 
     	{
-    		try
+            if (outFile != null)
             {
-                IAtomContainer iac = convertZMatrixToIAC(zmat);
-                iac.setProperty(CDKConstants.TITLE,zmat.getTitle());
-
-                if (outFile != null)
-                {
-                	IOtools.writeSDFAppend(outFile, iac, true);
-                }
-                
-                logger.debug(zmat.toLinesOfText(false, onlyTors));
-                
-                if (exposedOutputCollector != null)
-                {
-                	exposeOutputData(new NamedData(task.ID + "mol-"+i, iac));
-                }
+                IOtools.writeSDFAppend(outFile, iac, true);
             }
-            catch (Throwable t)
+            
+            logger.debug(zmat.toLinesOfText(false, onlyTors));
+            
+            if (exposedOutputCollector != null)
             {
-                Terminator.withMsgAndStatus("ERROR! Exception while "
-                + "converting ZMatrix " + i + ". You might need dummy "
-                + "atoms to define an healthier ZMatrix. Cause of the "
-                + "exception: " + t.getMessage(), -1);
+                exposeOutputData(new NamedData(task.ID + "mol-"+i, iac));
             }
     	} else if (task.equals(SUBTRACTZMATRICESTASK)) {
             ZMatrix zmatRes = subtractZMatrices(zmat, zmat2);
@@ -752,7 +726,7 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
      * is preferable to redefine the ZMatrix, possibly adding dummy atoms
      */
 
-    public IAtomContainer convertZMatrixToIAC(ZMatrix zmat) throws Throwable
+    public static IAtomContainer convertZMatrixToIAC(ZMatrix zmat) throws Throwable
     {
         IAtomContainer dummy = null;
         return convertZMatrixToIAC(zmat,dummy);
@@ -769,9 +743,11 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
      * is preferable to redefine the ZMatrix, possibly adding dummy atoms
      */
 
-    public IAtomContainer convertZMatrixToIAC(ZMatrix zmat, 
+    public static IAtomContainer convertZMatrixToIAC(ZMatrix zmat, 
     		IAtomContainer oldMol) throws Throwable
     {
+        Logger logger = LogManager.getLogger(ZMatrixHandler.class);
+        
         IAtomContainer mol = new AtomContainer();
         for (int i=0; i<zmat.getZAtomCount(); i++)
         {
@@ -1061,7 +1037,7 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
      * @param nic the expected number of internal coordinates
      */
 
-    private void checkICs(ZMatrixAtom zatm, int nic)
+    private static void checkICs(ZMatrixAtom zatm, int nic)
     {
         if (zatm.getICsCount() != nic)
         {
