@@ -297,7 +297,7 @@ public class AnnotatedAtomTuple implements Cloneable
      * <code>false</code> if it was not found.
      */
 
-    public boolean hasValueledAttribute(String key)
+    public boolean hasValuedAttribute(String key)
     {
         return valuedAttributes.containsKey(key.toUpperCase());
     }

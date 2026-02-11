@@ -138,7 +138,7 @@ public class ConformationalCoordinate extends AnnotatedAtomTuple
   	
   	private void parseFold()
   	{
-  		if (!hasValueledAttribute(ConformationalCoordDefinition.KEYFOLD))
+  		if (!hasValuedAttribute(ConformationalCoordDefinition.KEYFOLD))
   		{
   			setValueOfAttribute(ConformationalCoordDefinition.KEYFOLD, "1");
   		}
@@ -180,7 +180,7 @@ public class ConformationalCoordinate extends AnnotatedAtomTuple
 
     public int[] getSteps()
     {
-    	if (hasValueledAttribute(ConformationalCoordDefinition.KEYSTEPS))
+    	if (hasValuedAttribute(ConformationalCoordDefinition.KEYSTEPS))
     	{
     		return NumberUtils.parseArrayOfInt(getValueOfAttribute(
 	  				ConformationalCoordDefinition.KEYSTEPS));
@@ -211,7 +211,7 @@ public class ConformationalCoordinate extends AnnotatedAtomTuple
 
     public double[] getValues()
     {
-    	if (this.hasValueledAttribute(ConformationalCoordDefinition.KEYVALUES))
+    	if (this.hasValuedAttribute(ConformationalCoordDefinition.KEYVALUES))
     	{
             return NumberUtils.parseArrayOfDouble(this.getValueOfAttribute(
             		ConformationalCoordDefinition.KEYVALUES));
