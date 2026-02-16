@@ -26,16 +26,16 @@ if [ $n -ne 1 ] ; then echo NOT Passes ERROR 4b ; exit -1 ; fi
 n=0;n=$(grep -c "IMPROPERTORSION.*7,15,27,25.*111111" t126.log)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 4b ; exit -1 ; fi
 
-n=0;n=$(grep -c "=-123\.09]" t126.log)
+n=0;n=$(grep -c "=-123\.09\}" t126.log)
 if [ $n -ne 2 ] ; then echo NOT Passes ERROR 5 ; exit -1 ; fi
 
-n=0;n=$(grep -c "IDs=\[17\,14\,7\,1\]" t126.log)
+n=0;n=$(grep -c "IDs:\[17\,14\,7\,1\]" t126.log)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 6 ; exit -1 ; fi
 
-n=0;n=$(grep -c "IDs=\[25\,15\,7\,1\]" t126.log)
+n=0;n=$(grep -c "IDs:\[25\,15\,7\,1\]" t126.log)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 7 ; exit -1 ; fi
 
-n=0;n=$(grep -c "DIST.*=99\.0]" t126.log)
+n=0;n=$(grep -c "DIST.*=99\.0" t126.log)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 8 ; exit -1 ; fi
 
 grep -q 'Termination status: 0' t126.log

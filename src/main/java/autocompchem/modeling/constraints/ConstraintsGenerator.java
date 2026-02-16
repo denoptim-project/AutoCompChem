@@ -15,8 +15,10 @@ import autocompchem.modeling.atomtuple.AtomTupleGenerator;
 import autocompchem.modeling.atomtuple.AtomTupleMatchingRule;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
+import autocompchem.utils.NumberUtils;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
+import jakarta.el.ExpressionFactory;
 
 
 /**
@@ -152,8 +154,17 @@ public class ConstraintsGenerator extends AtomTupleGenerator
         
         if (params.contains(KEYINTERPOLATIONFACTOR))
         {
-            interpolationFactor = Double.parseDouble(params.getParameter(
-                KEYINTERPOLATIONFACTOR).getValueAsString());
+            String value = params.getParameter(KEYINTERPOLATIONFACTOR)
+                .getValueAsString();
+
+            if (NumberUtils.isParsableToDouble(value))
+            {
+                interpolationFactor = Double.parseDouble(value);
+            } else {
+                ExpressionFactory expFact = ExpressionFactory.newInstance();
+                interpolationFactor = NumberUtils.calculateNewValue(
+                    value,  expFact, null);
+            }
         }
 
         if (params.contains(KEYSETCONSTRAINTSA))

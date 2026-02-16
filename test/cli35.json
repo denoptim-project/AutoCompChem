@@ -94,7 +94,7 @@
         },
         {
           "reference": "interpolationFactor",
-          "value": "0.2"
+          "value": "${sin(0.2)}"
         },
         {
           "reference": "VERBOSITY",

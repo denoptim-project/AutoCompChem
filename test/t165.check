@@ -7,7 +7,7 @@ function not_passed() {
 
 if [ ! -f t165.log ] ; then not_passed $LINENO ; fi
 
-n=0;n=$(grep -c -i 'Constraint .*Type=DIHEDRAL,.*value=1\.2345' t165.log)
+n=0;n=$(grep -c -i 'Constraint .*Type=DIHEDRAL.*value=1\.2345' t165.log)
 if [ $n != 2 ] ; then not_passed $LINENO ; fi
 
 if grep -q 'Termination status: 0' t165.log ; then

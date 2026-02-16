@@ -1,0 +1,28 @@
+[
+  {
+    "key": "CONSTRAINTSA",
+    "casedKey": "constraintsA",
+    "type": "<ConstraintsSet>",
+    "doc": "The collection of constraints to be used as starting point for the interpolation."
+  },
+  {
+    "key": "CONSTRAINTSB",
+    "casedKey": "constraintsB",
+    "type": "<ConstraintsSet>",
+    "doc": "The collection of constraints to be used as ending point for the interpolation."
+  },
+  {
+    "key": "INTERPOLATIONFACTOR",
+    "casedKey": "interpolationFactor",
+    "type": "<String>",
+    "doc": "Controls the factor lambda to be used for the interpolation: final_value = initial_value + lambda * (final_value - initial_value). If the given string is parsable to a double, then it is used as the value of lambda. Otherwise, the string is interpreted as a expression defining the value of lambda (e.g., '${sin(0.2)}' would be evaluated to the value of the sine of 0.2)."
+  },
+  {
+    "embeddedWorker": "autocompchem.molecule.AtomContainerInputProcessor",
+    "tag": "the importing of chemical objects (e.g., molecular geometries)",
+    "ignorableItems": [
+      "outFormat",
+      "setProperties"
+    ]
+  }
+]

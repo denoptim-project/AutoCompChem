@@ -14,7 +14,7 @@ if ! grep -q -i "DISTANCE .*atmIDs:\[0,58\].*CURRENTVALUE=3.645" cli35.log; then
 
 if ! grep -q -i "DISTANCE .*atmIDs:\[0,58\].*CURRENTVALUE=12.695" cli35.log; then not_passed $LINENO ; exit 0 ; fi
 
-if ! grep -q -i "DISTANCE .*atmIDs:\[0,58\].* VALUE=5.455" cli35.log; then not_passed $LINENO ; exit 0 ; fi
+if ! grep -q -i "DISTANCE .*atmIDs:\[0,58\].* VALUE=5.4435" cli35.log; then not_passed $LINENO ; exit 0 ; fi
 
 n=0; n=$(grep -c -i "Termination status: 0" cli35.log)
 if [ 1 == "$n" ] ; then echo Passed ; exit 0 ; fi
