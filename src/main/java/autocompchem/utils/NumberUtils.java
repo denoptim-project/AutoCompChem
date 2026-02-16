@@ -509,6 +509,72 @@ public class NumberUtils
   		// Make context for interpreting expression that define how to 
   		// alter the old variable
   		ELContext context = new ELContext() {
+
+            FunctionMapper fm = new FunctionMapper() {
+                @Override
+                public Method resolveFunction(String prefix, String localName) {
+                    try {
+                        // Trigonometric functions
+                        if ("sin".equals(localName)) {
+                            return Math.class.getMethod("sin", double.class);
+                        } else if ("cos".equals(localName)) {
+                            return Math.class.getMethod("cos", double.class);
+                        } else if ("tan".equals(localName)) {
+                            return Math.class.getMethod("tan", double.class);
+                        } else if ("asin".equals(localName)) {
+                            return Math.class.getMethod("asin", double.class);
+                        } else if ("acos".equals(localName)) {
+                            return Math.class.getMethod("acos", double.class);
+                        } else if ("atan".equals(localName)) {
+                            return Math.class.getMethod("atan", double.class);
+                        } else if ("atan2".equals(localName)) {
+                            return Math.class.getMethod("atan2", double.class, double.class);
+                        }
+                        // Exponential and logarithmic functions
+                        else if ("exp".equals(localName)) {
+                            return Math.class.getMethod("exp", double.class);
+                        } else if ("log".equals(localName) || "ln".equals(localName)) {
+                            return Math.class.getMethod("log", double.class);
+                        } else if ("log10".equals(localName)) {
+                            return Math.class.getMethod("log10", double.class);
+                        }
+                        // Power functions
+                        else if ("sqrt".equals(localName)) {
+                            return Math.class.getMethod("sqrt", double.class);
+                        } else if ("pow".equals(localName)) {
+                            return Math.class.getMethod("pow", double.class, double.class);
+                        }
+                        // Hyperbolic functions
+                        else if ("sinh".equals(localName)) {
+                            return Math.class.getMethod("sinh", double.class);
+                        } else if ("cosh".equals(localName)) {
+                            return Math.class.getMethod("cosh", double.class);
+                        } else if ("tanh".equals(localName)) {
+                            return Math.class.getMethod("tanh", double.class);
+                        }
+                        // Rounding and absolute value
+                        else if ("abs".equals(localName)) {
+                            return Math.class.getMethod("abs", double.class);
+                        } else if ("ceil".equals(localName)) {
+                            return Math.class.getMethod("ceil", double.class);
+                        } else if ("floor".equals(localName)) {
+                            return Math.class.getMethod("floor", double.class);
+                        } else if ("round".equals(localName)) {
+                            return Math.class.getMethod("round", double.class);
+                        }
+                        // Min/Max functions
+                        else if ("max".equals(localName)) {
+                            return Math.class.getMethod("max", double.class, double.class);
+                        } else if ("min".equals(localName)) {
+                            return Math.class.getMethod("min", double.class, double.class);
+                        }
+                    } catch (NoSuchMethodException | SecurityException e) {
+                        // If method not found or access denied, return null
+                    }
+                    return null;
+                }
+            };
+
   			VariableMapper vm = new VariableMapper() {
                   @Override
                   public ValueExpression resolveVariable(String varName) 
@@ -579,12 +645,39 @@ public class NumberUtils
 
   			@Override
   			public ELResolver getELResolver() {
-  				return null;
+  				return new ELResolver() {
+  					@Override
+  					public Object getValue(ELContext context, Object base, Object property) {
+  						// Not used for function resolution
+  						return null;
+  					}
+
+  					@Override
+  					public Class<?> getType(ELContext context, Object base, Object property) {
+  						// Not used for function resolution
+  						return null;
+  					}
+
+  					@Override
+  					public void setValue(ELContext context, Object base, Object property, Object value) {
+  						// Read-only
+  					}
+
+  					@Override
+  					public boolean isReadOnly(ELContext context, Object base, Object property) {
+  						return true;
+  					}
+
+  					@Override
+  					public Class<?> getCommonPropertyType(ELContext context, Object base) {
+  						return null;
+  					}
+  				};
   			}
 
   			@Override
   			public FunctionMapper getFunctionMapper() {
-  				return null;
+  				return fm;
   			}
 
   			@Override

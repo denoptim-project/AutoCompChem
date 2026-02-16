@@ -286,6 +286,389 @@ public class NumberUtilsTest
 //------------------------------------------------------------------------------
     
     @Test
+    public void testCalculateNewValue_FunctionMapper() throws Exception
+    {
+    	ExpressionFactory expFact = ExpressionFactory.newInstance();
+    	
+    	// Test sin function
+    	// sin(0) = 0
+    	String expression = "${sin(0)}";
+    	assertTrue(NumberUtils.closeEnough(0.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	// sin(π/2) ≈ 1
+    	expression = "${sin(" + Math.PI/2 + ")}";
+    	assertTrue(NumberUtils.closeEnough(1.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	// sin(π) ≈ 0
+    	expression = "${sin(" + Math.PI + ")}";
+    	assertTrue(NumberUtils.closeEnough(0.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	// sin(π/6) = 0.5
+    	expression = "${sin(" + Math.PI/6 + ")}";
+    	assertTrue(NumberUtils.closeEnough(0.5, 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	// Test cos function
+    	// cos(0) = 1
+    	expression = "${cos(0)}";
+    	assertTrue(NumberUtils.closeEnough(1.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	// cos(π/2) ≈ 0
+    	expression = "${cos(" + Math.PI/2 + ")}";
+    	assertTrue(NumberUtils.closeEnough(0.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	// cos(π) ≈ -1
+    	expression = "${cos(" + Math.PI + ")}";
+    	assertTrue(NumberUtils.closeEnough(-1.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	// cos(π/3) = 0.5
+    	expression = "${cos(" + Math.PI/3 + ")}";
+    	assertTrue(NumberUtils.closeEnough(0.5, 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	// Test tan function
+    	// tan(0) = 0
+    	expression = "${tan(0)}";
+    	assertTrue(NumberUtils.closeEnough(0.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	// tan(π/4) ≈ 1
+    	expression = "${tan(" + Math.PI/4 + ")}";
+    	assertTrue(NumberUtils.closeEnough(1.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	// Test trigonometric functions with variables
+    	// sin(x) where x = π/2
+    	double oldVal = Math.PI / 2;
+    	expression = "${sin(x)}";
+    	assertTrue(NumberUtils.closeEnough(1.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, oldVal)));
+    	
+    	// cos(x) where x = 0
+    	oldVal = 0.0;
+    	expression = "${cos(x)}";
+    	assertTrue(NumberUtils.closeEnough(1.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, oldVal)));
+    	
+    	// tan(x) where x = π/4
+    	oldVal = Math.PI / 4;
+    	expression = "${tan(x)}";
+    	assertTrue(NumberUtils.closeEnough(1.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, oldVal)));
+    	
+    	// Test combined expressions with trigonometric functions
+    	// sin(x) + cos(x) where x = π/4, should be approximately √2 ≈ 1.414
+    	oldVal = Math.PI / 4;
+    	expression = "${sin(x) + cos(x)}";
+    	double expected = Math.sin(Math.PI/4) + Math.cos(Math.PI/4);
+    	assertTrue(NumberUtils.closeEnough(expected, 
+    			NumberUtils.calculateNewValue(expression, expFact, oldVal)));
+    }
+    
+//------------------------------------------------------------------------------
+    
+    @Test
+    public void testCalculateNewValueWithAllMathematicalFunctions() throws Exception
+    {
+    	ExpressionFactory expFact = ExpressionFactory.newInstance();
+    	
+    	// Test inverse trigonometric functions
+    	// asin(1) = π/2
+    	String expression = "${asin(1)}";
+    	assertTrue(NumberUtils.closeEnough(Math.PI/2, 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	// asin(0) = 0
+    	expression = "${asin(0)}";
+    	assertTrue(NumberUtils.closeEnough(0.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	// acos(0) = π/2
+    	expression = "${acos(0)}";
+    	assertTrue(NumberUtils.closeEnough(Math.PI/2, 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	// acos(1) = 0
+    	expression = "${acos(1)}";
+    	assertTrue(NumberUtils.closeEnough(0.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	// atan(1) = π/4
+    	expression = "${atan(1)}";
+    	assertTrue(NumberUtils.closeEnough(Math.PI/4, 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	// atan(0) = 0
+    	expression = "${atan(0)}";
+    	assertTrue(NumberUtils.closeEnough(0.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	// atan2(1, 1) = π/4
+    	expression = "${atan2(1, 1)}";
+    	assertTrue(NumberUtils.closeEnough(Math.PI/4, 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	// atan2(0, 1) = 0
+    	expression = "${atan2(0, 1)}";
+    	assertTrue(NumberUtils.closeEnough(0.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	// Test exponential and logarithmic functions
+    	// exp(0) = 1
+    	expression = "${exp(0)}";
+    	assertTrue(NumberUtils.closeEnough(1.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	// exp(1) ≈ e
+    	expression = "${exp(1)}";
+    	assertTrue(NumberUtils.closeEnough(Math.E, 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	// log(1) = 0 (natural logarithm)
+    	expression = "${log(1)}";
+    	assertTrue(NumberUtils.closeEnough(0.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	// log(e) = 1
+    	expression = "${log(" + Math.E + ")}";
+    	assertTrue(NumberUtils.closeEnough(1.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	// ln(e) = 1 (alias for log)
+    	expression = "${ln(" + Math.E + ")}";
+    	assertTrue(NumberUtils.closeEnough(1.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	// log10(1) = 0
+    	expression = "${log10(1)}";
+    	assertTrue(NumberUtils.closeEnough(0.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	// log10(10) = 1
+    	expression = "${log10(10)}";
+    	assertTrue(NumberUtils.closeEnough(1.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	// log10(100) = 2
+    	expression = "${log10(100)}";
+    	assertTrue(NumberUtils.closeEnough(2.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	// Test power functions
+    	// sqrt(4) = 2
+    	expression = "${sqrt(4)}";
+    	assertTrue(NumberUtils.closeEnough(2.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	// sqrt(0) = 0
+    	expression = "${sqrt(0)}";
+    	assertTrue(NumberUtils.closeEnough(0.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	// sqrt(9) = 3
+    	expression = "${sqrt(9)}";
+    	assertTrue(NumberUtils.closeEnough(3.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	// pow(2, 3) = 8
+    	expression = "${pow(2, 3)}";
+    	assertTrue(NumberUtils.closeEnough(8.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	// pow(5, 2) = 25
+    	expression = "${pow(5, 2)}";
+    	assertTrue(NumberUtils.closeEnough(25.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	// pow(10, 0) = 1
+    	expression = "${pow(10, 0)}";
+    	assertTrue(NumberUtils.closeEnough(1.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	// Test hyperbolic functions
+    	// sinh(0) = 0
+    	expression = "${sinh(0)}";
+    	assertTrue(NumberUtils.closeEnough(0.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	// cosh(0) = 1
+    	expression = "${cosh(0)}";
+    	assertTrue(NumberUtils.closeEnough(1.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	// tanh(0) = 0
+    	expression = "${tanh(0)}";
+    	assertTrue(NumberUtils.closeEnough(0.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	// Test with known values for hyperbolic functions
+    	double testVal = 1.0;
+    	expression = "${sinh(" + testVal + ")}";
+    	assertTrue(NumberUtils.closeEnough(Math.sinh(testVal), 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	expression = "${cosh(" + testVal + ")}";
+    	assertTrue(NumberUtils.closeEnough(Math.cosh(testVal), 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	expression = "${tanh(" + testVal + ")}";
+    	assertTrue(NumberUtils.closeEnough(Math.tanh(testVal), 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	// Test rounding and absolute value functions
+    	// abs(5) = 5
+    	expression = "${abs(5)}";
+    	assertTrue(NumberUtils.closeEnough(5.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	// abs(-5) = 5
+    	expression = "${abs(-5)}";
+    	assertTrue(NumberUtils.closeEnough(5.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	// abs(0) = 0
+    	expression = "${abs(0)}";
+    	assertTrue(NumberUtils.closeEnough(0.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	// ceil(4.3) = 5
+    	expression = "${ceil(4.3)}";
+    	assertTrue(NumberUtils.closeEnough(5.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	// ceil(-4.3) = -4
+    	expression = "${ceil(-4.3)}";
+    	assertTrue(NumberUtils.closeEnough(-4.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	// ceil(4.0) = 4
+    	expression = "${ceil(4.0)}";
+    	assertTrue(NumberUtils.closeEnough(4.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	// floor(4.7) = 4
+    	expression = "${floor(4.7)}";
+    	assertTrue(NumberUtils.closeEnough(4.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	// floor(-4.7) = -5
+    	expression = "${floor(-4.7)}";
+    	assertTrue(NumberUtils.closeEnough(-5.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	// floor(4.0) = 4
+    	expression = "${floor(4.0)}";
+    	assertTrue(NumberUtils.closeEnough(4.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	// round(4.3) = 4
+    	expression = "${round(4.3)}";
+    	assertTrue(NumberUtils.closeEnough(4.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	// round(4.7) = 5
+    	expression = "${round(4.7)}";
+    	assertTrue(NumberUtils.closeEnough(5.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	// round(-4.3) = -4
+    	expression = "${round(-4.3)}";
+    	assertTrue(NumberUtils.closeEnough(-4.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	// round(-4.7) = -5
+    	expression = "${round(-4.7)}";
+    	assertTrue(NumberUtils.closeEnough(-5.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	// Test min/max functions
+    	// max(5, 3) = 5
+    	expression = "${max(5, 3)}";
+    	assertTrue(NumberUtils.closeEnough(5.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	// max(-5, -3) = -3
+    	expression = "${max(-5, -3)}";
+    	assertTrue(NumberUtils.closeEnough(-3.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	// max(5, 5) = 5
+    	expression = "${max(5, 5)}";
+    	assertTrue(NumberUtils.closeEnough(5.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	// min(5, 3) = 3
+    	expression = "${min(5, 3)}";
+    	assertTrue(NumberUtils.closeEnough(3.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	// min(-5, -3) = -5
+    	expression = "${min(-5, -3)}";
+    	assertTrue(NumberUtils.closeEnough(-5.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	// min(5, 5) = 5
+    	expression = "${min(5, 5)}";
+    	assertTrue(NumberUtils.closeEnough(5.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	// Test functions with variables
+    	double oldVal = 2.0;
+    	// sqrt(x) where x = 4
+    	expression = "${sqrt(x)}";
+    	oldVal = 4.0;
+    	assertTrue(NumberUtils.closeEnough(2.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, oldVal)));
+    	
+    	// exp(x) where x = 1
+    	oldVal = 1.0;
+    	expression = "${exp(x)}";
+    	assertTrue(NumberUtils.closeEnough(Math.E, 
+    			NumberUtils.calculateNewValue(expression, expFact, oldVal)));
+    	
+    	// log(x) where x = e
+    	oldVal = Math.E;
+    	expression = "${log(x)}";
+    	assertTrue(NumberUtils.closeEnough(1.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, oldVal)));
+    	
+    	// abs(x) where x = -5
+    	oldVal = -5.0;
+    	expression = "${abs(x)}";
+    	assertTrue(NumberUtils.closeEnough(5.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, oldVal)));
+    	
+    	// Test combined expressions with multiple functions
+    	// sqrt(pow(3, 2)) = 3
+    	expression = "${sqrt(pow(3, 2))}";
+    	assertTrue(NumberUtils.closeEnough(3.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	// exp(log(5)) = 5
+    	expression = "${exp(log(5))}";
+    	assertTrue(NumberUtils.closeEnough(5.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	// abs(sin(π)) = 0
+    	expression = "${abs(sin(" + Math.PI + "))}";
+    	assertTrue(NumberUtils.closeEnough(0.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    	
+    	// max(sqrt(16), pow(2, 2)) = max(4, 4) = 4
+    	expression = "${max(sqrt(16), pow(2, 2))}";
+    	assertTrue(NumberUtils.closeEnough(4.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, null)));
+    }
+    
+//------------------------------------------------------------------------------
+    
+    @Test
     public void testParseArrayOfInt() throws Exception
     {
     	int[] array = NumberUtils.parseArrayOfInt("[100, 2, -3]");
