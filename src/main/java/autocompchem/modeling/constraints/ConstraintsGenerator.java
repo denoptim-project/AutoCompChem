@@ -14,6 +14,7 @@ import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
 import autocompchem.modeling.atomtuple.AtomTupleGenerator;
 import autocompchem.modeling.atomtuple.AtomTupleMatchingRule;
 import autocompchem.run.Job;
+import autocompchem.run.Terminator;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 
@@ -25,7 +26,39 @@ import autocompchem.worker.Worker;
  */
 
 public class ConstraintsGenerator extends AtomTupleGenerator
-{   
+{
+    /**
+     * Key for parameter specifying the first given set of constraints
+     */
+    public static String KEYSETCONSTRAINTSA = "CONSTRAINTS-A";
+
+    /**
+     * The first set of constraints for building an interpolated set
+     */
+    private ConstraintsSet constraintsA;
+
+    /**
+     * Key for parameter specifying the second given set of constraints
+     */
+    public static String KEYSETCONSTRAINTSB = "CONSTRAINTS-B";
+
+    /**
+     * The second set of constraints for building an interpolated set
+     */
+    private ConstraintsSet constraintsB;
+
+    /**
+     * Key for parameter specifying the lambda coefficient for the conversion 
+     * constraints A into constraints B. Lambda indicates the intermediate
+     * position between A (lambda=0.0) and B (lambda=1.0)
+     */
+    public static String KEYINTERPOLATIONFACTOR = "INTERPOLATIONFACTOR";
+
+    /**
+     * The interpolation factor
+     */
+    private Double interpolationFactor;
+
     /**
      * String defining the task of generating constraints
      */
@@ -38,6 +71,20 @@ public class ConstraintsGenerator extends AtomTupleGenerator
     public static final Task GENERATECONSTRAINTSTASK;
     static {
     	GENERATECONSTRAINTSTASK = Task.make(GENERATECONSTRAINTSTASKNAME);
+    }
+
+    /**
+     * String defining the task of generating constraints
+     */
+    public static final String INTERPOLATECONSTRAINTSTASKNAME = 
+    		"interpolateConstraints";
+
+    /**
+     * Task about interpolating constraints
+     */
+    public static final Task INTERPOLATECONSTRAINTSTASK;
+    static {
+    	INTERPOLATECONSTRAINTSTASK = Task.make(INTERPOLATECONSTRAINTSTASKNAME);
     }
 
 //-----------------------------------------------------------------------------
@@ -55,7 +102,9 @@ public class ConstraintsGenerator extends AtomTupleGenerator
     @Override
     public Set<Task> getCapabilities() {
         return Collections.unmodifiableSet(new HashSet<Task>(
-             Arrays.asList(GENERATECONSTRAINTSTASK)));
+             Arrays.asList(GENERATECONSTRAINTSTASK,
+                INTERPOLATECONSTRAINTSTASK
+             )));
     }
 
 //------------------------------------------------------------------------------
@@ -93,6 +142,36 @@ public class ConstraintsGenerator extends AtomTupleGenerator
 //-----------------------------------------------------------------------------
 
     /**
+     * Initialize the worker according to the parameters loaded by constructor.
+     */
+
+    @Override
+    public void initialize()
+    {
+        super.initialize();
+        
+        if (params.contains(KEYINTERPOLATIONFACTOR))
+        {
+            interpolationFactor = Double.parseDouble(params.getParameter(
+                KEYINTERPOLATIONFACTOR).getValueAsString());
+        }
+
+        if (params.contains(KEYSETCONSTRAINTSA))
+        {
+            constraintsA = (ConstraintsSet) params.getParameter(
+                KEYSETCONSTRAINTSA).getValue();
+        }
+
+        if (params.contains(KEYSETCONSTRAINTSB))
+        {
+            constraintsB = (ConstraintsSet) params.getParameter(
+                KEYSETCONSTRAINTSB).getValue();
+        }
+    }
+    
+//-----------------------------------------------------------------------------
+
+    /**
      * Performs any of the registered tasks according to how this worker
      * has been initialized.
      */
@@ -100,7 +179,128 @@ public class ConstraintsGenerator extends AtomTupleGenerator
     @Override
     public void performTask()
     {
-    	processInput();
+        if (task.equals(INTERPOLATECONSTRAINTSTASK))
+        {
+            ConstraintsSet cs = interpolateConstraints(constraintsA, 
+                constraintsB, interpolationFactor);
+        
+            logger.debug(cs.toString());
+            
+            if (outFile!=null)
+            {
+                outFileAlreadyUsed = true;
+                IOtools.writeTXTAppend(outFile, cs.toString(), true);
+            }
+            
+            if (exposedOutputCollector != null)
+            {
+                exposeOutputData(new NamedData(INTERPOLATECONSTRAINTSTASK.ID, cs));
+            }
+        } else {
+    	    processInput();
+        }
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Create a new set of constraints by computing new constraints based on the
+     * given input.
+     * @param constraintsA
+     * @param constraintsB
+     * @param interpolationFactor
+     * @return
+     */
+    public static ConstraintsSet interpolateConstraints(
+        ConstraintsSet constraintsA, ConstraintsSet constraintsB, 
+        Double interpolationFactor)
+    {
+        if (constraintsA == null || constraintsA.isEmpty())
+        {
+            Terminator.withMsgAndStatus("Missing or empty initial "
+                + "set of constraints. "
+                + "Please, provide a constraintsSet as value for " 
+                + KEYSETCONSTRAINTSA + ".", -1); 
+            return new ConstraintsSet();
+        }
+        if (constraintsB == null || constraintsB.isEmpty())
+        {
+            Terminator.withMsgAndStatus("Missing or empty final "
+                + "set of constraints. "
+                + "Please, provide a constraintsSet as value for " 
+                + KEYSETCONSTRAINTSB + ".", -1); 
+            return new ConstraintsSet();
+        }
+        if (interpolationFactor == null)
+        {
+            Terminator.withMsgAndStatus("Missing or empty final "
+                + "set of constraints. "
+                + "Please, provide a value for " 
+                + KEYINTERPOLATIONFACTOR + ".", -1); 
+            return new ConstraintsSet();
+        }
+
+        ConstraintsSet interpolatesCnstrs = new ConstraintsSet();
+
+        // Find pair of corresponding constraints in constraintsA and constraintsB
+        for (Constraint cA : constraintsA)
+        {
+            Constraint cB = null;
+            List<Integer> idsA = cA.getAtomIDs();
+            for (Constraint candidate : constraintsB.getConstrainsWithType(cA.getType()))
+            {
+                List<Integer> idsB = candidate.getAtomIDs();
+                if (idsA.size() == idsB.size())
+                {
+                    boolean match = true;
+                    for (int i = 0; i < idsA.size(); i++)
+                    {
+                        if (idsA.get(i) != idsB.get(i))
+                        {
+                            match = false;
+                            break;
+                        }
+                    }
+                    if (match)
+                    {
+                        cB = candidate;
+                        break;
+                    }
+                }
+            }
+            
+            if (cB == null)
+            {
+                Terminator.withMsgAndStatus("No matching constraint found for "
+                    + cA.toString() + " in " + constraintsB.toString() + ".", -1); 
+            }
+
+            // NB: the set value takes priority over the current value
+            Double valueA = cA.getValue();
+            Double valueB = cB.getValue();
+            if (cA.hasCurrentValue())
+            {
+                valueA = cA.getCurrentValue();
+            }
+            if (cB.hasCurrentValue())
+            {
+                valueB = cB.getCurrentValue();
+            }
+
+            // Clone constraint A to preserve all its features
+            Constraint interpolated = cA.clone();
+            
+            // Calculate interpolated value: value = valueA + lambda * (valueB - valueA)
+            double lambda = interpolationFactor.doubleValue();
+            double interpolatedValue = valueA + lambda * (valueB - valueA);
+            
+            // Set the interpolated value
+            interpolated.setValue(interpolatedValue);
+            
+            interpolatesCnstrs.add(interpolated);
+        }
+        
+        return interpolatesCnstrs;
     }
     
 //------------------------------------------------------------------------------

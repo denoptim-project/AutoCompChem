@@ -1317,12 +1317,20 @@ public class Job implements Runnable
      * permitted only for the first index and indicate how many levels relative 
      * to the present jobs to move to identify the outermost job from which
      * we start looking at the contained steps. A value of 0 indicated that 
-     * the job given as parameter is the one where to start looking into the steps.
+     * the job given as parameter is the one where to start looking into the 
+     * steps.
+     * The comma (',') can be used as separator as it will be replaced with a 
+     * dot ('.').
      * @return the job identified by the given path or <code>null</code> if the
      * given path cannot be satisfied by any job in the job tree.
      */
     public static Job navigateToJob(Job job, String pathToOtherJob)
     {
+        if (pathToOtherJob.contains(","))
+        {
+            pathToOtherJob = pathToOtherJob.replaceAll(",",".");			
+        }
+
     	// Take away the pound sign
     	if (pathToOtherJob.startsWith("#"))
     		pathToOtherJob = pathToOtherJob.substring(1);

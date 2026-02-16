@@ -1,0 +1,106 @@
+{
+  "jobType": "ACCJob",
+  "steps": [
+    {
+      "jobType": "ACCJob",
+      "params": [
+        {
+          "reference": "TASK",
+          "value": "GenerateConstraints"
+        },
+        {
+          "reference": "inFile",
+          "value": "../cli35-refs.sdf"
+        },
+        {
+          "reference": "useGeomAtIndex",
+          "value": 0
+        },
+        {
+          "reference": "SMARTS",
+          "value": "[#44]~[*;!#44] GetCurrentValue\n[*]~[#44]~[*] GetCurrentValue\n[*;!#44]~[#44]~[$([#6]([#1])[#1])]-[#1] GetCurrentValue\n[$([#6]([#1])[#1])]~[#44]~[#6;X3]~[#7;X3] GetCurrentValue\n[#44] [#44] GetCurrentValue\n[$([#6]([#1])([#1])~[#44])] [$([#6]([#1])([#1])~[#44])] GetCurrentValue"
+        },
+        {
+          "reference": "VERBOSITY",
+          "value": "5"
+        }
+      ]
+    },
+    {
+      "jobType": "ACCJob",
+      "params": [
+        {
+          "reference": "TASK",
+          "value": "GenerateConstraints"
+        },
+        {
+          "reference": "inFile",
+          "value": "../cli35-refs.sdf"
+        },
+        {
+          "reference": "useGeomAtIndex",
+          "value": 1
+        },
+        {
+          "reference": "SMARTS",
+          "value": "[#44]~[*;!#44] GetCurrentValue\n[*]~[#44]~[*] GetCurrentValue\n[*;!#44]~[#44]~[$([#6]([#1])[#1])]-[#1] GetCurrentValue\n[$([#6]([#1])[#1])]~[#44]~[#6;X3]~[#7;X3] GetCurrentValue\n[#44] [#44] GetCurrentValue\n[$([#6]([#1])([#1])~[#44])] [$([#6]([#1])([#1])~[#44])] GetCurrentValue"
+        },
+        {
+          "reference": "VERBOSITY",
+          "value": "5"
+        }
+      ]
+    },
+    {
+      "jobType": "ACCJob",
+      "params": [
+        {
+          "reference": "TASK",
+          "value": "listJobData"
+        },
+        {
+          "reference": "jobPointer",
+          "value": "#-1,0"
+        }
+      ]
+    },
+    {
+      "jobType": "ACCJob",
+      "params": [
+        {
+          "reference": "TASK",
+          "value": "listJobData"
+        },
+        {
+          "reference": "jobPointer",
+          "value": "#-1,1"
+        }
+      ]
+    },
+    {
+      "jobType": "ACCJob",
+      "params": [
+        {
+          "reference": "TASK",
+          "value": "interpolateConstraints"
+        },
+        {
+          "reference": "constraints-A",
+          "value": "getACCJobsData(#-1.0, GENERATECONSTRAINTS_mol-0)"
+        },
+        {
+          "reference": "constraints-B",
+          "value": "getACCJobsData(#-1.1, GENERATECONSTRAINTS_mol-1)"
+        },
+        {
+          "reference": "interpolationFactor",
+          "value": "0.2"
+        },
+        {
+          "reference": "VERBOSITY",
+          "value": "5"
+        }
+      ]
+    }
+  ]
+}

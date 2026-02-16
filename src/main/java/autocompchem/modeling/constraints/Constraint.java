@@ -237,19 +237,7 @@ public class Constraint extends AnnotatedAtomTuple
 	{
 		StringBuilder sb = new StringBuilder();
 		sb.append("Constraint [Type=");
-		sb.append(type).append(", IDs=[");
-		List<Integer> ids = getAtomIDs();
-		for (int i=0; i<ids.size(); i++)
-		{
-			sb.append(ids.get(i));
-			if (i<(ids.size()-1))
-				sb.append(",");
-		}
-		sb.append("], value=").append(hasValue() ? getValue() : "null");
-		sb.append("], prefix=").append(
-				getValueOfAttribute(AtomTupleConstants.KEYPREFIX));
-		sb.append("], suffix=").append(
-				getValueOfAttribute(AtomTupleConstants.KEYSUFFIX));
+		sb.append(type).append(" ").append(super.toString());
 		sb.append("] ");
 		return sb.toString();
 	}
