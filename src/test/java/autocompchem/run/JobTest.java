@@ -690,5 +690,124 @@ public class JobTest
     }
     
 //------------------------------------------------------------------------------
+    
+    @Test
+    public void testNavigateToJob() 
+    {
+    	// Create a job hierarchy:
+    	// root
+    	//   - step0
+    	//   - step1
+    	//     - step1_0
+    	//     - step1_1
+    	//       - step1_1_0
+    	//   - step2
+    	
+    	Job root = new Job();
+    	Job step0 = new Job();
+    	Job step1 = new Job();
+    	Job step1_0 = new Job();
+    	Job step1_1 = new Job();
+    	Job step1_1_0 = new Job();
+    	Job step2 = new Job();
+    	
+    	root.addStep(step0);
+    	root.addStep(step1);
+    	root.addStep(step2);
+    	step1.addStep(step1_0);
+    	step1.addStep(step1_1);
+    	step1_1.addStep(step1_1_0);
+    	
+    	// Test 1: Empty path returns null
+    	Job result = Job.navigateToJob(root, new int[]{});
+    	assertNull(result, "Empty path should return null");
+    	
+    	// Test 2: Path to current job (length 1, index 0)
+    	result = Job.navigateToJob(root, new int[]{0});
+    	assertTrue(root == result, "Path [0] should return the same job");
+    	
+    	// Test 3: Path to current job (length 1, positive index)
+    	result = Job.navigateToJob(step0, new int[]{5});
+    	assertTrue(step0 == result, "Path [5] should return the same job when length is 1");
+    	
+    	// Test 4: Path to first step (length 2, index 0, then step index 0)
+    	result = Job.navigateToJob(root, new int[]{0, 0});
+    	assertTrue(step0 == result, "Path [0, 0] should navigate to first step");
+    	
+    	// Test 5: Path to second step (length 2, index 0, then step index 1)
+    	result = Job.navigateToJob(root, new int[]{0, 1});
+    	assertTrue(step1 == result, "Path [0, 1] should navigate to second step");
+    	
+    	// Test 6: Path to third step (length 2, index 0, then step index 2)
+    	result = Job.navigateToJob(root, new int[]{0, 2});
+    	assertTrue(step2 == result, "Path [0, 2] should navigate to third step");
+    	
+    	// Test 7: Path to nested step (length 3)
+    	result = Job.navigateToJob(root, new int[]{0, 1, 0});
+    	assertTrue(step1_0 == result, "Path [0, 1, 0] should navigate to nested step");
+    	
+    	// Test 8: Path to deeply nested step (length 4)
+    	result = Job.navigateToJob(root, new int[]{0, 1, 1, 0});
+    	assertTrue(step1_1_0 == result, "Path [0, 1, 1, 0] should navigate to deeply nested step");
+    	
+    	// Test 9: Path going up to container (negative index -1)
+    	result = Job.navigateToJob(step0, new int[]{-1});
+    	assertTrue(root == result, "Path [-1] should navigate up to container");
+    	
+    	// Test 10: Path going up to get container itself
+    	result = Job.navigateToJob(step1_0, new int[]{-1});
+    	assertTrue(step1 == result, "Path [-1] from step1_0 should navigate up to container (step1)");
+    	
+    	// Test 10b: Path going up then to first step of container
+    	result = Job.navigateToJob(step1_0, new int[]{-1, 0});
+    	assertTrue(step1_0 == result, "Path [-1, 0] from step1_0 should navigate up then to first step (step1_0)");
+    	
+    	// Test 11: Path going up two levels
+    	result = Job.navigateToJob(step1_0, new int[]{-2});
+    	assertTrue(root == result, "Path [-2] should navigate up two levels");
+    	
+    	// Test 12: Path going up then down to sibling
+    	result = Job.navigateToJob(step1_0, new int[]{-1, 1});
+    	assertTrue(step1_1 == result, "Path [-1, 1] from step1_0 should navigate to sibling step1_1");
+    	
+    	// Test 13: Path going up then down to deeply nested step
+    	result = Job.navigateToJob(step1_0, new int[]{-1, 1, 0});
+    	assertTrue(step1_1_0 == result, "Path [-1, 1, 0] should navigate to deeply nested step");
+    	
+    	// Test 14: Invalid path - step index out of bounds
+    	result = Job.navigateToJob(root, new int[]{0, 10});
+    	assertNull(result, "Path with out-of-bounds step index should return null");
+    	
+    	// Test 15: Invalid path - step index out of bounds in nested level
+    	result = Job.navigateToJob(root, new int[]{0, 1, 10});
+    	assertNull(result, "Path with out-of-bounds nested step index should return null");
+    	
+    	// Test 16: Path going up when no container exists
+    	result = Job.navigateToJob(root, new int[]{-1});
+    	assertNull(result, "Path [-1] from root (no container) should return null");
+    	
+    	// Test 17: Path going up multiple levels when container chain ends
+    	Job isolated = new Job();
+    	Job isolatedStep = new Job();
+    	isolated.addStep(isolatedStep);
+    	// isolatedStep's container is isolated, which has no container
+    	result = Job.navigateToJob(isolatedStep, new int[]{-1, -1});
+    	assertNull(result, "Path [-1, -1] when container chain ends should return null");
+    	
+    	// Test 18: Complex path - up, down, up, down
+    	// From step1_1_0: go up to step1_1, then up to step1, then down to step1_0
+    	result = Job.navigateToJob(step1_1_0, new int[]{-2, 0});
+    	assertTrue(step1_0 == result, "Complex path [-2, 0] should navigate correctly");
+    	
+    	// Test 19: Path with negative index that becomes 0 after increment
+    	result = Job.navigateToJob(step0, new int[]{-1, 0});
+    	assertTrue(step0 == result, "Path [-1, 0] from step0 should navigate up then to first step (step0)");
+    	
+    	// Test 20: Path starting from nested job to root
+    	result = Job.navigateToJob(step1_1_0, new int[]{-3});
+    	assertTrue(root == result, "Path [-3] should navigate up to root");
+    }
+    
+//------------------------------------------------------------------------------
 
 }

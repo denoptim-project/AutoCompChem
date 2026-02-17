@@ -54,6 +54,7 @@ import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileUtils;
 import autocompchem.io.ACCJson;
+import autocompchem.io.IOtools;
 import autocompchem.log.LogUtils;
 import autocompchem.utils.NumberUtils;
 import autocompchem.utils.StringUtils;
@@ -1350,7 +1351,7 @@ public class Job implements Runnable
      * @param pathToOtherJob list of pointers to jobs. The first one indicates 
      * how many steps to take up along the chain of containing jobs from the job 
      * given as parameter. 
-     * Zero indicated that
+     * Zero indicates that
      * we look at a job that is contained (at any level) in the job given as 
      * parameter. 
      * Positive values take no effect as they are interpreted as a 0.
@@ -1359,8 +1360,12 @@ public class Job implements Runnable
      */
     public static Job navigateToJob(Job job, int[] pathToOtherJob)
     {
+        Logger logger = LogManager.getLogger(Job.class);
     	if (pathToOtherJob.length<1)
-    		return null;
+        {
+            logger.debug("WARNING: pathToOtherJob is empty. Returning null.");
+            return null;
+        }
     	
         if (pathToOtherJob[0]<0)
         {
@@ -1371,6 +1376,7 @@ public class Job implements Runnable
             }
         	if (!job.hasContainer())
         	{
+                logger.debug("WARNING: job has no container. Returning null.");
         		return null;
         	}
         	return navigateToJob(job.getContainer(), newPath);
@@ -1389,17 +1395,19 @@ public class Job implements Runnable
         	//   job and not any of his containers.
         	// * anything above 1 is further nested and is kept in the newPath
         	int[] newPath = new int[pathToOtherJob.length-1];
-        	
-        	// this indicated to the step that the target data is contained in it.
-        	newPath[0] = 0;
-        	
-        	// deeper level are dealt with in future recursions 
-        	for (int i = 2; i < newPath.length; i++) {
+        	for (int i = 1; i < pathToOtherJob.length; i++) {
         		newPath[i-1] = pathToOtherJob[i];
             }
         	
         	if (pathToOtherJob[1]+1 > job.getNumberOfSteps())
         		return null;
+            else if (pathToOtherJob[1]<0)
+            {
+                logger.debug("WARNING: only the first index can be negative, "
+                    + "but got " + Arrays.toString(pathToOtherJob) 
+                    + ". Returning null.");
+                return null;
+            }
         	
         	Job step = job.getStep(pathToOtherJob[1]);
         	return navigateToJob(step, newPath);
@@ -1732,6 +1740,14 @@ public class Job implements Runnable
     	for (String paramKey : dataToUpdate.getAllNamedData().keySet())
     	{
     		NamedData data = dataToUpdate.getAllNamedData().get(paramKey);
+
+            if (data.getValue() instanceof Job)
+            {
+                // Do not alter downstream jobs: they'll be updated at 
+                // their respective run time.
+                continue;
+            }
+
     		//WARNING: this may cause problems for non JSON-able content
     		// and also for any operation that relies on the actual instance
     		// stored within the named data because with the JSON operation
@@ -1814,9 +1830,11 @@ public class Job implements Runnable
                         + 2 + argStr.length();
                     String leftover = jsonStr.substring(beginningLeftOver, end);
                     newJson.append(init);
+                    // NB: here we rely on the toString() method of the value, not on JSON serialization
+                    // because we expect to be in the mids of a string value, not a JSON object.
                     newJson.append(value);
                     newJson.append(leftover);
-                    
+
                     startCopying = end;
                 }
                 
