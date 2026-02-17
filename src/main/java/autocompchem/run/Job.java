@@ -1747,17 +1747,16 @@ public class Job implements Runnable
             // the data value
             boolean replaceEntireValue = false;
             Object dataValue = data.getValue();
-            String dataValueStr = (String) dataValue;
             if (dataValue instanceof String)
             {
                 replaceEntireValue = StringUtils.hasSyntaxOfCommandCallWithParenthesesContent(
-                    dataValueStr, commandCall);
+                    (String) dataValue, commandCall);
             }
 
             if (replaceEntireValue)
             {
                 // Replace the entire value with the result of the command call
-                String argStr = StringUtils.getParenthesesContent(dataValueStr);
+                String argStr = StringUtils.getParenthesesContent((String) dataValue);
                 String[] args = argStr.split(",");
                 String pathToOtherJob = "#0";
                 String[] pathIntoExposedData = args;
