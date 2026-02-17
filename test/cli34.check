@@ -10,7 +10,7 @@ if [ ! -f cli34.log ] ; then not_passed $LINENO ; fi
 n=0; n=$(grep -c -i " SCF Energy" cli34.log)
 if [ 3 != "$n" ] ; then not_passed $LINENO ; exit 0 ; fi
 
-n=0; n=$(grep -c -i " LOOPJOB, Iteration_., JOBOUTPUTDATA, 0, FINALSCFENERGY" cli34.log)
+n=0; n=$(grep -c -i " JOBOUTPUTDATA, 0, FINALSCFENERGY" cli34.log)
 if [ 3 != "$n" ] ; then not_passed $LINENO ; exit 0 ; fi
 
 if [ ! -f cli34_collector.sdf ] ; then not_passed $LINENO ; fi

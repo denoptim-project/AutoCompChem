@@ -185,8 +185,8 @@ public class JobLooper extends Worker
 	{
     	if (task.equals(LOOPJOBTASK))
     	{
-			NamedDataCollector results = runLoopedJob(loopedJob, maxIterations,
-				replacementRules, writeIterationJSONFiles, 
+			NamedDataCollector results = runLoopedJob(getMyJob(), loopedJob, 
+				maxIterations, replacementRules, writeIterationJSONFiles, 
 				"Job"+getMyJob().getId());
 
 			if (exposedOutputCollector != null)
@@ -203,6 +203,7 @@ public class JobLooper extends Worker
 	/**
 	 * Runs a loop repeating a {@link Job} a given number of times using the 
 	 * iteration number to alter the job definition.
+	 * @param containerJob the container job that will contain the steps of the loop.
 	 * @param jobTmpl the template job to loop over.
 	 * @param maxIterations the maximum number of iterations of the loop.
 	 * @param replacements a map of rules defining string-replacements operations
@@ -213,9 +214,9 @@ public class JobLooper extends Worker
 	 * iteration JSON files.
 	 */
 	
-    public static NamedDataCollector runLoopedJob(Job jobTmpl, int maxIterations, 
-		Map<String, String> replacementRules, boolean writeIterationJSONFiles,
-		String looperJobName)
+    public static NamedDataCollector runLoopedJob(Job containerJob, Job jobTmpl, 
+		int maxIterations, Map<String, String> replacementRules, 
+		boolean writeIterationJSONFiles, String looperJobName)
 	{
     	Logger logger = LogManager.getLogger(JobLooper.class);
 
@@ -227,27 +228,27 @@ public class JobLooper extends Worker
 		NamedDataCollector results = new NamedDataCollector();
 		for (int i=0; i<maxIterations; i++)
 		{
-			logger.info("Iteration " + i + " of " + maxIterations);
+			logger.debug("Configuring iteration " + i + " of " + maxIterations);
 
 			// Compute the altered strings
 			Map<String, String> replacements = new HashMap<String, String>();
 			for (String originalString : replacementRules.keySet())
 			{
-				String replacementForIOriginalString = replacementRules.get(originalString);
-				if (replacementForIOriginalString.startsWith("${"))
+				String replacementForOriginalString = replacementRules.get(originalString);
+				if (replacementForOriginalString.startsWith("${"))
 				{
 					// Replacement string is an expression
 					try {
-						replacementForIOriginalString = NumberUtils.calculateNewFotmattedValue(
-							replacementForIOriginalString,  expFact, Double.valueOf(i+""));
+						replacementForOriginalString = NumberUtils.calculateNewFotmattedValue(
+							replacementForOriginalString,  expFact, Double.valueOf(i+""));
 					} catch (Exception e) {
 						Terminator.withMsgAndStatus("Error evaluating expression '" 
-							+ replacementForIOriginalString + "' at iteration " + i + ". " 
+							+ replacementForOriginalString + "' at iteration " + i + ". " 
 							+ "Please, check your input for parameter '" 
 							+ PARREPLACEMENTRULES + "'.", -1, e);
 					}
 				}
-				replacements.put(originalString, replacementForIOriginalString);
+				replacements.put(originalString, replacementForOriginalString);
 			}
 
 			// Alter job definition according to iteration number
@@ -263,21 +264,10 @@ public class JobLooper extends Worker
 			}
 
 			// Create and run the altered job
-			Job currentJob = (Job) ACCJson.getReader().fromJson(alteredJobJson, Job.class);
-			currentJob.setParameter("JobLoopIteration", i);
-			currentJob.run();
-
-			// Extract all data to be exposed as results of the loop
-			/*
-			for (String dataName : currentJob.getOutputCollector().getAllNamedData().keySet())
-			{
-				results.putNamedData("iter-" + i + "-" + dataName, 
-					currentJob.getOutputCollector().getNamedData(dataName));
-			}
-			*/
-
-			results.putNamedData("Iteration_" + i, new NamedData("Iteration_" + i, currentJob.getOutputCollector()));
+			Job currentStep = (Job) ACCJson.getReader().fromJson(alteredJobJson, Job.class);
+			containerJob.addStep(currentStep);
 		}
+		logger.info("Configured " + maxIterations + " iterations of the template job.");
 
 		return results;
 	}
