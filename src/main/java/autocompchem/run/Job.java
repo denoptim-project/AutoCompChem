@@ -1009,6 +1009,10 @@ public class Job implements Runnable
     	// step in the log of ACC jobs.
     	String msg = System.getProperty("line.separator") 
 				+ "Initiating " + appID + " Job " + getId();
+        if (hasParameter(WorkerConstants.PARTASK))
+        {
+            msg = msg + " (Task: " + getParameter(WorkerConstants.PARTASK).getValueAsString() + ")";
+        }
     	if (!(new File(System.getProperty("user.dir"))).equals(customUserDir))
     	{
     		msg = msg + " (WorkDir: " + customUserDir + ")";
