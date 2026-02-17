@@ -367,22 +367,22 @@ public class ParallelJobsRunnerTest
         
         main.run();
         
-        /* Job_#0.1 is the production job (the one monitored)
-         * Job_#0.2 is the monitoring job
-         * Job_#0.3 is a sibling writing on testjob.log1
-         * Job_#0.4 is a sibling writing on testjob.log2
-         * Job_#0.5 is a sibling writing on testjob.log3
-         * Job_#0.6 is a sibling but does not run (not enough threads to start it)
+        /* Job_#0.0 is the production job (the one monitored)
+         * Job_#0.1 is the monitoring job
+         * Job_#0.2 is a sibling writing on testjob.log1
+         * Job_#0.3 is a sibling writing on testjob.log2
+         * Job_#0.4 is a sibling writing on testjob.log3
+         * Job_#0.5 is a sibling but does not run (not enough threads to start it)
          */
         
         assertEquals(2, FileUtils.findByGlob(tempDir, 
-        		"Job_#0.1*", true).size());
+        		"Job_#0.0*", true).size());
+        assertEquals(2, FileUtils.findByGlob(tempDir, 
+        		"Job_#0.2*", true).size());
         assertEquals(2, FileUtils.findByGlob(tempDir, 
         		"Job_#0.3*", true).size());
         assertEquals(2, FileUtils.findByGlob(tempDir, 
         		"Job_#0.4*", true).size());
-        assertEquals(2, FileUtils.findByGlob(tempDir, 
-        		"Job_#0.5*", true).size());
         assertEquals(4, FileUtils.findByGlob(tempDir, "*_1", true).size());
         assertEquals(4, FileUtils.findByGlob(tempDir, "*_2", true).size());
         assertEquals(1, FileUtils.findByGlob(tempDir, 
@@ -453,10 +453,10 @@ public class ParallelJobsRunnerTest
         main.run();
         
         /* 
-         * Job_#0.1 is the production job (the one monitored)
-         * Job_#0.2 is the monitoring job
-         * Job_#0.3 is a sibling writing on testjob.log1
-         * Job_#0.4 is a sibling writing on testjob.log2
+         * Job_#0.0 is the production job (the one monitored)
+         * Job_#0.1 is the monitoring job
+         * Job_#0.2 is a sibling writing on testjob.log1
+         * Job_#0.3 is a sibling writing on testjob.log2
          */
         
         assertEquals(1, FileUtils.findByGlob(tempDir, "Job_#0.*", true).size());
@@ -465,9 +465,13 @@ public class ParallelJobsRunnerTest
         		"testjob.log_production").size());
         assertEquals(1, FileUtils.findByGlob(tempDir, 
         		"*/testjob.log_production").size());
-        assertEquals(0, FileAnalyzer.count(tempDir.getAbsolutePath() + SEP 
-        		+ "Job_#0.1_1" + SEP + baseName + "_production", 
-        		newPrefix+"Iteration 18"));
+        // Do it here to allw the fineanalyzed to trigger the error if the files are 
+        // not found. If it is doen inseide the assertion, surefy will crash instead of 
+        // reporting the error.
+        int count = FileAnalyzer.count(tempDir.getAbsolutePath() + SEP 
+                + "Job_#0.0_1" + SEP + baseName + "_production", 
+                newPrefix+"Iteration 18");
+        assertEquals(0, count);
         assertEquals(1, FileAnalyzer.count(logOnProductionJob, 
         		newPrefix+"Iteration 18"));
         assertEquals(1, FileAnalyzer.count(roothName+1, "Iteration 18"));
@@ -535,31 +539,31 @@ public class ParallelJobsRunnerTest
         main.setParameter(ParameterConstants.VERBOSITY, "0", true);
        
         main.run();
-        
-        /* Job_#0.1 is the monitoring job
-         * Job_#0.2 is the production job (the one monitored)
+
+        /* Job_#0.0 is the monitoring job
+         * Job_#0.1 is the production job (the one monitored)
          * Job_#0.3 is a sibling writing on testjob.log1
          * Job_#0.4 is a sibling writing on testjob.log2
          * Job_#0.5 is a sibling writing on testjob.log3
          * 
-         * Job_#0.2 writes the log that is monitored by Job_#0.1. Upon reaching
+         * Job_#0.1 writes the log that is monitored by Job_#0.0. Upon reaching
          * a given number of iterations, the monitoring job triggers a reaction
-         * that stops Job_#0.2, but does not do more than that.
+         * that stops Job_#0.1, but does not do more than that.
          * Therefore, we expect to find no archive folder, but we expect that 
-         * the log of Job_#0.2 is substantially shorted than the log of its 
-         * sibling Job_#0.3, which must not be stopped by the reaction.
+         * the log of Job_#0.1 is substantially shorted than the log of its 
+         * sibling Job_#0.2, which must not be stopped by the reaction.
          * 
-         * Jobs Job_#0.4, and Job_#0.5 ran do not fill in the number of parallel
+         * Jobs Job_#0.3, and Job_#0.4 do not fill in the number of parallel
          * batches so they run afterwards and should not be stopped by the 
-         * reaction to Job_#0.2.
+         * reaction to Job_#0.1.
          * 
          * Note that the monitoring job starts before the monitored job. Thus,
          * in the first monitoring iteration, the info channel is not readable,
          * hence the monitoring job has to be tolerant.
          */
         
-        assertEquals(0, FileUtils.findByGlob(tempDir, 
-        		"Job_#0.2_0", true).size());
+        assertFalse((new File(tempDir + SEP + "Job_#0.1_0")).exists());
+        assertFalse((new File(tempDir + SEP + "Job_#0.1_1")).exists());
         assertEquals(4, FileUtils.findByGlob(tempDir, 
         		"testjob.log*", true).size());
         assertTrue(16>FileAnalyzer.count(tempDir.getAbsolutePath() + SEP 

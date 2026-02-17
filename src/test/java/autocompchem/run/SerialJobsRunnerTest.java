@@ -203,31 +203,31 @@ public class SerialJobsRunnerTest
         }
         
         /*
-         * we expect that Job_#0.1 and Job_#0.2 run just fine and write their 
+         * we expect that Job_#0.0 and Job_#0.1 run just fine and write their 
          * log files to disk. 
-         * Then Job_#0.3, which is the evaluation job, 
-         * triggers the re-run from Job_#0.2. This
-         * causes the archiving of the results from Job_#0.2 into Job_#0.2_1.
-         * Note that Job_#0.1 is not archived because it will not be rerun.
-         * Then, Job_#0.2 re-runs, creating its log, and Job_#0.3 runs silently
+         * Then Job_#0.2, which is the evaluation job, 
+         * triggers the re-run from Job_#0.1. This
+         * causes the archiving of the results from Job_#0.1 into Job_#0.1_1.
+         * Note that Job_#0.0 is not archived because it will not be rerun.
+         * Then, Job_#0.1 re-runs, creating its log, and Job_#0.2 runs silently
          * because it does not detect any situation that triggers a reaction.
-         * Finally, Job_#0.4 runs normally.
+         * Finally, Job_#0.3 runs normally.
          */
 
         assertTrue((new File(roothName+"_production_1")).exists());
-        assertFalse((new File(tempDir + SEP + "Job_#0.1_1")).exists());
+        assertFalse((new File(tempDir + SEP + "Job_#0.0_1")).exists());
         assertEquals(1, 
         		FileUtils.findByREGEX(tempDir, ".*_production_1", true).size());
         
         assertTrue((new File(roothName+"_production_2")).exists());
-        assertTrue((new File(tempDir + SEP + "Job_#0.2_1")).exists());
-        assertTrue((new File(tempDir + SEP + "Job_#0.2_1" 
+        assertTrue((new File(tempDir + SEP + "Job_#0.1_1")).exists());
+        assertTrue((new File(tempDir + SEP + "Job_#0.1_1" 
         		+ SEP + baseName + "_production_2")).exists());
         assertEquals(2, 
         		FileUtils.findByREGEX(tempDir, ".*_production_2", true).size());
         
         assertTrue((new File(roothName+"_production_3")).exists());
-        assertFalse((new File(tempDir + SEP + "Job_#0.3_1")).exists());
+        assertFalse((new File(tempDir + SEP + "Job_#0.2_1")).exists());
         assertEquals(1, 
         		FileUtils.findByREGEX(tempDir, ".*_production_1", true).size());
     }

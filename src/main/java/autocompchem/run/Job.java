@@ -121,7 +121,7 @@ public class Job implements Runnable
 	/**
 	 * Counter for subjobs
 	 */
-	private AtomicInteger idSubJob = new AtomicInteger(1);
+	private AtomicInteger idSubJob = new AtomicInteger(0);
 	
     /**
      * Restart counter. counts how many times this job is restarted

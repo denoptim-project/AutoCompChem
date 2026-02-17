@@ -69,6 +69,23 @@ public class ActionApplier
     	if (aType==ActionType.STOP)
     		return;
     	
+    	// If triggering step ID is -1, it means the job wasn't found
+    	if (triggeringStepId < 0)
+    	{
+    		Logger logger = LogManager.getLogger(ActionApplier.class);
+    		logger.warn("Triggering step ID is " + triggeringStepId + 
+    				", which means the focus job was not found. Skipping action processing.");
+    		return;
+    	}
+    	
+    	// Validate triggering step ID
+    	if (triggeringStepId >= workflow.getNumberOfSteps())
+    	{
+    		throw new IllegalArgumentException("Invalid triggering step ID: " 
+    				+ triggeringStepId + ". Workflow has " 
+    				+ workflow.getNumberOfSteps() + " steps.");
+    	}
+    	
     	// Modify the workflow: Trim steps to have as first step the first one
     	// that should re-run.
     	if (aType==ActionType.REDO)
