@@ -237,8 +237,15 @@ public class JobLooper extends Worker
 				if (replacementForIOriginalString.startsWith("${"))
 				{
 					// Replacement string is an expression
-					replacementForIOriginalString = NumberUtils.calculateNewFotmattedValue(
-						replacementForIOriginalString,  expFact, Double.valueOf(i+""));
+					try {
+						replacementForIOriginalString = NumberUtils.calculateNewFotmattedValue(
+							replacementForIOriginalString,  expFact, Double.valueOf(i+""));
+					} catch (Exception e) {
+						Terminator.withMsgAndStatus("Error evaluating expression '" 
+							+ replacementForIOriginalString + "' at iteration " + i + ". " 
+							+ "Please, check your input for parameter '" 
+							+ PARREPLACEMENTRULES + "'.", -1, e);
+					}
 				}
 				replacements.put(originalString, replacementForIOriginalString);
 			}

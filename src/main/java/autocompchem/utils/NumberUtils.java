@@ -735,8 +735,7 @@ public class NumberUtils
   	 * @return the new value as a formatted string.
   	 */
   	public static String calculateNewFotmattedValue(String expr, 
-        ExpressionFactory expFact, 
-        Double oldValue)
+        ExpressionFactory expFact, Double oldValue)
     {
         // Make context for interpreting expression that define how to 
         // alter the old variable
