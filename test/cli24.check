@@ -27,13 +27,13 @@ if [ ! -f "cli24_wdir/cli24.out" ] ; then not_passed $LINENO ; fi
 if tail -n 2 "cli24_wdir/cli24.out" | grep -q "abnormal termination of xtb" ; then not_passed $LINENO ; fi
 if ! tail -n 2 "cli24_wdir/cli24.out" | grep -q "^normal termination of xtb" ; then not_passed $LINENO ; fi
 
-if [ ! -d "cli24_wdir/Job_#0.1_1" ] ; then not_passed $LINENO ; fi
-if [ ! -f "cli24_wdir/Job_#0.1_1/cli24.out" ] ; then not_passed $LINENO ; fi
-if ! tail -n 2 "cli24_wdir/Job_#0.1_1/cli24.out" | grep -q "abnormal termination of xtb" ; then not_passed $LINENO ; fi
+if [ ! -d "cli24_wdir/Job_#0.0_1" ] ; then not_passed $LINENO ; fi
+if [ ! -f "cli24_wdir/Job_#0.0_1/cli24.out" ] ; then not_passed $LINENO ; fi
+if ! tail -n 2 "cli24_wdir/Job_#0.0_1/cli24.out" | grep -q "abnormal termination of xtb" ; then not_passed $LINENO ; fi
 
-if [ ! -d "cli24_wdir/Job_#0.1_1/Job_#0.1_0" ] ; then not_passed $LINENO ; fi
-if [ ! -f "cli24_wdir/Job_#0.1_1/Job_#0.1_0/cli24.out" ] ; then not_passed $LINENO ; fi
-if ! tail -n 2 "cli24_wdir/Job_#0.1_1/Job_#0.1_0/cli24.out" | grep -q "abnormal termination of xtb" ; then not_passed $LINENO ; fi
+if [ ! -d "cli24_wdir/Job_#0.0_1/Job_#0.0_0" ] ; then not_passed $LINENO ; fi
+if [ ! -f "cli24_wdir/Job_#0.0_1/Job_#0.0_0/cli24.out" ] ; then not_passed $LINENO ; fi
+if ! tail -n 2 "cli24_wdir/Job_#0.0_1/Job_#0.0_0/cli24.out" | grep -q "abnormal termination of xtb" ; then not_passed $LINENO ; fi
 
 if grep -q 'Termination status: 0' "cli24.log" ; then echo Passed ; exit 0 ; fi
 not_passed $LINENO
