@@ -32,7 +32,6 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
 import autocompchem.datacollections.ParameterStorage;
-import autocompchem.run.Terminator;
 import autocompchem.text.TextBlock;
 
 /**
@@ -120,11 +119,10 @@ public class Keyword extends DirectiveData
         }
         else
         {
-            Terminator.withMsgAndStatus("ERROR! Expected '" 
+            throw new IllegalArgumentException("Expected '" 
             		+ ChemSoftConstants.JDLABLOUDKEY + "' or '" 
             		+ ChemSoftConstants.JDLABMUTEKEY + "' in front of key"
-            		+ " name '" + line + "'.",-1);
-            return null; // should not be reached, but satisfies linter
+            		+ " name '" + line + "'.");
         }
         Keyword k = new Keyword(nameAndValue[0], isLoud, nameAndValue[1]);
         k.extractTask();

@@ -49,7 +49,6 @@ import autocompchem.molecule.AtomContainerInputProcessor;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.molecule.intcoords.InternalCoord;
 import autocompchem.run.Job;
-import autocompchem.run.Terminator;
 import autocompchem.utils.StringUtils;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
@@ -216,8 +215,8 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
             List<ZMatrix> templates = IOtools.readZMatrixFile(tmplZMatFile);
             if (templates.size()==0)
             {
-            	 Terminator.withMsgAndStatus("ERROR! Could not find a template "
-            	 		+ "ZMatrix in '" + tmplZMatFile + "'",-1);
+            	 throw new IllegalArgumentException("Could not find a template "
+            	 		+ "ZMatrix in '" + tmplZMatFile + "'");
             } else if (templates.size()>1)
             {
                 logger.warn("Found " + templates.size() 
@@ -232,8 +231,8 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
             this.onlyTors = true;
             if (this.useTmpl)
             {
-                Terminator.withMsgAndStatus("ERROR! Inconsistent request to "
-                             + "use only torsions AND a template ZMatrix.", -1);
+                throw new IllegalStateException("Inconsistent request to "
+                             + "use only torsions AND a template ZMatrix.");
             }
         }
 
@@ -276,9 +275,8 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
                     zmat2 = makeZMatrix(mol, tmplZMat);
                     zmat2.setTitle(molName);
                 } catch (Throwable t) {
-                    t.printStackTrace();
-                    Terminator.withMsgAndStatus("ERROR! Exception returned "
-                        + " while reading " + inFile2, -1);
+                    throw new RuntimeException("Exception returned "
+                        + " while reading " + inFile2, t);
                 }
             }
         }
@@ -397,9 +395,9 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
             return makeZMatrix(iac, tmplZMat);
         } catch (NoReferenceAtomException e) {
             if (terminateOnFailure) {
-                Terminator.withMsgAndStatus("ERROR! Cannot create ZMatrix for molecule " 
+                throw new RuntimeException("Cannot create ZMatrix for molecule " 
                     + MolecularUtils.getNameOrID(iac) + ". "
-                    + "No reference atom can be chosen for any atom in the molecule.", -1);
+                    + "No reference atom can be chosen for any atom in the molecule.", e);
             }
             return null;
         }
@@ -423,9 +421,9 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
         // Ensure consistency with template
         if (tmplZMat!=null && iac.getAtomCount() != tmplZMat.getZAtomCount())
         {
-            Terminator.withMsgAndStatus("ZMatrix template (" 
+            throw new IllegalArgumentException("ZMatrix template (" 
                 + tmplZMat.getZAtomCount() + ") and current molecule ("
-                + iac.getAtomCount() + ") have different size.",-1); 
+                + iac.getAtomCount() + ") have different size."); 
         }
 
         // Fill the Z-matrix
@@ -553,8 +551,8 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
         ZMatrix modZMat = new ZMatrix(zmat.toLinesOfText(false,false));
         if (modZMat.getZAtomCount() != zmtMove.getZAtomCount())
         {
-            Terminator.withMsgAndStatus("ERROR! ZMatrixMove and ZMatrix have "
-                + "different number of atoms.",-1);
+            throw new IllegalArgumentException("ZMatrixMove and ZMatrix have "
+                + "different number of atoms.");
         }
         for (int i=0; i<modZMat.getZAtomCount(); i++)
         {
@@ -563,11 +561,11 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
             
             if (!zatm.sameIDsAs(zmov))
             {
-                Terminator.withMsgAndStatus("ERROR! Different set of atom IDs "
+                throw new IllegalArgumentException("Different set of atom IDs "
                         + "in ZMatrixAtom (" 
                         + zatm.toZMatrixLine(false,false) 
                         +  ") and ZMatrixMove (" 
-                        + zmov.toZMatrixLine(false,false) + ")",-1);
+                        + zmov.toZMatrixLine(false,false) + ")");
             }
             for (int j=0; j<zatm.getICsCount(); j++)
             {
@@ -617,9 +615,9 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
                                     zmatIC.setType("-1");
                                     break;
                                 default:
-                                     Terminator.withMsgAndStatus("ERROR! Type "
+                                     throw new IllegalArgumentException("Type "
                                         + "of 3rd internal coordinate ('"
-                                        + zmatIC.getType() +"') not known.",-1);
+                                        + zmatIC.getType() +"') not known.");
                             }
                         }
 /*
@@ -675,10 +673,9 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
             		break;
             }
         } else {
-            Terminator.withMsgAndStatus("ERROR! Expecting an input ZMatrix "
+            throw new IllegalArgumentException("Expecting an input ZMatrix "
             		+ "file. Please use '" + WorkerConstants.PARINFILE 
-            		+ "' keyord to provide a pathname to your ZMatrix input.",
-            		-1);
+            		+ "' keyord to provide a pathname to your ZMatrix input.");
         }
     }
     
@@ -1041,9 +1038,9 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
     {
         if (zatm.getICsCount() != nic)
         {
-            Terminator.withMsgAndStatus("ERROR! ZMatrixAtom does not contain "
+            throw new IllegalStateException("ZMatrixAtom does not contain "
                 + "the expected number of internal coordinates. Check "
-                + zatm.toZMatrixLine(false,false),-1);            
+                + zatm.toZMatrixLine(false,false));            
         }
     }
 

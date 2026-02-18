@@ -15,7 +15,6 @@ import autocompchem.files.FileUtils;
 import autocompchem.run.EvaluationJob;
 import autocompchem.run.Job;
 import autocompchem.run.MonitoringJob;
-import autocompchem.run.Terminator;
 import autocompchem.run.jobediting.Action.ActionObject;
 import autocompchem.run.jobediting.Action.ActionType;
 import autocompchem.run.jobediting.DataArchivingRule.ArchivingTaskType;
@@ -123,11 +122,10 @@ public class ActionApplier
     			try {
 					jsi.inheritSettings(actionTiggeringStep, preliminaryStep);
 				} catch (CloneNotSupportedException e) {
-					e.printStackTrace();
-					Terminator.withMsgAndStatus("ERROR: trying to clone data "
+					throw new RuntimeException("trying to clone data "
 							+ "that cannot be cloned. If you see the need to "
 							+ "do such operation, please, contact the "
-							+ "developers and present your use case.", -1);
+							+ "developers and present your use case.", e);
 				}
     		}
     		workflow.getSteps().add(0, preliminaryStep);
@@ -247,11 +245,11 @@ public class ActionApplier
     	if (action.prerefinementSteps != null && 
     			action.prerefinementSteps.size()>0)
     	{
-			Terminator.withMsgAndStatus("ERROR: trying to pre-pend steps in a"
+			throw new UnsupportedOperationException("trying to pre-pend steps in a"
 					+ "parallel batch of jobs. This is not possible in this"
 					+ "implementation. If you see the need to pre-pend steps"
 					+ "itno a parallel batch, please, contact the "
-					+ "developers and present your use case.", -1);
+					+ "developers and present your use case.");
     	}
     	
     	// Modify job settings
@@ -366,9 +364,9 @@ public class ActionApplier
 		File jobsRootPath = new File(path);
 		if (!jobsRootPath.exists())
 		{
-            Terminator.withMsgAndStatus("ERROR! Folder '" + path
+            throw new IllegalArgumentException("Folder '" + path
             		+ "' is expected to contain the data for job "
-            		+ job.getId() + ", but is not found.", -1);   
+            		+ job.getId() + ", but is not found.");   
 		}
 		
 		// Collect all files related to this job and that may need to be 

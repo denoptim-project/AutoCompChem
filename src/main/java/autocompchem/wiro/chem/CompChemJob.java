@@ -43,7 +43,6 @@ import autocompchem.io.ACCJson;
 import autocompchem.io.IOtools;
 import autocompchem.run.Job;
 import autocompchem.run.JobEvaluator;
-import autocompchem.run.Terminator;
 import autocompchem.text.TextAnalyzer;
 import autocompchem.wiro.WIROConstants;
 
@@ -928,11 +927,11 @@ public class CompChemJob extends Job implements Cloneable
 	            	lines.addAll(
 	            			((CompChemJob) getStep(step)).toLinesJobDetails());
 	            } else {
-	            	Terminator.withMsgAndStatus("ERROR! Unxpected step of type "
-	            			+ getStep(step).getClass().getSimpleName() 
-	            			+ " within a "
+            	throw new IllegalStateException("Unxpected step of type "
+            			+ getStep(step).getClass().getSimpleName() 
+            			+ " within a "
 	            			+ this.getClass().getSimpleName() 
-	            			+ " job.", -1);
+	            			+ " job.");
 	            }
 	        }
         } else if (getNumberOfSteps()==0 && directives.size()>0) 
@@ -942,12 +941,12 @@ public class CompChemJob extends Job implements Cloneable
         		lines.addAll(d.toLinesJobDetails());
         	}
         } else {
-        	Terminator.withMsgAndStatus("ERROR! Unable to convert "
+        	throw new UnsupportedOperationException("Unable to convert "
         			+ this.getClass().getSimpleName() + " "
         			+ "to JobDetails lines when it has " + directives.size() 
         			+ " directives and " + getNumberOfSteps() + " sub-jobs. "
         			+ "This functionality is not implemented yet. Please, "
-        			+ "contact the authors.", -1);
+        			+ "contact the authors.");
         }
         return lines;
     }

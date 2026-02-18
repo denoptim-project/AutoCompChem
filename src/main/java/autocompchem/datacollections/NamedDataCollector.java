@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import autocompchem.run.Terminator;
 
 /**
  * Storage of {@link NamedData} objects that are collected by reference.
@@ -133,11 +132,8 @@ public class NamedDataCollector implements Cloneable
         	{
         		return null;
         	} else {
-        		Exception e = new Exception("Key not found");
-        		e.printStackTrace();
-        		Terminator.withMsgAndStatus("ERROR! Key '" + ref 
-        				+ "' not found in " + this.getClass().getSimpleName(),
-        				-1);
+        		throw new IllegalArgumentException("Key '" + ref 
+        				+ "' not found in " + this.getClass().getSimpleName());
         	}
         }
         return allData.get(ref);

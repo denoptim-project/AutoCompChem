@@ -7,7 +7,6 @@ import java.util.List;
 
 import autocompchem.molecule.vibrations.NormalMode;
 import autocompchem.molecule.vibrations.NormalModeSet;
-import autocompchem.run.Terminator;
 
 /**
  * Tools that are useful when dealing with Gaussian.
@@ -64,10 +63,10 @@ public class GaussianUtils
             		modes.add(new NormalMode());
         			break;
         		default:
-        			Terminator.withMsgAndStatus("ERROR! "
-        					+ "Cannot "
+        			throw new IllegalArgumentException(
+        					"Cannot "
         					+ "read normal mode from "
-        					+ "line '" + line + "'.",-1);
+        					+ "line '" + line + "'.");
         		}
 
 				// Read frequency values

@@ -20,6 +20,7 @@ package autocompchem.ui;
 
 
 import java.io.File;
+import java.io.IOException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -32,7 +33,6 @@ import autocompchem.log.LogUtils;
 import autocompchem.run.ACCJob;
 import autocompchem.run.Job;
 import autocompchem.run.JobFactory;
-import autocompchem.run.Terminator;
 import autocompchem.utils.NumberUtils;
 import autocompchem.utils.TimeUtils;
 import autocompchem.worker.Task;
@@ -50,7 +50,7 @@ import autocompchem.worker.WorkerFactory;
 public class ACCMain
 {
     //Software version number
-    private static final String version = "3.3.0";
+    private static final String version = "3.4.0";
     
     // System.spec line separator
     private static final String NL = System.getProperty("line.separator");
@@ -81,105 +81,103 @@ public class ACCMain
     
     public static void main(String[] args)
     {   
-        // Logging in message
-        printInit();
-        
-        initializeRegistry();
-        
-        // Detect kind of run (command line arguments or parameter file)
-        // and what is the job to be done
-        Job job;
-        if (args.length < 1)
-        {
-            //TODO eventually here we will launch the gui.
-            printUsage();
-            Terminator.withMsgAndStatus("ERROR! No input or command line "
-                + "argument given. " + NL
-                + "AutoCompChem requires either command line arguments, or "
-                + "a single argument that is the pathname to a parameters "
-                + "file.",1);
-            return; // should not be reached, but satisfies linter
-        }
-        else if (args.length == 1)
-        {
-            String pathName = args[0];
+        try {
+            // Logging in message
+            printInit();
             
-            if (CLIHELP.equals(pathName.toUpperCase()) 
-                    || CLIHELPSHORT.equals(pathName.toUpperCase()))
+            initializeRegistry();
+            
+            // Detect kind of run (command line arguments or parameter file)
+            // and what is the job to be done
+            Job job = null;
+            if (args.length < 1)
             {
+                //TODO eventually here we will launch the gui.
                 printUsage();
-                Terminator.withMsgAndStatus("Normal termination", 0);
-            }
-            
-            try {
-                job = JobFactory.buildFromFile(new File(pathName));
-            } catch (Throwable t) {
-                t.printStackTrace();
-                String msg = "ERROR! Exception returned while reading "
-                        + "job settings from file '" + pathName + "'.";
-                Terminator.withMsgAndStatus(msg, -1);
+                Terminator.withMsgAndStatus("ERROR! No input or command line "
+                    + "argument given. " + NL
+                    + "AutoCompChem requires either command line arguments, or "
+                    + "a single argument that is the pathname to a parameters "
+                    + "file.",1);
                 return; // should not be reached, but satisfies linter
             }
-        }
-        else
-        {
-            job = parseCLIArgs(args);
-            
-            boolean requiresHelp = false;
-            for (int i=0; i<args.length; i++)
+            else if (args.length == 1)
             {
-                if (CLIHELP.equals(args[i].toUpperCase()) 
-                        || CLIHELPSHORT.equals(args[i].toUpperCase()))
+                String pathName = args[0];
+                
+                if (CLIHELP.equals(pathName.toUpperCase()) 
+                        || CLIHELPSHORT.equals(pathName.toUpperCase()))
                 {
-                    requiresHelp = true;
-                    break;
+                    printUsage();
+                    Terminator.withMsgAndStatus("Normal termination", 0);
                 }
-            }
-            
-            if (requiresHelp)
-            {
-                if (job instanceof ACCJob)
-                {
-                    Worker w = ((ACCJob) job).getUninitializedWorker();
-                    String msg = w.getTaskSpecificHelp();
-                    logger.info(msg);
-                } else {
-                	logger.warn("No help message available for " 
-                            + job.getClass().getName() + "jobs.");
-                }
-                Terminator.withMsgAndStatus("Exiting upon request to print "
-                        + "help message",0);
-            }
-        }
-
-        // Do the task
-        try {
-            job.run();
-        } catch (IllegalArgumentException iae) {
-            Terminator.withMsgAndStatus("ERROR! Input led to illegal argument. "
-                    + NL + "Hint: " + iae.getMessage(), -1);
-        } catch (Throwable t) {
-            t.printStackTrace();
-            String msg = t.getMessage();
-            if (msg == null)
-            {
-                Terminator.withMsgAndStatus("Exception occurred! But 'null' "
-                        + "message returned. Please "
-                        + "report this to the author.", -1);
-            } else {
-                if (msg.startsWith("ERROR!"))
-                {
-                    Terminator.withMsgAndStatus(t.getMessage(), -1);
-                } else {
+                
+                try {
+                    job = JobFactory.buildFromFile(new File(pathName));
+                } catch (Throwable t) {
                     t.printStackTrace();
-                    Terminator.withMsgAndStatus("Exception occurred! Please "
-                            + "report this to the author.", -1);
+                    String msg = "ERROR! Exception returned while reading "
+                            + "job settings from file '" + pathName + "'.";
+                    Terminator.withMsgAndStatus(msg, -1);
+                    return; // should not be reached, but satisfies linter
                 }
             }
+            else
+            {
+                try {
+                    job = parseCLIArgs(args);
+                } catch (IOException e) {
+                    Terminator.withMsgAndStatus("ERROR! Failed to parse CLI arguments: " 
+                            + e.getMessage(), -1, e);
+                }
+                
+                boolean requiresHelp = false;
+                for (int i=0; i<args.length; i++)
+                {
+                    if (CLIHELP.equals(args[i].toUpperCase()) 
+                            || CLIHELPSHORT.equals(args[i].toUpperCase()))
+                    {
+                        requiresHelp = true;
+                        break;
+                    }
+                }
+                
+                if (requiresHelp)
+                {
+                    if (job instanceof ACCJob)
+                    {
+                        Worker w = ((ACCJob) job).getUninitializedWorker();
+                        String msg = w.getTaskSpecificHelp();
+                        logger.info(msg);
+                    } else {
+                        logger.warn("No help message available for " 
+                                + job.getClass().getName() + "jobs.");
+                    }
+                    Terminator.withMsgAndStatus("Exiting upon request to print "
+                            + "help message",0);
+                }
+            }
+
+            // Do the task
+            try {
+                job.run();
+            } catch (Throwable t) {
+                String msg = t.getMessage();
+                if (msg == null)
+                {
+                    Terminator.withMsgAndStatus("Exception occurred! But 'null' "
+                            + "message returned. Please "
+                            + "report this to the author.", -1, t);
+                } else {
+                    Terminator.withMsgAndStatus(t.getMessage(), -1, t);
+                }
+            }
+            
+            // Exit
+            Terminator.withMsgAndStatus("Normal Termination", 0);
+        } catch (Throwable e) {
+            Terminator.withMsgAndStatus("ERROR! " +e.getMessage(), -1, e);
         }
-        
-        // Exit
-        Terminator.withMsgAndStatus("Normal Termination", 0);
     }
 
 //------------------------------------------------------------------------------
@@ -204,9 +202,10 @@ public class ACCMain
      * Parses the vector of command line arguments.
      * @param args the vector of arguments to be parsed.
      * @return job the job set up from the parameters parsed from command line.
+     * @throws IOException if the file is not readable.
      */
     
-    protected static Job parseCLIArgs(String[] args)
+    protected static Job parseCLIArgs(String[] args) throws IOException
     {   
         ParameterStorage params = new ParameterStorage();
         
@@ -298,9 +297,9 @@ public class ACCMain
     		badCombinationMsg = "-p/--params and -j/--job ";
     	if (!badCombinationMsg.isBlank())
     	{
-	        Terminator.withMsgAndStatus("ERROR! Found both "
+	        throw new IllegalArgumentException("Found both "
 	        		+ badCombinationMsg + " options. "
-	        		+ "You can use only one of the two.",-1);
+	        		+ "You can use only one of the two.");
         }
         
         Job job = null;
@@ -526,4 +525,63 @@ public class ACCMain
     }
 
 //------------------------------------------------------------------------------
+
+    /**
+     * Terminator has the power to kill the execution of a running job
+     * usually returning an error message for the user and an exit status for the
+     * machine.
+     */
+    private static class Terminator
+    {
+        /*
+         * The logger of this class
+         */
+        private static Logger logger = LogManager.getLogger(
+                "autocompchem.ui.ACCMain.Terminator");
+
+    //------------------------------------------------------------------------------
+
+        /**
+         * Terminate execution with error message and specify exit status.
+         * @param message the final message to be printed when closing the log.
+         * @param exitStatus exit status
+         * @param cause a cause for which we print stack trace.
+         */
+        public static void withMsgAndStatus(String message, int exitStatus,
+                Throwable cause)
+        {
+            logger.debug("Exception stack trace:", cause);
+            withMsgAndStatus(message, exitStatus);
+        }
+        
+    //------------------------------------------------------------------------------
+
+        /**
+         * Terminate execution with error message and specify exit status.
+         * @param message the final message to be printed when closing the log.
+         * @param exitStatus exit status
+         */
+        public static void withMsgAndStatus(String message, int exitStatus)
+        {
+            if (exitStatus != 0)
+            {
+                message = "ERROR! " + message;
+            }
+            String msg = TimeUtils.getTimestampLine() + NL
+                    + "Termination status: " + exitStatus + NL
+                    + "Final message: " + message + NL 
+                    + "Thanks for using AutoCompChem." + NL
+                    + "Mandi! ;) ";
+            if (exitStatus != 0)
+            {
+                logger.fatal(msg);
+            } else {
+                logger.info(msg);
+            }
+            System.exit(exitStatus);
+        }
+
+    //------------------------------------------------------------------------------
+
+    }
 }

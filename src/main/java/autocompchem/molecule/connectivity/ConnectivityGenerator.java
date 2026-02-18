@@ -38,7 +38,6 @@ import autocompchem.io.IOtools;
 import autocompchem.molecule.AtomContainerInputProcessor;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Job;
-import autocompchem.run.Terminator;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 
@@ -275,8 +274,8 @@ public class ConnectivityGenerator extends AtomContainerInputProcessor
         {
             refMols = IOtools.readMultiMolFiles(templatePathName);
         } catch (Throwable t) {
-            Terminator.withMsgAndStatus("ERROR! Exception returned while "
-                    + "reading " + templatePathName, -1);
+            throw new RuntimeException("Exception returned while "
+                    + "reading " + templatePathName, t);
         }
           
         //TODO: possibility of allowing one different reference for each entry

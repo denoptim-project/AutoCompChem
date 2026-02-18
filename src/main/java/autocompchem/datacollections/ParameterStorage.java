@@ -36,7 +36,6 @@ import com.google.gson.JsonSerializer;
 import com.google.gson.reflect.TypeToken;
 
 import autocompchem.io.IOtools;
-import autocompchem.run.Terminator;
 import autocompchem.text.TextAnalyzer;
 import autocompchem.text.TextBlockIndexed;
 
@@ -147,8 +146,8 @@ public class ParameterStorage extends NamedDataCollector
     {
         if (!contains(ref))
         {
-            Terminator.withMsgAndStatus("ERROR! Key '" + ref + "' not found in "
-                        + "ParameterStorage!",-1);
+            throw new IllegalArgumentException("Key '" + ref + "' not found in "
+                        + "ParameterStorage!");
         }
         return getParameterOrNull(ref);
     }
@@ -388,9 +387,8 @@ public class ParameterStorage extends NamedDataCollector
 			try { 
 				ndClone= nd.clone();
 			} catch (CloneNotSupportedException e) {
-				e.printStackTrace();
-				Terminator.withMsgAndStatus("ERROR! Could not clone "
-						+ this.getClass().getSimpleName(), -1);
+				throw new RuntimeException("Could not clone "
+						+ this.getClass().getSimpleName(), e);
 			}
 			newPar.putNamedData(ndClone.getReference().toUpperCase(), ndClone);
     	}

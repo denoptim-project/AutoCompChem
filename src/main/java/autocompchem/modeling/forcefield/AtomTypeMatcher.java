@@ -38,7 +38,6 @@ import autocompchem.io.IOtools;
 import autocompchem.molecule.AtomContainerInputProcessor;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Job;
-import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
 import autocompchem.smarts.MatchingIdxs;
 import autocompchem.smarts.SMARTS;
@@ -179,7 +178,7 @@ public class AtomTypeMatcher extends AtomContainerInputProcessor
         if (msq.hasProblems())
         {
             String cause = msq.getMessage();
-            Terminator.withMsgAndStatus("ERROR! " +cause,-1);
+            throw new IllegalArgumentException(cause);
         }
 
         //prepare flags
@@ -278,9 +277,8 @@ public class AtomTypeMatcher extends AtomContainerInputProcessor
     {
         switch (outFormat) {
             case "TXYZ":
-                Terminator.withMsgAndStatus("ERROR! Output format 'TXYZ' "
-                   + "is still under development. ", -1);
-                break;
+                throw new UnsupportedOperationException("Output format 'TXYZ' "
+                   + "is still under development.");
 
             case "LIST":
                 ArrayList<String> tab = new ArrayList<String>();
@@ -297,8 +295,8 @@ public class AtomTypeMatcher extends AtomContainerInputProcessor
                 break;
 
             default:
-                Terminator.withMsgAndStatus("ERROR! Format '" + outFormat + "'"
-                                + " not known! Check the option OUTFORMAT.",-1);
+                throw new IllegalArgumentException("Format '" + outFormat + "'"
+                                + " not known! Check the option OUTFORMAT.");
         }
     }
 

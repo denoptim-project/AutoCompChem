@@ -47,7 +47,6 @@ import autocompchem.molecule.MolecularUtils;
 import autocompchem.molecule.conformation.ConformationalCoordinate;
 import autocompchem.molecule.conformation.ConformationalSpace;
 import autocompchem.run.Job;
-import autocompchem.run.Terminator;
 import autocompchem.text.TextBlock;
 import autocompchem.utils.StringUtils;
 import autocompchem.wiro.chem.ChemSoftInputWriter;
@@ -715,8 +714,8 @@ public class SpartanInputWriter extends ChemSoftInputWriter
         File molSpecFolder = new File(jobFolder + sep + molName);
         if (!molSpecFolder.mkdirs())
         {
-            Terminator.withMsgAndStatus("ERROR! Unable to create folder '"
-            		+ molSpecFolder+ "'.",-1);
+            throw new RuntimeException("Unable to create folder '"
+            		+ molSpecFolder+ "'.");
         }
         
         //Create Spartan's flag files

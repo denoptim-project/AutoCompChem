@@ -32,7 +32,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import autocompchem.io.IOtools;
-import autocompchem.run.Terminator;
 
 /**
  * Tool for managing files and folder trees
@@ -257,11 +256,10 @@ public class FileUtils
     			break;
     			
     		default:
-    			Terminator.withMsgAndStatus("ERROR! "
-    					+ "The mode for finding files can "
+    			throw new IllegalArgumentException(
+    					"The mode for finding files can "
         				+ "only be 'regex' or 'glob', but you asked for '" 
-    					+ mode + "'", -1);
-    			return new ArrayList<File>();
+    					+ mode + "'");
     	}
     	
         // Use Java NIO PathMatcher which handles OS differences automatically
@@ -437,14 +435,14 @@ public class FileUtils
     {
         if (outFile == null)
         {
-            Terminator.withMsgAndStatus("ERROR! Attempt to check for a "
-                  + "file but 'null' is given as name",-1);
+            throw new IllegalArgumentException("Attempt to check for a "
+                  + "file but 'null' is given as name");
         } else {
             if (outFile.exists())
             {
-                Terminator.withMsgAndStatus("ERROR! File " +  outFile
+                throw new IllegalStateException("File " +  outFile
                     + " exists and this software doesn't have rights "
-                    + "to overwrite files.",-1);
+                    + "to overwrite files.");
             }
         }
     }
@@ -484,8 +482,8 @@ public class FileUtils
     {
         if (!file.exists())
         {
-            Terminator.withMsgAndStatus("ERROR! File or folder " + file
-                                + " does not exist!",-1);
+            throw new IllegalArgumentException("File or folder " + file
+                                + " does not exist!");
         }
 
         //Check read is required
@@ -493,8 +491,8 @@ public class FileUtils
         {
             if (!file.canRead())
             {
-                Terminator.withMsgAndStatus("ERROR! File or folder " + file
-                                + " exists but is not readable!",-1);
+                throw new SecurityException("File or folder " + file
+                                + " exists but is not readable!");
             }
         }
 
@@ -503,8 +501,8 @@ public class FileUtils
         {
             if (!file.canWrite())
             {
-                Terminator.withMsgAndStatus("ERROR! File or folder " + file
-                                + " exists but is not writable!",-1);
+                throw new SecurityException("File or folder " + file
+                                + " exists but is not writable!");
             }
         }
 
@@ -513,8 +511,8 @@ public class FileUtils
         {
             if (!file.canExecute())
             {
-                Terminator.withMsgAndStatus("ERROR! File/folder " + file 
-                                + " exists but is not executable!",-1);
+                throw new SecurityException("File/folder " + file 
+                                + " exists but is not executable!");
             }
         }
     }

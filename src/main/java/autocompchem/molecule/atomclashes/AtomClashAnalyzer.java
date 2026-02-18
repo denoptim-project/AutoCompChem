@@ -35,7 +35,6 @@ import autocompchem.atom.AtomUtils;
 import autocompchem.molecule.AtomContainerInputProcessor;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Job;
-import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
 import autocompchem.smarts.MatchingIdxs;
 import autocompchem.smarts.SMARTS;
@@ -211,7 +210,7 @@ public class AtomClashAnalyzer extends AtomContainerInputProcessor
                 {
                     String msg = "Wrong number of arguments in definition of "
                                  + "VDW contact allowance.";
-                    Terminator.withMsgAndStatus(msg,-1);
+                    throw new IllegalArgumentException(msg);
                 }
 
                 VDWAllowance newAlw = new VDWAllowance(parts[0],  //SMARTS 1
@@ -315,9 +314,9 @@ public class AtomClashAnalyzer extends AtomContainerInputProcessor
                 if (cause.contains("The AtomType") &&
                                         cause.contains("could not be found"))
                 {
-                    Terminator.withMsgAndStatus("ERROR! " + cause
+                    throw new IllegalArgumentException(cause
                         + " To solve the problem try to move this "
-                        + "element to \"Du\" an try again.",-1);
+                        + "element to \"Du\" an try again.");
                 }
                 logger.warn("\nWARNING! Problems in using SMARTS queries. "
                                 + cause + NL 
@@ -374,7 +373,7 @@ public class AtomClashAnalyzer extends AtomContainerInputProcessor
             if (msq.hasProblems())
             {
                 String cause = msq.getMessage();
-                Terminator.withMsgAndStatus("ERROR! " +cause,-1);
+                throw new IllegalArgumentException(cause);
             }
             for (int iikey=0; iikey<allowances.size(); iikey++)
             {

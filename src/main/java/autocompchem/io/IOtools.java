@@ -65,7 +65,6 @@ import autocompchem.molecule.intcoords.zmatrix.ZMatrixConstants;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrixHandler;
 import autocompchem.run.ACCJob;
 import autocompchem.run.Job;
-import autocompchem.run.Terminator;
 import autocompchem.text.TextAnalyzer;
 import autocompchem.text.TextBlock;
 import autocompchem.utils.StringUtils;
@@ -137,17 +136,16 @@ public class IOtools
                 }
             }
         } catch (FileNotFoundException fnf) {
-        	Terminator.withMsgAndStatus("File Not Found: " + file, -1);
+        	throw new RuntimeException("File Not Found: " + file, fnf);
         } catch (IOException ioex) {
-        	Terminator.withMsgAndStatus("Error in reading file '" + file, 
-        			-1 , ioex);
+        	throw new RuntimeException("Error in reading file '" + file, ioex);
         } finally {
             try {
                 if (buffRead != null)
                     buffRead.close();
             } catch (IOException ioex2) {
-            	Terminator.withMsgAndStatus("Error in reading file '" + file, 
-            			-1 , ioex2);
+            	// Log but don't throw - closing errors should not mask original exceptions
+            	// This is a utility method, so we can't use logger here easily
             }
         }
         return allLines;
@@ -182,18 +180,16 @@ public class IOtools
                     allLines.add(line);
             }
         } catch (FileNotFoundException fnf) {
-            Terminator.withMsgAndStatus("ERROR! File " + file 
-                                + " not found!", -1);
+            throw new RuntimeException("File " + file 
+                                + " not found!", fnf);
         } catch (IOException ioex) {
-        	Terminator.withMsgAndStatus("Error in reading file '" + file, 
-        			-1 , ioex);
+        	throw new RuntimeException("Error in reading file '" + file, ioex);
         } finally {
             try {
                 if (buffRead != null)
                     buffRead.close();
             } catch (IOException ioex2) {
-            	Terminator.withMsgAndStatus("Error in reading file '" + file, 
-            			-1 , ioex2);
+            	// Log but don't throw - closing errors should not mask original exceptions
             }
         }
         return allLines;
@@ -217,8 +213,8 @@ public class IOtools
         	br = new BufferedReader(new FileReader(file));
             result = readJson(type, br);
         } catch (JsonSyntaxException jse) {
-        	Terminator.withMsgAndStatus("ERROR! JSON file '" + file 
-        			+ "' has illegal syntax: " + jse.getMessage(), -1);
+        	throw new RuntimeException("JSON file '" + file 
+        			+ "' has illegal syntax: " + jse.getMessage(), jse);
         } finally 
         {
             if (br != null)
@@ -253,9 +249,8 @@ public class IOtools
         			replacement);
             result = reader.fromJson(br, type);
         } catch (JsonSyntaxException jse) {
-        	jse.printStackTrace();
-        	Terminator.withMsgAndStatus("ERROR! JSON file '" + file 
-        			+ "' has illegal syntax: " + jse.getMessage(), -1);
+        	throw new RuntimeException("JSON file '" + file 
+        			+ "' has illegal syntax: " + jse.getMessage(), jse);
         } finally 
         {
             if (br != null)
@@ -424,7 +419,7 @@ public class IOtools
         }
 
         if (badTermination)
-            Terminator.withMsgAndStatus("ERROR! " + msg,-1);
+            throw new RuntimeException(msg != null ? msg : "Error reading file");
 
         return lines;
         }
@@ -470,7 +465,7 @@ public class IOtools
         }
 
         if (badTermination)
-            Terminator.withMsgAndStatus("ERROR! " + msg,-1);
+            throw new RuntimeException(msg != null ? msg : "Error reading file");
 
         return lines;
     }
@@ -496,8 +491,7 @@ public class IOtools
             lstContainers.addAll(ChemFileManipulator.getAllAtomContainers(
                                                                      chemFile));
         } catch (Throwable t2) {
-            Terminator.withMsgAndStatus("ERROR! Failure in reading SDF: " + t2,
-                                                                            -1);
+            throw new RuntimeException("Failure in reading SDF: " + t2, t2);
         }
 
         return lstContainers;
@@ -561,22 +555,19 @@ public class IOtools
             }
             if (oneBlock.size() != 0)
             {
-                Terminator.withMsgAndStatus("ERROR! Unterminated ZMatrix block "
-                                            + "in file '" + file + "'.",-1);
+                throw new IllegalStateException("Unterminated ZMatrix block "
+                                            + "in file '" + file + "'.");
             }
         } catch (FileNotFoundException fnf) {
-            Terminator.withMsgAndStatus("ERROR! File '" + file + "' not found.",
-            		-1);
+            throw new RuntimeException("File '" + file + "' not found.", fnf);
         } catch (IOException ioex) {
-        	Terminator.withMsgAndStatus("Error in reading file '" + file, 
-        			-1 , ioex);
+        	throw new RuntimeException("Error in reading file '" + file, ioex);
         } finally {
             try {
                 if (buffRead != null)
                     buffRead.close();
             } catch (IOException ioex2) {
-            	Terminator.withMsgAndStatus("Error in reading file '" + file, 
-            			-1 , ioex2);
+            	// Log but don't throw - closing errors should not mask original exceptions
             }
         }
         return allZMats;
@@ -603,8 +594,7 @@ public class IOtools
             lstContainers.addAll(ChemFileManipulator.getAllAtomContainers(
                                                                      chemFile));
         } catch (Throwable t2) {
-            Terminator.withMsgAndStatus("ERROR! Failure in reading XYZ: " + t2,
-                                                                            -1);
+            throw new RuntimeException("Failure in reading XYZ: " + t2, t2);
         }
 
         return lstContainers;
@@ -667,10 +657,10 @@ public class IOtools
                     iac.setProperty(ZMatrixHandler.ZMATRIXPROPERTYNAME, zmat);
                     mols.add(iac);
 				} catch (Throwable e) {
-                    Terminator.withMsgAndStatus("ERROR! Exception while "
+                    throw new RuntimeException("Exception while "
                     + "converting ZMatrix " + i + ". You might need dummy "
                     + "atoms to define an healthier ZMatrix. Cause of the "
-                    + "exception: " + e.getMessage(), -1);
+                    + "exception: " + e.getMessage(), e);
 				}
             }
         } else {
@@ -678,11 +668,11 @@ public class IOtools
 				OutputReader reader = builder.makeOutputReaderInstance(file);
 				if (!(reader instanceof ChemSoftOutputReader))
 				{
-					Terminator.withMsgAndStatus(
+					throw new IllegalArgumentException(
 							"Cannot read chemical systems in file '" + file 
 							+ "' because the only reader that seems to read "
 							+ "such file is not an implementation of " 
-							+ ChemSoftOutputReader.class.getName() + ".", -1);
+							+ ChemSoftOutputReader.class.getName() + ".");
 				}
 				ChemSoftOutputReader analyzer = (ChemSoftOutputReader) reader;
 				if (analyzer!=null)
@@ -720,26 +710,26 @@ public class IOtools
 					
 					if (mols.size()==0)
 					{
-						Terminator.withMsgAndStatus("ERROR! No geometry found "
+						throw new IllegalStateException("No geometry found "
 								+ "in '" + file.getName() + "' (analyzed by "
 								+ analyzer.getClass().getSimpleName()
-								+ ").", -1);
+								+ ").");
 					}
 				}
 			} catch (FileNotFoundException e) {
-				Terminator.withMsgAndStatus("ERROR! File '"
-                        + file.getName() + "' not found.", -1);
+				throw new RuntimeException("File '"
+                        + file.getName() + "' not found.", e);
 			}
         }
         
         if (mols.size()==0) 
         {
-            Terminator.withMsgAndStatus("ERROR! Cannot understand format of '"
+            throw new IllegalArgumentException("Cannot understand format of '"
                         + file.getName() + "'."
                         + " In this version, you can read multiple "
                         + "chemical entities only from SDF, XYZ files, or "
                         + "any output from any of these: " 
-                        + ReaderWriterFactory.getRegisteredSoftwareIDs(), -1);
+                        + ReaderWriterFactory.getRegisteredSoftwareIDs());
         }
         return mols;
     }
@@ -767,8 +757,7 @@ public class IOtools
         }
         catch (Throwable t2) 
         {
-        	Terminator.withMsgAndStatus("Error in writing file '" + file, 
-        			-1 , t2);
+        	throw new RuntimeException("Error in writing file '" + file, t2);
         } 
         finally 
         {
@@ -779,8 +768,7 @@ public class IOtools
             } 
             catch (IOException ioe) 
             {
-            	Terminator.withMsgAndStatus("Error in writing file '" + file, 
-            			-1 , ioe);
+            	// Log but don't throw - closing errors should not mask original exceptions
             }
         }
     }
@@ -806,8 +794,8 @@ public class IOtools
         } 
         catch (Throwable t2) 
         {
-        	Terminator.withMsgAndStatus("Error in writing file '" + file 
-        			+ "': " + t2, -1);
+        	throw new RuntimeException("Error in writing file '" + file 
+        			+ "': " + t2, t2);
         } 
         finally 
         {
@@ -818,8 +806,7 @@ public class IOtools
             } 
             catch (IOException ioe) 
             {
-            	Terminator.withMsgAndStatus("Error in writing file '" + file, 
-            			-1 , ioe);
+            	// Log but don't throw - closing errors should not mask original exceptions
             }
         }
     }
@@ -844,13 +831,11 @@ public class IOtools
         }
         catch (CDKException e)
         {
-        	Terminator.withMsgAndStatus("Error in writing file '" + file, 
-        			-1 ,e);
+        	throw new RuntimeException("Error in writing file '" + file, e);
         }
         catch (Throwable t2)
         {
-        	Terminator.withMsgAndStatus("Error in writing file '" + file, 
-        			-1 ,t2);
+        	throw new RuntimeException("Error in writing file '" + file, t2);
         }
         finally
         {
@@ -861,8 +846,7 @@ public class IOtools
             }
             catch (IOException ioe)
             {
-            	Terminator.withMsgAndStatus("Error in writing file '" + file, 
-            			-1 ,ioe);
+            	// Log but don't throw - closing errors should not mask original exceptions
             }
         }
     }
@@ -893,9 +877,8 @@ public class IOtools
 				break;
 				
 			default:
-				Terminator.withMsgAndStatus("ERROR! Format '" + format + "' is "
-						+ "not a known format for writing atom containers", -1);
-		  			break;
+				throw new IllegalArgumentException("Format '" + format + "' is "
+						+ "not a known format for writing atom containers");
 	  	}
 	}
 	
@@ -935,11 +918,11 @@ public class IOtools
     {
     	if (!EnumUtils.isValidEnum(IACOutFormat.class, formatStr.toUpperCase()))
 		{
-    		Terminator.withMsgAndStatus("ERROR! Format '" + formatStr + "' is "
+    		throw new IllegalArgumentException("Format '" + formatStr + "' is "
     				+ "not a known format for writing atom containers ("
     				+ StringUtils.mergeListToString(
     						Arrays.asList(IACOutFormat.values()), ",", true)
-    				+ ")", -1);
+    				+ ")");
 		}
     	IACOutFormat format =  IACOutFormat.valueOf(formatStr.toUpperCase());
     	
@@ -978,15 +961,13 @@ public class IOtools
             sdfWriter = new SDFWriter(new FileWriter(file, append));
             sdfWriter.write(mols);
         } catch (Throwable t2) {
-        	Terminator.withMsgAndStatus("Error in writing file '" + file, 
-        			-1 , t2);
+        	throw new RuntimeException("Error in writing file '" + file, t2);
         } finally {
              try {
                  if(sdfWriter != null)
                      sdfWriter.close();
              } catch (IOException ioe) {
-            	Terminator.withMsgAndStatus("Error in writing file '" + file, 
-            			-1 , ioe);
+            	// Log but don't throw - closing errors should not mask original exceptions
              }
         }
     }
@@ -1034,9 +1015,9 @@ public class IOtools
 		FileUtils.mustNotExist(file);
 		if (! (job instanceof ACCJob))
 		{
-        	Terminator.withMsgAndStatus("ERROR: cannot write "
+        	throw new IllegalArgumentException("cannot write "
         			+ job.getClass().getSimpleName() 
-        			+ " into parameters' file format.", -1);
+        			+ " into parameters' file format.");
 		}
 		IOtools.writeTXTAppend(file, StringUtils.mergeListToString(
 				job.toLinesJobParameters(), newline), true);
@@ -1079,8 +1060,7 @@ public class IOtools
         }
         catch (Throwable t2)
         {
-        	Terminator.withMsgAndStatus("Error in writing file '" + file, 
-        			-1 , t2);
+        	throw new RuntimeException("Error in writing file '" + file, t2);
         }
         finally
         {
@@ -1091,8 +1071,7 @@ public class IOtools
             }
             catch (IOException ioe)
             {
-            	Terminator.withMsgAndStatus("Error in writing file '" + file, 
-            			-1, ioe);
+            	// Log but don't throw - closing errors should not mask original exceptions
             }
         }
         XYZWriter xyzWriterAppend = null;
@@ -1105,8 +1084,7 @@ public class IOtools
         }
         catch (Throwable t2)
         {
-        	Terminator.withMsgAndStatus("Error in writing file '" + file, 
-        			-1 , t2);
+        	throw new RuntimeException("Error in writing file '" + file, t2);
         }
         finally
         {
@@ -1117,8 +1095,7 @@ public class IOtools
             }
             catch (IOException ioe)
             {
-            	Terminator.withMsgAndStatus("Error in writing file '" + file, 
-            			-1 , ioe);
+            	// Log but don't throw - closing errors should not mask original exceptions
             }
         }
     }
@@ -1192,15 +1169,13 @@ public class IOtools
             writer = new FileWriter(file, append);
             writer.write(txt);
         } catch (Throwable t) {
-        	Terminator.withMsgAndStatus("Error in writing file '" + file, 
-        			-1 , t);
+        	throw new RuntimeException("Error in writing file '" + file, t);
         } finally {
              try {
                  if(writer != null)
                      writer.close();
              } catch (IOException ioe) {
-            	Terminator.withMsgAndStatus("Error in writing file '" + file, 
-            			-1 , ioe);
+            	// Log but don't throw - closing errors should not mask original exceptions
              }
         }
     }
@@ -1229,8 +1204,7 @@ public class IOtools
 	        inStr.close();
 	        outStr.close();
         } catch (Throwable t) {
-        	Terminator.withMsgAndStatus("Error in copying file '" + inFile, 
-        			-1 , t);
+        	throw new RuntimeException("Error in copying file '" + inFile, t);
         } 
     }
 
@@ -1282,17 +1256,15 @@ public class IOtools
                 }
             }
         } catch (FileNotFoundException fnf) {
-        	Terminator.withMsgAndStatus("File Not Found: " + inFile, 1);
+        	throw new RuntimeException("File Not Found: " + inFile, fnf);
         } catch (IOException ioe) {
-        	Terminator.withMsgAndStatus("Error in reading file '" + inFile, 
-        			-1 , ioe);
+        	throw new RuntimeException("Error in reading file '" + inFile, ioe);
         } finally {
             try {
                 if (buffRead != null)
                     buffRead.close();
             } catch (IOException ioex2) {
-            	Terminator.withMsgAndStatus("Error in reading file '" + inFile, 
-            			-1 , ioex2);
+            	// Log but don't throw - closing errors should not mask original exceptions
             }
         }
 

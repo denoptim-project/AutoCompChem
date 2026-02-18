@@ -90,9 +90,10 @@ public final class JobFactory
      * Build a {@link Job} from from an existing file.
      * @param file the file from which to read the definition of the job.
      * @return the resulting job
+     * @throws IOException if the file is not suitable for creating a Job.
      */
 	
-	public static Job buildFromFile(File file)
+	public static Job buildFromFile(File file) throws IOException
 	{
 		return buildFromFile(file, null);
 	}
@@ -107,10 +108,10 @@ public final class JobFactory
      * of the job. This is a way to customize a general-purpose job definition 
      * making it specific for the given string.
      * @return the resulting job.
-     * @throws IOException 
+     * @throws IOException if the file is not suitable for creating a Job.
      */
 	
-	public static Job buildFromFile(File file, String imposedStr)
+	public static Job buildFromFile(File file, String imposedStr) throws IOException
 	{
     	Job job = null;
     	
@@ -118,13 +119,7 @@ public final class JobFactory
     	switch (type)
     	{
     	case JSON:
-    		try {
-				job = buildFromJSONFile(file, imposedStr);
-			} catch (IOException e) {
-				Terminator.withMsgAndStatus("Format of file '" + file + "' does "
-						+ "not allow to create a Job. Cause: " + e.getMessage(),
-						-1, e);
-			}
+    		job = buildFromJSONFile(file, imposedStr);
     		break;
     		
     	case PAR:
@@ -133,11 +128,10 @@ public final class JobFactory
     		break;
     		
 		default:
-			Terminator.withMsgAndStatus("Format of file '" + file + "' does "
+			throw new IllegalArgumentException("Format of file '" + file + "' does "
 					+ "not allow to create a Job. Please make sure the file is "
 					+ "either a JSON file or TXT parameters file adhering to "
-					+ "ACC format." , -1);
-			break;	
+					+ "ACC format.");
     	}
     	return job;
 	}
@@ -170,9 +164,9 @@ public final class JobFactory
     	}
     	if (!(obj instanceof Job))
     	{
-    		Terminator.withMsgAndStatus("Format of file '" + file + "' does "
+    		throw new IllegalArgumentException("Format of file '" + file + "' does "
     				+ "not allow to create a Job. Deseralized object is '"
-    				+ obj.getClass().getName() + "'.", -1);
+    				+ obj.getClass().getName() + "'.");
     	}
     	Job job = (Job) obj;
     	job = procesParametersUponJobCreation(job);
@@ -192,9 +186,11 @@ public final class JobFactory
      * of the job. This is a way to customize a general-purpose job definition 
      * making it specific for the given string.
      * @return the resulting job
+     * @throws IOException if the file is not readable
      */
 
-    public static Job buildFromParametersFile(File file, String imposedStr)
+    public static Job buildFromParametersFile(File file, String imposedStr) 
+		throws IOException
     {
         List<TextBlockIndexed> blocks = FileAnalyzer.extractTextBlocks(
         		file,

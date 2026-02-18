@@ -42,7 +42,6 @@ import autocompchem.io.ACCJson;
 import autocompchem.log.LogUtils;
 import autocompchem.run.IOutputExposer;
 import autocompchem.run.Job;
-import autocompchem.run.Terminator;
 import autocompchem.utils.NumberUtils;
 
 
@@ -332,9 +331,9 @@ public abstract class Worker implements IOutputExposer
             		ParameterConstants.VERBOSITY).getValueAsString();
             if (!NumberUtils.isNumber(str))
 			{
-				Terminator.withMsgAndStatus("ERROR! Value '" + str + "' "
+				throw new IllegalArgumentException("Value '" + str + "' "
 						+ "cannot be converted to an integer. Check parameter "
-						+ ParameterConstants.VERBOSITY, -1);
+						+ ParameterConstants.VERBOSITY);
 			}
             Configurator.setLevel(logger.getName(), 
             		LogUtils.verbosityToLevel(Integer.parseInt(str)));
@@ -512,9 +511,9 @@ public abstract class Worker implements IOutputExposer
 	 */
 	protected void dealWithTaskMismatch()
 	{
-    	Terminator.withMsgAndStatus("ERROR! Task '" + task + "' is not "
+    	throw new IllegalStateException("Task '" + task + "' is not "
     			+ "linked to any method in "
-    			+ this.getClass().getSimpleName() + ".", -1);
+    			+ this.getClass().getSimpleName() + ".");
 	}
 	
 //------------------------------------------------------------------------------

@@ -42,7 +42,6 @@ import autocompchem.molecule.coordinationgeometry.CoordinationGeometryUtils;
 import autocompchem.molecule.geometry.GeometryAligner;
 import autocompchem.molecule.geometry.GeometryAlignment;
 import autocompchem.run.Job;
-import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
 import autocompchem.smarts.SMARTS;
 import autocompchem.worker.Task;
@@ -247,12 +246,12 @@ public class MolecularComparator extends AtomContainerInputProcessor
         //Get the atoms
         if (targetAtoms.equals("") || targetAtoms == null)
         {
-            Terminator.withMsgAndStatus("ERROR! MoleculeComparator requires "
+            throw new IllegalArgumentException("MoleculeComparator requires "
                 + "a SMARTS query to identify the target atom of which the "
                 + "geometry is to be compared with a reference structure. "
                 + "It seems that the SMARTS was not define. Please provide "
                 + "a SMARTS string by means of the keyword:value pair "
-                + "TARGETATOMSQUERY: <SMARTS_of_the_central_atom>.", -1);
+                + "TARGETATOMSQUERY: <SMARTS_of_the_central_atom>.");
         }
 
         //Get the atoms of which geometry have to be compared
@@ -269,23 +268,23 @@ public class MolecularComparator extends AtomContainerInputProcessor
             if (cause.contains("The AtomType") && 
                                         cause.contains("could not be found"))
             {
-                Terminator.withMsgAndStatus("ERROR! " + cause 
+                throw new IllegalArgumentException(cause 
                         + " To solve the problem try to move this "
-                        + "element to \"Du\" an try again.",-1);
+                        + "element to \"Du\" an try again.");
             }
             logger.warn("WARNING! Problems in using SMARTS queries. " + cause
             		+ NL + "Matches: "+msq.getNumMatchesMap());
         } 
         if (msq.getTotalMatches() < 1) {
-            Terminator.withMsgAndStatus("ERROR! Unable to find the central "
+            throw new IllegalArgumentException("Unable to find the central "
                 + "atom '" + targetAtoms + "' in molecule " 
-                + MolecularUtils.getNameOrID(iac) + ".", -1);
+                + MolecularUtils.getNameOrID(iac) + ".");
         } 
         else if (msq.getTotalMatches() > 1) 
         {
-            Terminator.withMsgAndStatus("ERROR! More than one atom matches the "
+            throw new IllegalArgumentException("More than one atom matches the "
                 + "given query (" + targetAtoms + "). Unable to unambiguously "
-                + "identify the central atom to be analysed",-1);
+                + "identify the central atom to be analysed");
         }
 
         int centerID =  msq.getMatchingIdxsOfSMARTS("center").get(0).get(0);
@@ -301,23 +300,23 @@ public class MolecularComparator extends AtomContainerInputProcessor
             if (cause.contains("The AtomType") &&
                                         cause.contains("could not be found"))
             {           
-                Terminator.withMsgAndStatus("ERROR! " + cause 
+                throw new IllegalArgumentException(cause 
                         + " To solve the problem try to move this "
-                        + "element to \"Du\" an try again.",-1);
+                        + "element to \"Du\" an try again.");
             }   
             logger.warn("WARNING! Problems in using SMARTS queries. " + cause
             		+ NL + "Matches: "+msqR.getNumMatchesMap());
         } 
         if (msqR.getTotalMatches() < 1) {
-            Terminator.withMsgAndStatus("ERROR! Unable to find the central "
+            throw new IllegalArgumentException("Unable to find the central "
                 + "atom '" + targetAtoms + "' in molecule "
-                + MolecularUtils.getNameOrID(referenceMol) + ".", -1);
+                + MolecularUtils.getNameOrID(referenceMol) + ".");
         } 
         else if (msqR.getTotalMatches() > 1) 
         {
-            Terminator.withMsgAndStatus("ERROR! More than one atom matches the "
+            throw new IllegalArgumentException("More than one atom matches the "
                 + "given query (" + targetAtoms + "). Unable to unambiguously "
-                + "identify the central atom to be analysed",-1);
+                + "identify the central atom to be analysed");
         }
         int centerIDR = msqR.getMatchingIdxsOfSMARTS("center").get(0).get(0);
         IAtom refAtm = referenceMol.getAtom(centerIDR);
@@ -373,7 +372,7 @@ public class MolecularComparator extends AtomContainerInputProcessor
 
         if (cnA != cnR)
         {
-            Terminator.withMsgAndStatus("ERROR! The geometries of target atom '"
+            throw new IllegalStateException("The geometries of target atom '"
                         + MolecularUtils.getAtomRef(atmA,molA) 
                         + "' in molecule "
                         + MolecularUtils.getNameOrID(molA)
@@ -381,7 +380,7 @@ public class MolecularComparator extends AtomContainerInputProcessor
                         + MolecularUtils.getAtomRef(atmR,molR)
                         + "' in molecule "
                         + MolecularUtils.getNameOrID(molR)
-                        + " have different CN (" + cnA + ", " + cnR + ").",-1);
+                        + " have different CN (" + cnA + ", " + cnR + ").");
         }
 
 
@@ -452,10 +451,9 @@ public class MolecularComparator extends AtomContainerInputProcessor
 		try {
 			alignment = GeometryAligner.alignGeometries(referenceMol, iac);
 		} catch (IllegalArgumentException | CloneNotSupportedException e) {
-			 Terminator.withMsgAndStatus("ERROR! Could not match reference "
+			 throw new RuntimeException("Could not match reference "
 			 		+ "substructure in geometry to edit. "
-			 		+ "Cannot compare moleculed by superposition.", -1, e);
-			 return; // Unreachable, but satisfies linter
+			 		+ "Cannot compare moleculed by superposition.", e);
 		}
 		logger.debug("Comparison by superposition - RMSD: " + alignment.getRMSD());
 

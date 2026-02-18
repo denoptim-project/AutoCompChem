@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -65,8 +66,17 @@ public class ACCMainTest
     	@SuppressWarnings("unused")
 		String task = DummyWorker.DUMMYTASKTASK.casedID;
     	
-    	Job job = ACCMain.parseCLIArgs(args);
-    	ParameterStorage params = job.getParameters();
+    	Job job = null;
+		try {
+			job = ACCMain.parseCLIArgs(args);
+		} catch (IOException e) {
+			throw new RuntimeException("Failed to parse CLI arguments: " 
+					+ e.getMessage(), e);
+		}
+		if (job == null) {
+			throw new RuntimeException("Job from parsing CLI args is null.");
+		}
+		ParameterStorage params = job.getParameters();
     	
     	assertEquals(SoftwareId.ACC, job.getAppID(),"Job APP");
     	assertTrue(params.contains("long"),"Parsed long and quoted option.");
@@ -88,7 +98,6 @@ public class ACCMainTest
         
         final String RTN = "FromCLI";
         final String EXT = "_suffix.ext";
-        
         
         String tmpPathName = tempDir.getAbsolutePath() 
         		+ System.getProperty("file.separator") + "acc.params";
@@ -114,7 +123,16 @@ public class ACCMainTest
         		"-P1","value_from_CLI","-p", tmpPathName,
         		"--"+ParameterConstants.STRINGFROMCLI, RTN};
     	
-    	Job job = ACCMain.parseCLIArgs(args);
+    	Job job = null;
+		try {
+			job = ACCMain.parseCLIArgs(args);
+		} catch (IOException e) {
+			throw new RuntimeException("Failed to parse CLI arguments: " 
+					+ e.getMessage(), e);
+		}
+		if (job == null) {
+			throw new RuntimeException("Job from parsing CLI args is null.");
+		}
     	
     	assertEquals(SoftwareId.ACC,job.getAppID(),"Job APP");
     	assertEquals(DummyWorker.DUMMYTASKTASK.casedID,job.getParameter(

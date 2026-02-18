@@ -18,6 +18,7 @@ package autocompchem.run;
  */
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -113,8 +114,8 @@ public class JobDefinitionConverter extends Worker
             FileUtils.foundAndPermissions(pathname,true,false,false);
             this.inFile = getNewFile(pathname);
         } else {
-			Terminator.withMsgAndStatus("ERROR! Missing '" 
-					+ WorkerConstants.PARINFILE + "'.", -1);
+			throw new IllegalArgumentException("Missing '" 
+					+ WorkerConstants.PARINFILE + "'.");
         }
     	
     	if (params.contains(WorkerConstants.PAROUTFILE))
@@ -133,8 +134,8 @@ public class JobDefinitionConverter extends Worker
 		        }
 	        }
         } else {
-			Terminator.withMsgAndStatus("ERROR! Missing '" 
-					+ WorkerConstants.PAROUTFILE + "'.", -1);
+			throw new IllegalArgumentException("Missing '" 
+					+ WorkerConstants.PAROUTFILE + "'.");
         }
         
         if (params.contains(WorkerConstants.PAROUTFORMAT))
@@ -156,6 +157,7 @@ public class JobDefinitionConverter extends Worker
 	 */
 	public static void convertJobDefinitionFile(File inFile, File outFile, 
 			ACCFileType outFormat) 
+		throws IOException
 	{	
 		Job job = JobFactory.buildFromFile(inFile);
 		
@@ -171,9 +173,8 @@ public class JobDefinitionConverter extends Worker
 	    		break;
     		
     		default:
-    			Terminator.withMsgAndStatus("ERROR! Format '" + outFormat 
-    					+ "' cannot be used to write Jobs.", -1);
-    			break;
+    			throw new IllegalArgumentException("Format '" + outFormat 
+    					+ "' cannot be used to write Jobs.");
     	}
 	}
 
@@ -182,7 +183,12 @@ public class JobDefinitionConverter extends Worker
 	@Override
 	public void performTask() 
 	{
-		convertJobDefinitionFile(inFile, outFile, outFormat);
+		try {
+			convertJobDefinitionFile(inFile, outFile, outFormat);
+		} catch (IOException e) {
+			throw new RuntimeException("Failed to convert job definition file: " 
+					+ e.getMessage(), e);
+		}
 	}
 	
 //------------------------------------------------------------------------------

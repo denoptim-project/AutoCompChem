@@ -26,7 +26,6 @@ import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.atom.AtomUtils;
-import autocompchem.run.Terminator;
 import autocompchem.wiro.chem.gaussian.GaussianConstants;
 
 /**
@@ -93,8 +92,8 @@ public class GaussianMolSpecification
                 }
                 catch (Throwable t)
                 {
-                    Terminator.withMsgAndStatus("ERROR! Unable to convert '"
-                        + line + "' into an integer charge.",-1);
+                    throw new IllegalArgumentException("Unable to convert '"
+                        + line + "' into an integer charge.", t);
                 }
             }
             else if (line.startsWith(GaussianConstants.SPINMLTKEY))
@@ -106,8 +105,8 @@ public class GaussianMolSpecification
                 }
                 catch (Throwable t)
                 {
-                    Terminator.withMsgAndStatus("ERROR! Unable to convert '"
-                        + line + "' into an integer charge.",-1);
+                    throw new IllegalArgumentException("Unable to convert '"
+                        + line + "' into an integer charge.", t);
                 }
             }
         }

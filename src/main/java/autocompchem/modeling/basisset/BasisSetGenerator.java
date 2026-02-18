@@ -38,7 +38,6 @@ import autocompchem.io.IOtools;
 import autocompchem.molecule.AtomContainerInputProcessor;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Job;
-import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
 import autocompchem.smarts.MatchingIdxs;
 import autocompchem.smarts.SMARTS;
@@ -292,8 +291,8 @@ public class BasisSetGenerator extends AtomContainerInputProcessor
             }
             else 
             {
-                Terminator.withMsgAndStatus("ERROR! Unknown basis set "
-                                 + "assignation rule '" + r.getType() + ".",-1);
+                throw new IllegalArgumentException("Unknown basis set "
+                                 + "assignation rule '" + r.getType() + ".");
             }
         }
         logger.info("SMARTS rules for basis set assignation: " + smarts + NL
@@ -304,7 +303,7 @@ public class BasisSetGenerator extends AtomContainerInputProcessor
         if (msq.hasProblems())
         {
             String cause = msq.getMessage();
-            Terminator.withMsgAndStatus("ERROR! " +cause,-1);
+            throw new IllegalArgumentException(cause);
         }
         for (String rulRef : smarts.keySet())
         {
@@ -363,10 +362,10 @@ public class BasisSetGenerator extends AtomContainerInputProcessor
             }
             if (!hasAtmSpecBS && !matchedByElSpecBS && !this.allowPartial)
             {
-                String msg = "ERROR! Atom "
+                String msg = "Atom "
                               + MolecularUtils.getAtomRef(atm,mol) + " was not "
                               + "matched by any basis set assignation rule! ";
-                Terminator.withMsgAndStatus(msg,-1);
+                throw new IllegalStateException(msg);
             }
         }
 
@@ -404,11 +403,11 @@ public class BasisSetGenerator extends AtomContainerInputProcessor
                     } else {
                         if (!impBS.hasElement(elSymb))
                         {
-                            String msg = "ERROR! Basis set file imported for "
+                            String msg = "Basis set file imported for "
                                          + "rule '" + rulRef 
                                          + "' does not contains element '"
                                          + elSymb + "'. Exiting.";
-                            Terminator.withMsgAndStatus(msg,-1);
+                            throw new IllegalStateException(msg);
                         }
     
                         CenterBasisSet cbs = impBS.getCenterBasisSetForElement(
@@ -469,11 +468,11 @@ public class BasisSetGenerator extends AtomContainerInputProcessor
                         // NB: the center Id is case insensitive: use upper!
                         if (!impBS.hasElement(elSymb))
                         {
-                            String msg = "ERROR! Basis set file imported for "
+                            String msg = "Basis set file imported for "
                                          + "rule '" + rulRef 
                                          + "' does not contains element '"
                                          + elSymb + "'. Exiting.";
-                            Terminator.withMsgAndStatus(msg,-1);
+                            throw new IllegalStateException(msg);
                         }
                         CenterBasisSet locCBS = impBS.getCenterBasisSetForElement(
                         		elSymb.toUpperCase());

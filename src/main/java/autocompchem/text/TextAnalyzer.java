@@ -18,6 +18,7 @@ package autocompchem.text;
  */
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -32,7 +33,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import autocompchem.run.Terminator;
 import autocompchem.utils.StringUtils;
 import autocompchem.wiro.chem.ChemSoftConstants;
 
@@ -203,6 +203,7 @@ public class TextAnalyzer
                                                              String pattern1,
                                                              String pattern2,
                                                              boolean inclPatts)
+            throws IOException
     {
         List<List<String>> blocks = extractMultiTxtBlocksWithDelimiters(
                                                                       buffRead,
@@ -237,6 +238,7 @@ public class TextAnalyzer
                                                                String pattern2,
                                                              boolean onlyFirst,
                                                               boolean inclPatts)
+            throws IOException
     {
         return extractMultiTxtBlocksWithDelimiters(buffRead,
                                  new ArrayList<String>(Arrays.asList(pattern1)),
@@ -271,6 +273,7 @@ public class TextAnalyzer
                                                   List<String> endPattrns,
                                                              boolean onlyFirst,
                                                              boolean inclPatts)
+            throws IOException
     {
         List<List<String>> blocks = new ArrayList<List<String>>();
 
@@ -370,6 +373,7 @@ public class TextAnalyzer
                                                   List<String> endPattrns,
                                                              boolean onlyFirst,
                                                              boolean inclPatts)
+            throws IOException
     {
         return               extractMapOfTxtBlocksWithDelimiters(buffRead,
                                                        new ArrayList<String>(),
@@ -408,6 +412,7 @@ public class TextAnalyzer
                                                               String endPattrn,
                                                              boolean onlyFirst,
                                                              boolean inclPatts)
+            throws IOException
     {
         List<String> startPattrns = new ArrayList<String>();
         List<String> endPattrns = new ArrayList<String>();
@@ -451,6 +456,7 @@ public class TextAnalyzer
                                                   List<String> endPattrns,
                                                              boolean onlyFirst,
                                                              boolean inclPatts)
+            throws IOException
     {
         return extractTextBlocks(buffRead, new ArrayList<String>(), 
                                                                   startPattrns,
@@ -492,6 +498,7 @@ public class TextAnalyzer
                                                   List<String> endPattrns,
                                                              boolean onlyFirst,
                                                              boolean inclPatts)
+            throws IOException
     {
         return extractTextBlocks(buffRead, slPattrns, startPattrns, endPattrns,
                                                                      onlyFirst,
@@ -535,6 +542,7 @@ public class TextAnalyzer
                                                              boolean onlyFirst,
                                                              boolean inclPatts,
                                                       boolean expandBeyondNests)
+            throws IOException
     {
         // This is what we well return
         List<TextBlockIndexed> blocks = new ArrayList<TextBlockIndexed>();
@@ -553,7 +561,6 @@ public class TextAnalyzer
         int countMatches = -1;
 
         // Start reading the input text feed line by line
-        String msg = "";
         try {
             String line = null;
             outerLoopOnLines:
@@ -780,10 +787,8 @@ public class TextAnalyzer
                 }
             }
         } catch (Throwable t) {
-            msg = t.getMessage();
-            t.printStackTrace();
-            Terminator.withMsgAndStatus("ERROR! Unable to read bufferedReader "
-                + ". " + msg,-1);
+            throw new IOException("Unable to read bufferedReader. " 
+                    + t.getMessage(), t);
         }
 
         return blocks;
@@ -828,6 +833,7 @@ public class TextAnalyzer
                                                   List<String> endPattrns,
                                                              boolean onlyFirst,
                                                              boolean inclPatts)
+            throws IOException
     {
         TreeMap<String,List<String>> blocks = 
                 new TreeMap<String,List<String>>(new MetchKeyComparator());
@@ -842,7 +848,6 @@ public class TextAnalyzer
             countsML.add(-1);
         }
         int countMatches = -1;
-        String msg = "";
         try {
             String line = null;
             outerLoopOnLines: 
@@ -969,10 +974,8 @@ public class TextAnalyzer
                 }
             }
         } catch (Throwable t) {
-            msg = t.getMessage();
-            t.printStackTrace();
-            Terminator.withMsgAndStatus("ERROR! Unable to read bufferedReader " 
-                + ". " + msg,-1);
+            throw new IOException("Unable to read bufferedReader. " 
+                    + t.getMessage(), t);
         } 
         return blocks;
     }
@@ -1043,10 +1046,10 @@ public class TextAnalyzer
                                                                String pattern1,
                                                                int size,
                                                                boolean inclPatt)
+            throws IOException
     {
         ArrayList<ArrayList<String>> blocks =
                                              new ArrayList<ArrayList<String>>();
-        String msg = "";
         try {
             String line = null;
             while ((line = buffRead.readLine()) != null)
@@ -1071,9 +1074,8 @@ public class TextAnalyzer
                 }
             }
         } catch (Throwable t) {
-            msg = t.getMessage();
-            Terminator.withMsgAndStatus("ERROR! Unable to read bufferedReader. "
-                + msg,-1);
+            throw new IOException("Unable to read bufferedReader. " 
+                    + t.getMessage(), t);
         } 
 
         return blocks;
@@ -1124,9 +1126,9 @@ public class TextAnalyzer
 
         if (!understood)
         {
-        	Terminator.withMsgAndStatus("ERROR! "
-        			+ "TextAnalyzer.getMatchingMethod failed to "
-        			+ "understand string '"+str+"'.", -1);
+        	throw new IllegalArgumentException(
+        			"TextAnalyzer.getMatchingMethod failed to "
+        			+ "understand string '"+str+"'.");
         }
         
         return startMidEnd;
@@ -1420,6 +1422,7 @@ public class TextAnalyzer
     public static List<String> readTextWithMultilineBlocks(
                         List<String> lines, String commentLab,
                         String start, String end)
+            throws IllegalStateException
     {
         //Start interpretation of the formatted text
         List<String> newLines = new ArrayList<String>();
@@ -1502,18 +1505,18 @@ public class TextAnalyzer
         		{
         			sb.append(l + NL);
         		}
-        		Terminator.withMsgAndStatus("ERROR! There is an label '" 
+        		throw new IllegalStateException("There is an label '" 
         				+ ChemSoftConstants.JDCLOSEBLOCK+ "' indicating the "
         				+ "end of a multi line block of text, but no opening "
         				+ "label '" + ChemSoftConstants.JDOPENBLOCK + "' was "
         				+ "found before this point. Check input up to this: "
-        				+ NL + sb.toString(), -1);
+        				+ NL + sb.toString());
         	}
         }
         
         if (nestingLevel>0)
         {
-        	String msg = NL + "ERROR! ";
+        	String msg = NL;
         	if (nestingLevel > 1)
         	{
         		msg = msg + "There are "+nestingLevel+" unterminated multi "
@@ -1528,15 +1531,15 @@ public class TextAnalyzer
             {
             	msg = msg + NL + " -> '" + l + "'";
             }
-        	Terminator.withMsgAndStatus(msg, -1);
+        	throw new IllegalStateException(msg);
         }
         if (nestingLevel<0)
         {
-        	Terminator.withMsgAndStatus("ERROR! There is an label '" 
+        	throw new IllegalStateException("There is an label '" 
     				+ ChemSoftConstants.JDCLOSEBLOCK+ "' indicating the "
     				+ "end of a multi line block of text, but no opening "
     				+ "label '" + ChemSoftConstants.JDOPENBLOCK + "' was "
-    				+ "found before the last line of text.", -1);
+    				+ "found before the last line of text.");
         }
         
         return newLines;

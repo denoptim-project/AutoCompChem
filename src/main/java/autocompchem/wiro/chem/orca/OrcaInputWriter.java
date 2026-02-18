@@ -47,7 +47,6 @@ import autocompchem.molecule.intcoords.InternalCoord;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrixAtom;
 import autocompchem.run.Job;
-import autocompchem.run.Terminator;
 import autocompchem.utils.StringUtils;
 import autocompchem.wiro.chem.ChemSoftConstants;
 import autocompchem.wiro.chem.ChemSoftInputWriter;
@@ -183,13 +182,13 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 					+ "input file text lines.";
 			if (d.getAllSubDirectives().size()>0)
 			{
-				Terminator.withMsgAndStatus("ERROR! Unexpected sub "
-						+ "directives "+errTail, -1);
+				throw new IllegalStateException("Unexpected sub "
+						+ "directives "+errTail);
 			}
 			if (d.getAllDirectiveDataBlocks().size()>0)
 			{
-				Terminator.withMsgAndStatus("ERROR! Unexpected directive "
-						+ "data blocks "+errTail, -1);
+				throw new IllegalStateException("Unexpected directive "
+						+ "data blocks "+errTail);
 			}
 			return lines;
     	}
@@ -226,13 +225,13 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 						+ "input file text lines.";
 				if (d.getAllSubDirectives().size()>0)
 				{
-					Terminator.withMsgAndStatus("ERROR! Unexpected sub "
-							+ "directives "+errTail, -1);
+					throw new IllegalStateException("Unexpected sub "
+							+ "directives "+errTail);
 				}
 				if (d.getAllDirectiveDataBlocks().size()>0)
 				{
-					Terminator.withMsgAndStatus("ERROR! Unexpected directive "
-							+ "data blocks "+errTail, -1);
+					throw new IllegalStateException("Unexpected directive "
+							+ "data blocks "+errTail);
 				}
 				lines.add(line);
 				break;
@@ -1036,14 +1035,13 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 					{
 						if (sysDefDir == null)
 						{
-							Terminator.withMsgAndStatus("ERROR! Neither '"
+							throw new IllegalStateException("Neither '"
 								+ OrcaConstants.COORDSDIRNAME + "' nor '"
 								+ OrcaConstants.STARDIRNAME + "' directive found. "
 								+ "Cannot project atom specific info onto the"
 								+ "definition of the system. Yet, the following "
 								+ "contains atom-specific information: " + NL
-								+ dd, -1);
-							return; // should not be reached, but satisfies linter
+								+ dd);
 						}
 						
 						logger.warn("WARNING: "
@@ -1058,15 +1056,14 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 								OrcaConstants.COORDSDIRNAME);
 						if (systemDefSubDirs.size()==0)
 						{
-							Terminator.withMsgAndStatus("WARNING: "
-									+ "An index-specific basis set found in "
+							throw new IllegalStateException(
+									"An index-specific basis set found in "
 									+ "this "
 									+ "job, but no directive named '" 
 									+ OrcaConstants.COORDSDIRNAME + "' is found "
 									+ "within the main '"
 									+ OrcaConstants.COORDSDIRNAME + "' or '"
-									+ OrcaConstants.STARDIRNAME + "' directive.", 
-									-1);
+									+ OrcaConstants.STARDIRNAME + "' directive.");
 						}
 					}
 						
@@ -1108,13 +1105,13 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 						{
 							if (cbs.getNamedComponents().size()>1)
 							{
-								Terminator.withMsgAndStatus("Unable to "
+								throw new UnsupportedOperationException("Unable to "
 										+ "deal "
 										+ "with multiple basis set "
 										+ "components "
 										+ "for a single center. If this is "
 										+ "really what you need, please "
-										+ "contact the authors.", -1);
+										+ "contact the authors.");
 							}
 
 							String dirName = bsName;
@@ -1301,11 +1298,10 @@ public class OrcaInputWriter extends ChemSoftInputWriter
                 // NB: in Orca we expect only one coefficient
                 if (p.getCoeff().size()>1)
                 {
-                	Terminator.withMsgAndStatus("ERROR! In Orca we expect only "
+                	throw new IllegalArgumentException("In Orca we expect only "
                 			+ "one coefficient, but I've found " 
                 			+ p.getCoeff().size()
-                			+ " in the basis set. Change format of basis set.",
-                			-1);
+                			+ " in the basis set. Change format of basis set.");
                 }
                 line = line + String.format(Locale.ENGLISH, cForm, 
                 		p.getCoeff().get(0));
@@ -1373,12 +1369,12 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 			l = "k";
 			break;
 		default:
-			Terminator.withMsgAndStatus("ERROR! You requied to convert "
+			throw new IllegalArgumentException("You requied to convert "
     				+ "angular momentom " + azimuthalNumber
     				+ " into historical letter, but Orca 5.0.4 declares "
     				+ "up to 'k' as maximum angular momentum. If this "
     				+ "convention has changed, please inform the authors of "
-    				+ "AutoCompChem for an upgrade", -1);
+    				+ "AutoCompChem for an upgrade");
 		}
 		return l;
 	}

@@ -48,7 +48,6 @@ import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
 
 import autocompchem.atom.AtomUtils;
 import autocompchem.geometry.DistanceMatrix;
-import autocompchem.run.Terminator;
 
 /**
  * Toolbox for molecular objects
@@ -619,9 +618,8 @@ public class MolecularUtils
         else if (bndOrder == 0)
             return IBond.Order.valueOf("UNSET");
         else {
-            Terminator.withMsgAndStatus("ERROR! Integer '" + bndOrder 
-                              + "' is not recognized ad a valid bond order",-1);
-            return IBond.Order.valueOf("UNSET");
+            throw new IllegalArgumentException("Integer '" + bndOrder 
+                              + "' is not recognized ad a valid bond order");
         }
     }
 
@@ -646,9 +644,8 @@ public class MolecularUtils
         else if (bndOrder.equals(IBond.Order.valueOf("UNSET")))
             return 0;
         else {
-            Terminator.withMsgAndStatus("ERROR! Integer '" + bndOrder
-                              + "' is not recognized ad a valid bond order",-1);
-            return -1;
+            throw new IllegalArgumentException("Integer '" + bndOrder
+                              + "' is not recognized ad a valid bond order");
         }
    }
 
@@ -801,18 +798,18 @@ public class MolecularUtils
 			Kekulization.kekulize(mol);
 		} catch (CDKException e) {
 			e.printStackTrace();
-			Terminator.withMsgAndStatus("ERROR! Kekulization failes. "
+			throw new RuntimeException("Kekulization failes. "
 					+ "To by-pass "
 					+ "this problem, generate input structures with "
 					+ "connectivity tables that do NOT use aromatic bond "
-					+ "type.",-1);
+					+ "type.", e);
 		}
 		
 		for (IBond bnd : mol.bonds())
 		{
 			if (bnd.getOrder().equals(IBond.Order.UNSET)) 
 			{
-				String msg = "ERROR! Kekulization could not "
+				String msg = "Kekulization could not "
 						+ "assign all bond orders. In particular, the bond "
 						+ "order of bond involving ";
 				for (IAtom atm : bnd.atoms())
@@ -823,7 +820,7 @@ public class MolecularUtils
 						+ "this problem, generate input structures with "
 						+ "connectivity tables that do NOT use aromatic bond "
 						+ "type.";
-				Terminator.withMsgAndStatus(msg, -1);
+				throw new RuntimeException(msg);
 			}
 		}
 	}

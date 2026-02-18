@@ -31,7 +31,6 @@ import java.util.TreeMap;
 
 import org.apache.tika.Tika;
 
-import autocompchem.run.Terminator;
 import autocompchem.text.TextAnalyzer;
 import autocompchem.text.TextBlockIndexed;
 
@@ -158,6 +157,7 @@ public class FileAnalyzer
                                                              String pattern1,
                                                              String pattern2,
                                                              boolean inclPatts)
+            throws IOException
     {
         List<List<String>> blocks = extractMultiTxtBlocksWithDelimiters(inFile,
                                                                        pattern1,
@@ -190,6 +190,7 @@ public class FileAnalyzer
                                                              String pattern2,
                                                              boolean onlyFirst,
                                                              boolean inclPatts)
+            throws IOException
     {
         return extractMultiTxtBlocksWithDelimiters(inFile,
                                  new ArrayList<String>(Arrays.asList(pattern1)),
@@ -223,11 +224,10 @@ public class FileAnalyzer
                                                   List<String> endPattrns,
                                                              boolean onlyFirst,
                                                              boolean inclPatts)
+            throws IOException
     {
         List<List<String>> blocks = new ArrayList<List<String>>();
 
-        boolean badTermination = false;
-        String msg = "";
         try (BufferedReader buffRead = new BufferedReader(new FileReader(inFile))) {
             blocks = TextAnalyzer.extractMultiTxtBlocksWithDelimiters(buffRead,
                                                               startPattrns,
@@ -235,12 +235,9 @@ public class FileAnalyzer
                                                               onlyFirst,
                                                               inclPatts);
         } catch (Throwable t) {
-            badTermination = true;
-            msg = t.getMessage();
+            throw new IOException("Unable to read file " + inFile + ". " 
+                    + t.getMessage(), t);
         }
-
-        if (badTermination)
-            Terminator.withMsgAndStatus("ERROR! " + msg, -1);
 
         return blocks;
     }
@@ -273,6 +270,7 @@ public class FileAnalyzer
                                                               String endPattrn,
                                                              boolean onlyFirst,
                                                              boolean inclPatts)
+            throws IOException
     {
         List<String> startPattrns = new ArrayList<String>();
         List<String> endPattrns = new ArrayList<String>();
@@ -289,8 +287,9 @@ public class FileAnalyzer
             		onlyFirst,
             		inclPatts,
             		false);
-        } catch (Exception e) {
-            Terminator.withMsgAndStatus("ERROR! Unable to read "+ file,-1);
+        } catch (Throwable t) {
+            throw new IOException("Unable to read " + file + ". " 
+                    + t.getMessage(), t);
         }
         return blocks;
     }
@@ -367,6 +366,7 @@ public class FileAnalyzer
                                                   List<String> endPattrns,
                                                              boolean onlyFirst,
                                                              boolean inclPatts)
+            throws IOException
     {
         return               extractMapOfTxtBlocksWithDelimiters(inFile,
                                                        new ArrayList<String>(),
@@ -414,11 +414,11 @@ public class FileAnalyzer
                                                   List<String> endPattrns,
                                                              boolean onlyFirst,
                                                              boolean inclPatts)
+            throws IOException
     {
         TreeMap<String,List<String>> blocks = 
                 new TreeMap<String,List<String>>(new MetchKeyComparator());
 
-        String msg = "";
         try (BufferedReader buffRead = new BufferedReader(new FileReader(inFile))) {
             blocks = TextAnalyzer.extractMapOfTxtBlocksWithDelimiters(buffRead,
                                                                      slPattrns,
@@ -427,9 +427,8 @@ public class FileAnalyzer
                                                                      onlyFirst,
                                                                      inclPatts);
         } catch (Throwable t) {
-            msg = t.getMessage();
-            Terminator.withMsgAndStatus("ERROR! Unable to read file " + inFile
-                + ". " + msg,-1);
+            throw new IOException("Unable to read file " + inFile + ". " 
+                    + t.getMessage(), t);
         }
         return blocks;
     }
@@ -495,9 +494,9 @@ public class FileAnalyzer
 
     public static List<List<String>> extractMultiTxtBlocksWithDelimiterAndSize(
     		String inFile, String pattern1, int size, boolean inclPatt)
+            throws IOException
     {
         List<List<String>> blocks = new ArrayList<List<String>>();
-        String msg = "";
         try (BufferedReader buffRead = new BufferedReader(new FileReader(inFile))) {
             String line = null;
             while ((line = buffRead.readLine()) != null)
@@ -522,9 +521,8 @@ public class FileAnalyzer
                 }
             }
         } catch (Throwable t) {
-            msg = t.getMessage();
-            Terminator.withMsgAndStatus("ERROR! Unable to read file " + inFile
-                + ". " + msg,-1);
+            throw new IOException("Unable to read file " + inFile + ". " 
+                    + t.getMessage(), t);
         }
         return blocks;
     }
@@ -539,6 +537,7 @@ public class FileAnalyzer
      */
    
     public static List<String> grep(String inFile, String pattern)
+            throws IOException
     {
     	Set<String> set = new HashSet<String>();
     	set.add(pattern);
@@ -556,19 +555,15 @@ public class FileAnalyzer
      */
    
     public static List<String> grep(String inFile, Set<String> patterns)
+            throws IOException
     {
         List<String> matches = new ArrayList<String>();
-        boolean badTermination = false;
-        String msg = "";
         try (BufferedReader buffRead = new BufferedReader(new FileReader(inFile))) {
             matches = TextAnalyzer.grep(buffRead,patterns);
         } catch (Throwable t) {
-            badTermination = true;
-            msg = t.getMessage();
+            throw new IOException("Unable to read file " + inFile + ". " 
+                    + t.getMessage(), t);
         }
-
-        if (badTermination)
-            Terminator.withMsgAndStatus("ERROR! " + msg, -1);
         
         return matches;
     }   

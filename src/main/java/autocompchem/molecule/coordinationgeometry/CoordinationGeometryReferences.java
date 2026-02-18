@@ -32,7 +32,6 @@ import javax.vecmath.Point3d;
 import org.openscience.cdk.PseudoAtom;
 import org.openscience.cdk.interfaces.IAtom;
 
-import autocompchem.run.Terminator;
 
 /**
  *   Collection of reference coordination geometries 
@@ -82,9 +81,9 @@ public class CoordinationGeometryReferences
                 String[] partsOfAtm = parts[i].split(",");
                 if (partsOfAtm.length != 4)
                 {
-                    Terminator.withMsgAndStatus("ERROR! Check reference "
+                    throw new IllegalArgumentException("Check reference "
                         + "geometry " + cgName + " in file " + file
-                        + ". Wrong number of fields for atom " + i, -1);
+                        + ". Wrong number of fields for atom " + i);
                 }
                 String centerLabel = partsOfAtm[0];
                 double xCoord = Double.parseDouble(partsOfAtm[1]);
@@ -109,8 +108,8 @@ public class CoordinationGeometryReferences
         }
         } catch (IOException e) {
             e.printStackTrace();
-            Terminator.withMsgAndStatus("ERROR! Unable to read reference "
-                + "coordination geometries", -1);
+            throw new RuntimeException("Unable to read reference "
+                + "coordination geometries", e);
         }
 
         isInitialized = true;

@@ -29,7 +29,6 @@ import java.util.Set;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
-import autocompchem.run.Terminator;
 import autocompchem.smarts.SMARTS;
 import autocompchem.utils.NumberUtils;
 
@@ -224,9 +223,9 @@ public class AtomTupleMatchingRule
         String[] p = txt.trim().split("\\s+");
         if (p.length < 1)
         {
-            Terminator.withMsgAndStatus("ERROR! Not enough words to make a "
+            throw new IllegalArgumentException("Not enough words to make a "
             		+ "rule for matching atom tuples. Check line '" + txt 
-            		+ "'.", -1);
+            		+ "'.");
         }
         List<String> parts = new ArrayList<String>(Arrays.asList(p));
         
@@ -278,9 +277,9 @@ public class AtomTupleMatchingRule
     		// check for consistency with expectation: we are either reading an
     		// atom identifier (SMARTS or index) or a keyword.
     		if (readingIDs && !NumberUtils.isParsableToInt(word)) {
-				Terminator.withMsgAndStatus("Wrong syntax in "
+				throw new IllegalArgumentException("Wrong syntax in "
         				+ "line '" + txt + "'. Word '" + word 
-        				+ "' is unexpected.", -1);
+        				+ "' is unexpected.");
             }
     		
         	if (readingIDs)

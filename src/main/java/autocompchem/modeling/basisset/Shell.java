@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-import autocompchem.run.Terminator;
 
 /**
  * Object representing a single shell: a set of functions that have the same
@@ -284,10 +283,10 @@ public class Shell implements Cloneable
                 break;
 
             default:
-                String msg = "ERROR! Format '" + format + "' is not a known "
+                String msg = "Format '" + format + "' is not a known "
                              + "format for reporting basis sets (in Shell). "
                              + "Check your input.";
-                Terminator.withMsgAndStatus(msg,-1);
+                throw new IllegalArgumentException(msg);
         }
         return sb.toString();
     }

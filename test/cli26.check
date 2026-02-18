@@ -10,7 +10,7 @@ if [ ! -f "cli26_bad_w.log" ] ; then not_passed $LINENO ; fi
 n=0; n=$(grep -c -i "did NOT terminate normally" "cli26_bad_w.log")
 if [ 1 != "$n" ] ; then not_passed $LINENO ; fi
 
-n=0; n=$(grep -c -i "Termination triggered by violation" "cli26_bad_w.log")
+n=0; n=$(grep -c -i "Violation of the normal termination requirement" "cli26_bad_w.log")
 if [ 1 != "$n" ] ; then not_passed $LINENO ; fi
 
 if [ ! -f "cli26_bad_wo.log" ] ; then not_passed $LINENO ; fi

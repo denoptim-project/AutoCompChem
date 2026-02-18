@@ -24,7 +24,6 @@ import java.util.Set;
 
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterUtils;
-import autocompchem.run.Terminator;
 import autocompchem.utils.StringUtils;
 import autocompchem.wiro.chem.gaussian.GaussianConstants;
 
@@ -139,11 +138,11 @@ public class GaussianOptionsSection
             key = actualLine.substring(0,actualLine.indexOf("="));
             value = actualLine.substring(actualLine.indexOf("=") + 1);
         } else {
-            String msg = "ERROR! Attempt to create a GaussianOptionsSection "
+            String msg = "Attempt to create a GaussianOptionsSection "
                         + "without specifying a reference name for the option "
                         + "(i.e., '=' not found). Check the following line in "
                         + "your input: " + line;
-            Terminator.withMsgAndStatus(msg,-1);
+            throw new IllegalArgumentException(msg);
         }
 
         ArrayList<String> keyValuePair = new ArrayList<String>();

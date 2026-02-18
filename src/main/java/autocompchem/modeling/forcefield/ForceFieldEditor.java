@@ -34,7 +34,6 @@ import org.openscience.cdk.AtomType;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileUtils;
 import autocompchem.run.Job;
-import autocompchem.run.Terminator;
 import autocompchem.smarts.SMARTS;
 import autocompchem.utils.NumberAwareStringComparator;
 import autocompchem.wiro.chem.tinker.TinkerForceFieldHandler;
@@ -248,9 +247,8 @@ public class ForceFieldEditor extends Worker
         {
             if (noOutput)
             {
-                String cause = "ERROR! ForceFieldEditor: OUTFORMAT defined"
-                                + " while running in no-output mode";
-                Terminator.withMsgAndStatus("ERROR! " + cause,-1);
+                throw new IllegalStateException("ForceFieldEditor: OUTFORMAT defined"
+                                + " while running in no-output mode");
             }
             this.outFormat = 
                         params.getParameter("OUTFORMAT").getValue().toString();
@@ -270,13 +268,13 @@ public class ForceFieldEditor extends Worker
                 String[] words = l.split("\\s+");
                 if (words.length < 2)
                 {
-                    Terminator.withMsgAndStatus("ERROR! Expecting more than "
-                         + "one space-separated words in line '" + l + "'.",-1);
+                    throw new IllegalArgumentException("Expecting more than "
+                         + "one space-separated words in line '" + l + "'.");
                 }
                 if (!SMARTS.isSingleAtomSMARTS(words[0]))
                 {
-                    Terminator.withMsgAndStatus("ERROR! Expecting SMARTS in "
-                                                      + "line '" + l + "'.",-1);
+                    throw new IllegalArgumentException("Expecting SMARTS in "
+                                                      + "line '" + l + "'.");
                 }
                 Map<String,String> opts = new HashMap<String,String>();
                 for (int j=1; j<words.length; j++)
@@ -284,8 +282,8 @@ public class ForceFieldEditor extends Worker
                     String[] kv = words[j].split("=");
                     if (kv.length != 2)
                     {
-                        Terminator.withMsgAndStatus("ERROR! Expecting syntax "
-                                      + " 'key=value' in line '" + l + "'.",-1);
+                        throw new IllegalArgumentException("Expecting syntax "
+                                      + " 'key=value' in line '" + l + "'.");
                     }
                     if (kv[0].toUpperCase().equals(
                             ForceFieldConstants.ATMTYPSTRMAP)
@@ -340,9 +338,9 @@ public class ForceFieldEditor extends Worker
                 break;
 
             default:
-                Terminator.withMsgAndStatus("ERROR! Force field file format '" 
+                throw new IllegalArgumentException("Force field file format '" 
                                             + format + "' in not known. Cannot "
-                                            + "import the force field.",-1);
+                                            + "import the force field.");
         }        
     }
 
@@ -362,9 +360,9 @@ public class ForceFieldEditor extends Worker
                 break;
 
             default:
-                Terminator.withMsgAndStatus("ERROR! Force field file format '"
+                throw new IllegalArgumentException("Force field file format '"
                                             + format + "' in not known. Cannot "
-                                            + "export the force field.",-1);
+                                            + "export the force field.");
         }
     }
 
@@ -386,7 +384,7 @@ public class ForceFieldEditor extends Worker
             msg = "Inconsistent number of structures (" + molFiles.size() 
                   + ") or vibrational analysis files (" + vaFiles.size() + "). "
                   + "Check input parameters!";
-            Terminator.withMsgAndStatus("ERROR! " + msg,-1);
+            throw new IllegalArgumentException(msg);
         }
         else
         {
@@ -427,8 +425,7 @@ public class ForceFieldEditor extends Worker
             default:
                 msg = "Format '" + vaFormat + "' is not among the known "
                       + "formats of vibrational analysis files";
-                Terminator.withMsgAndStatus("ERROR! " + msg,-1);
-                break;
+                throw new IllegalArgumentException(msg);
         }
 
         //Assign atom type/class
@@ -477,7 +474,7 @@ public class ForceFieldEditor extends Worker
         logger.info(paramsLog);
         
         //Import new parameter into the loaded FF parameters' set
-        logger.fatal("ERROR: implementation ot complete! Use at your own risk!");
+        logger.fatal("Implementation not complete! Use at your own risk!");
 
 
         //Write results
@@ -539,11 +536,11 @@ public class ForceFieldEditor extends Worker
 
                 if (jj > 3)
                 {
-                    Terminator.withMsgAndStatus("ERROR! More than 4 atomic "
+                    throw new IllegalArgumentException("More than 4 atomic "
                                + "SMARTS for IC-defining SMARTS rule "
                                + ii + " (last SMARTS:" + singleSmarts + "). "
                                + "These rules must identify N-tuples of "
-                               + "atoms, where N=2,3,4. Check the input.",-1);
+                               + "atoms, where N=2,3,4. Check the input.");
                 }
                 jj++;
                 String childName = masterName + SUBRULELAB + jj;
@@ -551,10 +548,10 @@ public class ForceFieldEditor extends Worker
             }
             if (jj < 1)
             {
-                Terminator.withMsgAndStatus("ERROR! Less than 2 atomic "
+                throw new IllegalArgumentException("Less than 2 atomic "
                                + "SMARTS for IC-defining SMARTS rule "
                                + ii + ". These rules must identify N-tuples of "
-                               + "atoms, where N=2,3,4. Check input.",-1);
+                               + "atoms, where N=2,3,4. Check input.");
             }
         }
         return map;

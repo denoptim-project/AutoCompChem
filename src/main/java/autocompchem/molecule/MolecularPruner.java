@@ -33,7 +33,6 @@ import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.run.Job;
-import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
 import autocompchem.smarts.MatchingIdxs;
 import autocompchem.smarts.SMARTS;
@@ -168,7 +167,7 @@ public class MolecularPruner extends AtomContainerInputProcessor
         if (msq.hasProblems())
         {
             String cause = msq.getMessage();
-            Terminator.withMsgAndStatus("ERROR! " + cause, -1);
+            throw new IllegalArgumentException(cause);
         }
 
         List<IAtom> targets = new ArrayList<IAtom>();

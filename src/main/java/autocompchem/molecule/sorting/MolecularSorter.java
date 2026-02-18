@@ -29,7 +29,6 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import autocompchem.molecule.AtomContainerInputProcessor;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Job;
-import autocompchem.run.Terminator;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 
@@ -155,7 +154,7 @@ public class MolecularSorter extends AtomContainerInputProcessor
             {
                 String err = "Molecule " + MolecularUtils.getNameOrID(mol)
                              + " has no field named '" + propertyName + "'.";
-                Terminator.withMsgAndStatus("ERROR! " + err, -1);
+                throw new IllegalArgumentException(err);
             }
 
             SortableMolecule sm = new SortableMolecule(mol, 

@@ -39,7 +39,6 @@ import autocompchem.molecule.connectivity.ConnectivityUtils;
 import autocompchem.molecule.vibrations.NormalModeSet;
 import autocompchem.run.Job;
 import autocompchem.run.JobFactory;
-import autocompchem.run.Terminator;
 import autocompchem.utils.NumberUtils;
 import autocompchem.utils.StringUtils;
 import autocompchem.wiro.OutputReader;
@@ -197,15 +196,15 @@ public abstract class ChemSoftOutputReader extends OutputReader
                 } 
                 catch (Throwable t)
                 {
-                    Terminator.withMsgAndStatus("ERROR! Cannot convert '" + w 
+                    throw new IllegalArgumentException("Cannot convert '" + w 
                         + "' to an integer. Check selection of vibrational "
                         + "modes in " + ChemSoftConstants.PARPRINTVIBMODES 
-                        + ".", -1); 
+                        + ".", t); 
                 }
                 if (val < 0)
                 {
-                    Terminator.withMsgAndStatus("ERROR! Negative number "
-                        + "cannot be used to select a vibrational mode.",-1);
+                    throw new IllegalArgumentException("Negative number "
+                        + "cannot be used to select a vibrational mode.");
                 }
                 list.add(w);
             }
@@ -245,11 +244,11 @@ public abstract class ChemSoftOutputReader extends OutputReader
 	                } 
 	                catch (Throwable t)
 	                {
-	                    Terminator.withMsgAndStatus("ERROR! Cannot convert '" 
+	                    throw new IllegalArgumentException("Cannot convert '" 
 	                    	+ w + "' to a double. Check "
 	                        + ChemSoftConstants.PARBONDLENGTHTOLETANCE + " for "
 	                        + ChemSoftConstants.PARTEMPLATECONNECTIVITY 
-	                        + ".", -1); 
+	                        + ".", t); 
 	                }
 	                //Silly: we check the conversion to double and then store a string...
 	                ps.setParameter(ChemSoftConstants.PARBONDLENGTHTOLETANCE, w);
@@ -298,8 +297,8 @@ public abstract class ChemSoftOutputReader extends OutputReader
 	            	{
 	            		if ((i+1)>=p.length || !NumberUtils.isNumber(p[i+1]))
 	            		{ 
-	            			Terminator.withMsgAndStatus("ERROR! expecting a "
-	            					+ "value after " + w + ".",-1);
+	            			throw new IllegalArgumentException("expecting a "
+	            					+ "value after " + w + ".");
 	            		}
 	            		ps.setParameter(w, p[i+1]);
 	            	}
@@ -331,8 +330,8 @@ public abstract class ChemSoftOutputReader extends OutputReader
 	            	{
 	            		if ((i+1)>=p.length || !NumberUtils.isNumber(p[i+1]))
 	            		{
-	            			Terminator.withMsgAndStatus("ERROR! expecting a "
-	            					+ "value after LOWESTFREQ.",-1);
+	            			throw new IllegalArgumentException("expecting a "
+	            					+ "value after LOWESTFREQ.");
 	            		}
 	            		ps.setParameter(ChemSoftConstants.SMALLESTFREQ, p[i+1]);
 	            	}
@@ -412,14 +411,14 @@ public abstract class ChemSoftOutputReader extends OutputReader
 						if (acs.getAtomContainer(0).getAtomCount() !=
 								connectivityTemplate.getAtomCount())
 						{
-							Terminator.withMsgAndStatus("ERROR! Number of "
+							throw new IllegalStateException("Number of "
 									+ "atom in template structure does "
 									+ "not correspond to number of atom "
 									+ "in file '" + inFile + "' (" 
 									+ connectivityTemplate.getAtomCount() 
 									+ " vs. "
 									+ acs.getAtomContainer(0).getAtomCount()
-									+ ").", -1);
+									+ ").");
 						}
 						for (int i=0; i<acs.getAtomContainerCount(); i++)
 						{

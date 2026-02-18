@@ -60,7 +60,6 @@ import autocompchem.utils.NumberUtils;
 import autocompchem.utils.StringUtils;
 import autocompchem.wiro.chem.ChemSoftConstants;
 import autocompchem.run.Job;
-import autocompchem.run.Terminator;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerConstants;
@@ -274,9 +273,9 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
                 }
                 catch (Throwable t)
                 {
-                    Terminator.withMsgAndStatus("ERROR! Cannot convert line '"
+                    throw new IllegalArgumentException("Cannot convert line '"
                         + line + "' into a 3-tupla of Cartesian coordinates. "
-                        + "Check file '" + crtFile+ "'.",-1);
+                        + "Check file '" + crtFile+ "'.");
                 }
                 this.crtMove.add(v);
             }
@@ -298,8 +297,8 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
                 }
                 catch (Throwable t)
                 {
-                    Terminator.withMsgAndStatus("ERROR! Cannot understand scale "
-                        + "factor '" + parts[i] + "'. Expecting double.",-1);
+                    throw new IllegalArgumentException("Cannot understand scale "
+                        + "factor '" + parts[i] + "'. Expecting double.");
                 }
                 scaleFactors.add(d);
             }
@@ -316,10 +315,10 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
 			// or: steps, initial, step_length
 			if (parts.length != 3)
 			{
-				Terminator.withMsgAndStatus("ERROR! Cannot understand value '"
+				throw new IllegalArgumentException("Cannot understand value '"
                         + line + "'. Expecting either of these syntaxes: " + NL  
                         + "  <real> <real> <integer> (initial_value, final_value, #steps)" + NL
-                        + "  <integer> <real> <real> (#steps, initial_value, step_length).",-1);
+                        + "  <integer> <real> <real> (#steps, initial_value, step_length).");
 			} else {
 				int steps = 0;
 				double initialValue = 0.0;
@@ -365,42 +364,42 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
             String[] words = line.trim().split("\\s+");
             if (words.length != 4 && words.length != 5)
             {
-            	Terminator.withMsgAndStatus("ERROR! Cannot understand value '"
+            	throw new IllegalArgumentException("Cannot understand value '"
                         + line + "'. Expecting either of these syntaxes: " + NL  
                         + "  <word> <integer> <real> <real> " + NL
-                        + "  <word> <integer> <real> <real> <real>.",-1);
+                        + "  <word> <integer> <real> <real> <real>.");
             }
             String kind = words[0];
             if (!kind.toUpperCase().equals("EVEN") && 
             		!kind.toUpperCase().equals("BALANCED"))
             {
-            	Terminator.withMsgAndStatus("ERROR! Cannot understand '" + kind
-                        + "' as a scaling factor distribution kind.",-1);
+            	throw new IllegalArgumentException("Cannot understand '" + kind
+                        + "' as a scaling factor distribution kind.");
             }
             scalingFactorDistribution = kind;
             String num = words[1];
             try {
             	numScalingFactors = Integer.parseInt(num);
             } catch (Throwable t) {
-            	Terminator.withMsgAndStatus("ERROR! Cannot understand '" + num
+            	throw new IllegalArgumentException("Cannot understand '" + num
                         + "' as the number of scaling factor to generate. "
-                        + "Expecting an integer.",-1);
+                        + "Expecting an integer.");
             }
             num = words[2];
             try {
             	percOfNeg = Double.parseDouble(num);
             } catch (Throwable t) {
-            	Terminator.withMsgAndStatus("ERROR! Cannot understand '" + num
+            	throw new IllegalArgumentException("Cannot understand '" + num
                         + "' as the percentage of the possible negative path. "
-                        + "Expecting a double.",-1);
+                        + "Expecting a double.");
             }
             num = words[3];
             try {
             	percOfPos = Double.parseDouble(num);
             } catch (Throwable t) {
-            	Terminator.withMsgAndStatus("ERROR! Cannot understand '" + num
+            	throw new IllegalArgumentException("Cannot understand '" + num
                         + "' as the percentage of the possible positive path. "
-                        + "Expecting a double.",-1);
+                        + "Expecting a double.");
             }
             if (words.length >= 5)
             {
@@ -408,9 +407,9 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
 	            try {
 	            	maxDispl = Double.parseDouble(num);
 	            } catch (Throwable t) {
-	            	Terminator.withMsgAndStatus("ERROR! Cannot understand '" 
+	            	throw new IllegalArgumentException("Cannot understand '" 
 	                        + num + "' as the maximum displacement for a "
-	                        + "single atom. Expecting a double.",-1);
+	                        + "single atom. Expecting a double.");
 	            }
             }
         }
@@ -423,16 +422,16 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
 			String[] parts = line.trim().split("\\s+");
 			if (parts.length < 2)
 			{
-				Terminator.withMsgAndStatus("ERROR! Cannot understand value '"
+				throw new IllegalArgumentException("Cannot understand value '"
 					+ line + "'. Expecting this syntax: " + NL
-					+ "  <string> <real> (kind, threshold).",-1);
+					+ "  <string> <real> (kind, threshold).");
 			}
 			terminationKind = parts[0];
 			if (!knownTerminationKinds.contains(terminationKind.toUpperCase()))
 			{
-				Terminator.withMsgAndStatus("ERROR! Cannot understand '" + terminationKind
+				throw new IllegalArgumentException("Cannot understand '" + terminationKind
 					+ "' as a termination criterion kind. Known kinds are: " 
-					+ NL + StringUtils.mergeListToString(knownTerminationKinds, ", "),-1);
+					+ NL + StringUtils.mergeListToString(knownTerminationKinds, ", "));
 			}
 			terminationThreshold = Double.parseDouble(parts[1]);
 			logger.info("Bond stretching termination criteria: " + terminationKind + " " + NumberUtils.getEnglishFormattedDecimal("###.####", terminationThreshold));
@@ -446,8 +445,8 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
             FileUtils.foundAndPermissions(zmtFile,true,false,false);
             if (IOtools.readZMatrixFile(zmtFile).size() != 1)
             {
-                Terminator.withMsgAndStatus("ERROR! Found multiple ZMatrices "
-                                             + "in file '" + zmtFile + "'.",-1);
+                throw new IllegalArgumentException("Found multiple ZMatrices "
+                                             + "in file '" + zmtFile + "'.");
             }
             this.zmtMove = IOtools.readZMatrixFile(zmtFile).get(0);
         }
@@ -462,9 +461,9 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
             List<IAtomContainer> refMols = IOtools.readSDF(this.refFile);
             if (refMols.size() != 1)
             {
-                Terminator.withMsgAndStatus("ERROR! MoleculeGeometryEditor "
+                throw new IllegalArgumentException("MoleculeGeometryEditor "
                         + "requires SDF files with one reference structure. "
-                        + "Check file " + refFile, -1);
+                        + "Check file " + refFile);
             }
             this.refMol = refMols.get(0);
         }
@@ -507,10 +506,10 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
                 }
                 catch (Throwable t)
                 {
-                    Terminator.withMsgAndStatus("ERROR! Exception while "
+                    throw new RuntimeException("Exception while "
                         + "altering the ZMatrix. You might need dummy "
                         + "atoms to define an healthy ZMatrix. Cause of the "
-                        + "exception: " + t.getMessage(), -1);
+                        + "exception: " + t.getMessage(), t);
                 }
             }
             else if (crtMove!=null && crtMove.size()>0)
@@ -518,9 +517,8 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
                 logger.info("Applying Cartesian move");
                 result = applyCartesianMove(iac);
             } else {
-                Terminator.withMsgAndStatus("ERROR! Choose and provide either "
-                        + "a Cartesian or a ZMatrix move.", -1);
-                return null; // should not be reached, but satisfies linter
+                throw new IllegalStateException("Choose and provide either "
+                        + "a Cartesian or a ZMatrix move.");
             }
     		
     		if (exposedOutputCollector != null)
@@ -580,9 +578,9 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
     {
         if (crtMove == null || crtMove.size() == 0)
         {
-            Terminator.withMsgAndStatus("ERROR! No Cartesian move defined. "
+            throw new IllegalStateException("No Cartesian move defined. "
                 + "Please, try using 'CARTESIANMOVE' to provide a Cartesian "
-                + "move.",-1);
+                + "move.");
         }
 
         String outMolBasename = MolecularUtils.getNameOrID(iac);
@@ -599,19 +597,18 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
             logger.info("Matching reference sub-structure");
             if (this.refMol.getAtomCount() != crtMove.size())
             {
-                Terminator.withMsgAndStatus("ERROR! Reference structure (size "
+                throw new IllegalArgumentException("Reference structure (size "
                      + this.refMol.getAtomCount() + ") and Cartesian step ("
-                     + "size " + crtMove.size() + ") have different size. ",-1);
+                     + "size " + crtMove.size() + ") have different size.");
             }
             
             GeometryAlignment alignment;
 			try {
 				alignment = GeometryAligner.alignGeometries(refMol, iac);
 			} catch (IllegalArgumentException | CloneNotSupportedException e) {
-				Terminator.withMsgAndStatus("ERROR! Could not match reference "
+				throw new RuntimeException("Could not match reference "
 				 		+ "substructure in geometry to edit. "
-				 		+ "Cannot perform Cartesian move.", -1, e);
-				return null; // should not be reached, but satisfies linter
+				 		+ "Cannot perform Cartesian move.", e);
 			}
             Map<Integer,Integer> refToInAtmMap = alignment.getMappingIndexes();
 
@@ -695,8 +692,7 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
         }
         catch (Throwable t)
         {
-            Terminator.withMsgAndStatus("ERROR! Cannot clone molecule.", -1, t);
-			return null; // should not be reached, but satisfies linter
+            throw new RuntimeException("Cannot clone molecule.", t);
         }
         for (int i=0; i<outMol.getAtomCount(); i++)
         {
@@ -1126,9 +1122,9 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
 
 		if (smartsBondToStretch == null || smartsBondToStretch.getString().isEmpty())
 		{
-			Terminator.withMsgAndStatus("ERROR! No SMARTS bond to stretch defined. "
+			throw new IllegalStateException("No SMARTS bond to stretch defined. "
 				+ "Please, try using 'SMARTSBONDTOSTRETCH' to provide a bond "
-				+ "to stretch.", -1);
+				+ "to stretch.");
 		}
 
 		// Ensure the atom list is ordered in a way compatible with ZMatrix representation
@@ -1173,11 +1169,10 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
 			if (output2 != null) {
 				zmatMol = (ZMatrix) output2;
 			} else {
-				Terminator.withMsgAndStatus("ERROR! Cannot make ZMatrix to " 
+				throw new IllegalStateException("Cannot make ZMatrix to " 
 					+ "stretch bond. " 
 					+"Alter the connectivity or the list of atoms to enable " 
-					+ "ZMatrix representation.", -1);
-				return null; // should not be reached, but satisfies linter
+					+ "ZMatrix representation.");
 			}
 		}
 
@@ -1186,15 +1181,15 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
 			reorderedIAC, Map.of("bondToStretch", smartsBondToStretch));
 		if (bondsToStretch.size() == 0)
 		{
-			Terminator.withMsgAndStatus("ERROR! No match for SMARTS '" 
+			throw new IllegalArgumentException("No match for SMARTS '" 
 			+ smartsBondToStretch.getString() + "' found in molecule '"
-			+ outMolBasename + "'.", -1);
+			+ outMolBasename + "'.");
 		} else if (bondsToStretch.size() > 1)
 		{
-			Terminator.withMsgAndStatus("ERROR! Multiple matches for SMARTS '" 
+			throw new IllegalArgumentException("Multiple matches for SMARTS '" 
 			+ smartsBondToStretch.getString() + "' found in molecule '"
 			+ outMolBasename + "'. Can't "
-			+ "stretch multiple bonds at once.", -1);
+			+ "stretch multiple bonds at once.");
 		}
 		IBond bondToStretch = bondsToStretch.get("bondToStretch").get(0);
 
@@ -1204,11 +1199,11 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
 			reorderedIAC.indexOf(bondToStretch.getEnd()));
 		if (atomToMove == null)
 		{
-			Terminator.withMsgAndStatus("ERROR! No internal coordinate "
+			throw new IllegalStateException("No internal coordinate "
 				+ "corresponding to the bond to stretch ("
 				+ MolecularUtils.getAtomRef(bondToStretch.getBegin(), reorderedIAC)
 				+ "-" + MolecularUtils.getAtomRef(bondToStretch.getEnd(), reorderedIAC)
-				+ ") found.", -1);
+				+ ") found.");
 		}
 		int indexOfZAtomToAlter = zmatMol.zatoms().indexOf(atomToMove);
 		double initialValue = zmatMol.getZAtom(indexOfZAtomToAlter).getIC(0).getValue();
@@ -1232,10 +1227,9 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
 			try {
 				outMol = zmh.convertZMatrixToIAC(zmatMol, reorderedIAC);
 			} catch (Throwable e) {
-				Terminator.withMsgAndStatus("ERROR! Exception while "
+				throw new RuntimeException("Exception while "
 					+ "converting ZMatrix to IAC. Cause of the exception: "
-					+ e.getMessage(), -1, e);
-				return null; // should not be reached, but satisfies linter
+					+ e.getMessage(), e);
 			}
 			
 			outMol.setProperty(CDKConstants.TITLE, outMolBasename 
@@ -1249,8 +1243,7 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
 				try {
 					clonedResult = (IAtomContainer) outMol.clone();
 				} catch (CloneNotSupportedException e) {
-					Terminator.withMsgAndStatus("ERROR! Cannot clone molecule.", -1, e);
-					return null; // should not be reached, but satisfies linter
+					throw new RuntimeException("Cannot clone molecule.", e);
 				}
 
 				// Remove the bond that was stretched
@@ -1289,9 +1282,9 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
     {
         if (zmtMove == null || zmtMove.getZAtomCount() == 0)
         {
-            Terminator.withMsgAndStatus("ERROR! No ZMatrix move defined. "
+            throw new IllegalStateException("No ZMatrix move defined. "
                 + "Please, try using 'ZMATRIXMOVE' to provide a geometrical "
-                + "modification as changes of internal coordinates.",-1);
+                + "modification as changes of internal coordinates.");
         }
 
         String outMolBasename = MolecularUtils.getNameOrID(iac);
@@ -1319,8 +1312,8 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
         ZMatrix actualZMatMove = new ZMatrix();
         if (iac.getAtomCount() != zmtMove.getZAtomCount())
         {
-            Terminator.withMsgAndStatus("ERROR! The ZMatrix move has a"
-			    + "different number of atoms than the molecule.",-1);
+            throw new IllegalArgumentException("The ZMatrix move has a"
+			    + "different number of atoms than the molecule.");
         } 
 		actualZMatMove = new ZMatrix(zmtMove.toLinesOfText(false,false));
         String msg2 = "Actual ZMatrixMove: " + NL;

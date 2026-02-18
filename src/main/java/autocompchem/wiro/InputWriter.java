@@ -1,6 +1,7 @@
 package autocompchem.wiro;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -14,7 +15,6 @@ import autocompchem.io.IOtools;
 import autocompchem.run.Job;
 import autocompchem.run.JobFactory;
 import autocompchem.run.SoftwareId;
-import autocompchem.run.Terminator;
 import autocompchem.wiro.chem.ChemSoftInputWriter;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
@@ -163,15 +163,20 @@ public class InputWriter extends Worker implements ITextualInputWriter
             logger.debug("Job details from JD file '" + jdFile + "'.");
             
             FileUtils.foundAndPermissions(jdFile,true,false,false);
-            this.jobToInput = JobFactory.buildFromFile(jdFile);
+            try {
+                this.jobToInput = JobFactory.buildFromFile(jdFile);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to read job definition file: " 
+                        + e.getMessage(), e);
+            }
         } else if (params.contains(WIROConstants.PARJOBDETAILSOBJ)) {
         	this.jobToInput = (Job) params.getParameter(
                     WIROConstants.PARJOBDETAILSOBJ).getValue();
         } else {
-            Terminator.withMsgAndStatus("ERROR! Unable to get job details. "
+            throw new IllegalArgumentException("Unable to get job details. "
                     + "Neither '" + WIROConstants.PARJOBDETAILSFILE
                     + "' nor '" + WIROConstants.PARJOBDETAILSOBJ 
-                    + "'found in parameters.",-1);
+                    + "'found in parameters.");
         }
 
         if (params.contains(WIROConstants.PAROUTFILEROOT))

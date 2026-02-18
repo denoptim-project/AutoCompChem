@@ -26,7 +26,6 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import autocompchem.io.IOtools;
-import autocompchem.run.Terminator;
 import autocompchem.utils.NumberUtils;
 import autocompchem.utils.StringUtils;
 import autocompchem.wiro.chem.gaussian.GaussianInputWriter;
@@ -141,10 +140,10 @@ public class BasisSetUtils
                     }
                     else if (line.trim().equals(""))
                     {
-                        msg = "ERROR! Unexpected empty line in basis set "
+                        msg = "Unexpected empty line in basis set "
                                 + "defintition. Check file '" + inFile + "' "
                                 + "line nr. " + (i+1) + ".";
-                        Terminator.withMsgAndStatus(msg,-1);
+                        throw new IllegalArgumentException(msg);
                     }
 
                     wrds = line.trim().split("\\s+");
@@ -202,7 +201,7 @@ public class BasisSetUtils
 					} 
                     else
                     {
-                        msg = "ERROR! Unable to understand line '" + line + "' "
+                        msg = "Unable to understand line '" + line + "' "
                              + "in basis set section of file '" + inFile + "' "
                              + "line " + (i+1) + ". Words:" + wrds.length;
                         if (wrds.length>=1)
@@ -221,7 +220,7 @@ public class BasisSetUtils
                              + " isNum:" + NumberUtils.isNumber(wrds[2]);
                         }
 
-                        Terminator.withMsgAndStatus(msg,-1);
+                        throw new IllegalArgumentException(msg);
                     }
                 }
                 if (shell.getSize() > 0)
@@ -334,10 +333,10 @@ public class BasisSetUtils
                     }
                     else
                     {
-                        msg = "ERROR! Unable to understand line '" + line + "' "
+                        msg = "Unable to understand line '" + line + "' "
                              + "in ECP section of file '" + inFile + "' "
                              + "line " + (i+1) + ".";
-                        Terminator.withMsgAndStatus(msg,-1);
+                        throw new IllegalArgumentException(msg);
                     }
                 }
                 if (ecps.getSize()>0)
@@ -349,9 +348,9 @@ public class BasisSetUtils
             }
             else
             {
-                msg = "ERROR! Unable to understand line '" + line + "' in "
+                msg = "Unable to understand line '" + line + "' in "
                       + "basis set file '" + inFile + "' in line " + (i+1);
-                Terminator.withMsgAndStatus(msg,-1);
+                throw new IllegalArgumentException(msg);
             }
         }
         

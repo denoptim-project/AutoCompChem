@@ -35,7 +35,6 @@ import org.openscience.cdk.interfaces.IBond;
 
 import autocompchem.molecule.connectivity.ConnectivityUtils;
 import autocompchem.run.Job;
-import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
 import autocompchem.smarts.MatchingIdxs;
 import autocompchem.smarts.SMARTS;
@@ -236,16 +235,16 @@ public class MolecularReorderer extends AtomContainerInputProcessor
             if (msq.hasProblems())
             {
                 String cause = msq.getMessage();
-                Terminator.withMsgAndStatus("ERROR! Cannot reorganize lists "
+                throw new IllegalArgumentException("Cannot reorganize lists "
                     + "based on SMARTS queries: application of SMARTS returns "
-                    + "errors. Details: " + cause,-1);
+                    + "errors. Details: " + cause);
             }
             if (msq.getTotalMatches() == 0)
             {
-                Terminator.withMsgAndStatus("ERROR! No atom matches the given "
+                throw new IllegalArgumentException("No atom matches the given "
                     + "SMARTS queries. "
                     + "Make sure at least one SMARTS query matches at least "
-                    + "one atom per molecule.",-1);
+                    + "one atom per molecule.");
             }
   
             ArrayList<String> sortedKeys = new ArrayList<String>();
@@ -374,18 +373,18 @@ public class MolecularReorderer extends AtomContainerInputProcessor
             if (atm.getProperty(VISITEDFLAG) == null ||
                 atm.getProperty(NEWATMINDEX) == null)
             {
-                s = "ERROR! Atom " + s + " does not belong to any visited "
+                s = "Atom " + s + " does not belong to any visited "
                     + "network of bonds (i.e., isolated fragment). ";
                 if (useSmarts)
                 {
                     s = s + "It is likely that no SMARTS query matches any "
-                        + "atom of the fragment to with this atom belongs.";
+                        + "atom of the fragment containing this atom.";
                 }
                 else
                 {
                     s = s + " Please report this potential bug to the authors.";
                 }
-                Terminator.withMsgAndStatus(s,-1);
+                throw new IllegalStateException(s);
             }
 
             int frgId = (Integer) atm.getProperty(VISITEDFLAG);
@@ -431,16 +430,16 @@ public class MolecularReorderer extends AtomContainerInputProcessor
                 }
                 catch (CloneNotSupportedException cnse)
                 {
-                    Terminator.withMsgAndStatus("ERROR! Cannot clone atom "
+                    throw new RuntimeException("Cannot clone atom "
                         + MolecularUtils.getAtomRef(oldAtm,iac) + ". Please, "
-                        + "report this error to the authors.",-1);
+                        + "report this error to the authors.", cnse);
                 }
             }
         }
         if (orderedIAC.getAtomCount() != iac.getAtomCount())
         {
-            Terminator.withMsgAndStatus("ERROR! Unable to recover all atoms. "
-                + "Please, report this bug to the authors.",-1);
+            throw new IllegalStateException("Unable to recover all atoms. "
+                + "Please, report this bug to the authors.");
         }
         for (int i=0; i<iac.getBondCount(); i++)
         {
@@ -449,8 +448,8 @@ public class MolecularReorderer extends AtomContainerInputProcessor
             IAtom oldAtm2 = oldBnd.getAtom(1);
             if (oldBnd.getAtomCount() != 2)
             {
-                Terminator.withMsgAndStatus("ERROR! Managment of "
-                              + "multicenter bonds is not yet implemented.",-1);
+                throw new UnsupportedOperationException("Managment of "
+                              + "multicenter bonds is not yet implemented.");
             }
             int oldAtmId1 = iac.indexOf(oldAtm1);
             int oldAtmId2 = iac.indexOf(oldAtm2);
@@ -478,10 +477,10 @@ public class MolecularReorderer extends AtomContainerInputProcessor
             }
             catch (Throwable t)
             {
-                Terminator.withMsgAndStatus("ERROR! Cannot copy bond between"
+                throw new RuntimeException("Cannot copy bond between"
                     + MolecularUtils.getAtomRef(oldAtm1,iac) + " and "
                     + MolecularUtils.getAtomRef(oldAtm2,iac) + ". Please, "   
-                    + "report this error to the authors.",-1);
+                    + "report this error to the authors.", t);
             }
         }
             

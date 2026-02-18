@@ -50,7 +50,6 @@ import autocompchem.molecule.intcoords.InternalCoord;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrixAtom;
 import autocompchem.run.Job;
-import autocompchem.run.Terminator;
 import autocompchem.utils.StringUtils;
 import autocompchem.wiro.chem.ChemSoftInputWriter;
 import autocompchem.wiro.chem.CompChemJob;
@@ -244,13 +243,13 @@ public class NWChemInputWriter extends ChemSoftInputWriter
             //TODO: we can try to reduce length by replacing those parts of 
             // the title that are/were added by AutoCompChem with shorter
             // words or abbreviations
-            Terminator.withMsgAndStatus("ERROR! Keyword section of directive "
+            throw new UnsupportedOperationException("Keyword section of directive "
                 + dirName + " is more than " + NWChemConstants.MAXCONCATLINES 
                 + " lines long, but shortening protocol is not "
                 + "implemented in this version of autocompchem. You should use a "
                 + "directive's data block ('" + NWChemConstants.LABDATA
                 + "' in jobDetails file) rather than a "
-                + "keyword.",-1);
+                + "keyword.");
         }
 
         //Then add the data sections
@@ -272,9 +271,9 @@ public class NWChemInputWriter extends ChemSoftInputWriter
 					break;
 					
 				default:
-					Terminator.withMsgAndStatus("ERROR! Found basis set as "
+					throw new IllegalArgumentException("Found basis set as "
 							+ "value of a Directive data that is neither ECP "
-							+ "nor BASIS, but is '" + d.getName() + "'.",-1);
+							+ "nor BASIS, but is '" + d.getName() + "'.");
 				}
 				break;
 				
@@ -303,11 +302,10 @@ public class NWChemInputWriter extends ChemSoftInputWriter
 					break;
 					
 				default:
-					Terminator.withMsgAndStatus("Found set of constraints"
+					throw new UnsupportedOperationException("Found set of constraints"
 							+ "in a ditective that is unexpected. Please, "
 							+ "contact the authors and present your use "
-							+ "case.", -1); 
-					break;
+							+ "case.");
 				}
 				break;
 				
@@ -473,9 +471,9 @@ public class NWChemInputWriter extends ChemSoftInputWriter
             if (dirName.toUpperCase().equals("SET") || 
                 dirName.toUpperCase().equals("UNSET"))
             {
-                Terminator.withMsgAndStatus("ERROR! Unexpected use of data "
+                throw new UnsupportedOperationException("Unexpected use of data "
                     + "block inside a '" + dirName + "' directive. "
-                    + "Current NWChem does not support suck possibility.",-1);
+                    + "Current NWChem does not support suck possibility.");
             }
         }
 
@@ -495,9 +493,9 @@ public class NWChemInputWriter extends ChemSoftInputWriter
             if (dirName.toUpperCase().equals("SET") ||
             		dirName.toUpperCase().equals("UNSET"))
             {
-                Terminator.withMsgAndStatus("ERROR! Unexpected subdirective "
+                throw new UnsupportedOperationException("Unexpected subdirective "
                     + "inside a '" + dirName + "' directive. Current NWChem "
-                    + "does not support such possibility.",-1);
+                    + "does not support such possibility.");
             }
         }
 

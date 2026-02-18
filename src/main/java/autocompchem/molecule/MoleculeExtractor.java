@@ -38,7 +38,6 @@ import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.molecule.connectivity.ConnectivityUtils;
 import autocompchem.run.Job;
-import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
 import autocompchem.smarts.SMARTS;
 import autocompchem.worker.Task;
@@ -292,8 +291,8 @@ public class MoleculeExtractor extends AtomContainerInputProcessor
 	            if (reqMsq.hasProblems())
 	            {
 	                String cause = reqMsq.getMessage();
-	                Terminator.withMsgAndStatus("ERROR! Unable to use required "
-	               		+ "SMARTS. Details: " + cause,-1);
+	                throw new IllegalArgumentException("Unable to use required "
+	               		+ "SMARTS. Details: " + cause);
 	            }
 	            if (reqMsq.getTotalMatches() > 0)
 	            {
@@ -328,8 +327,8 @@ public class MoleculeExtractor extends AtomContainerInputProcessor
 	            if (exclMsq.hasProblems())
 	            {
 	                String cause = exclMsq.getMessage();
-	                Terminator.withMsgAndStatus("ERROR! Unable to use required "
-	                		+ "SMARTS. Details: " + cause,-1);
+	                throw new IllegalArgumentException("Unable to use required "
+	                		+ "SMARTS. Details: " + cause);
 	            }
 	            if (exclMsq.getTotalMatches() == 0)
 	            {

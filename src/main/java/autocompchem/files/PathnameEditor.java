@@ -8,7 +8,6 @@ import java.util.Set;
 
 import autocompchem.datacollections.NamedData;
 import autocompchem.run.Job;
-import autocompchem.run.Terminator;
 import autocompchem.wiro.WIROConstants;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
@@ -157,8 +156,8 @@ public class PathnameEditor extends Worker
     {
         if (input==null)
         {
-            Terminator.withMsgAndStatus("ERROR! Missing input pathname. "
-                + "Nothing to do",-1);
+            throw new IllegalArgumentException("Missing input pathname. "
+                + "Nothing to do");
         }
         
         String processedPathname = processPathname(input.getPath());

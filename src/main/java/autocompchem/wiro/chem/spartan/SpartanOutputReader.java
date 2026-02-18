@@ -1,6 +1,7 @@
 package autocompchem.wiro.chem.spartan;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -29,7 +30,6 @@ import autocompchem.files.FileUtils;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Job;
 import autocompchem.run.SoftwareId;
-import autocompchem.run.Terminator;
 import autocompchem.wiro.ITextualInputWriter;
 import autocompchem.wiro.WIROConstants;
 import autocompchem.wiro.chem.ChemSoftConstants;
@@ -96,11 +96,11 @@ public class SpartanOutputReader extends ChemSoftOutputReader
     	
     	if (!inFile.isDirectory())
     	{
-    		Terminator.withMsgAndStatus("ERROR! " 
-    				+ this.getClass().getSimpleName() + " requires the "
+    		throw new IllegalArgumentException(
+    				this.getClass().getSimpleName() + " requires the "
     				+ "value of " + WIROConstants.PARJOBOUTPUTFILE 
     				+ " to be a pathname to a Spartan directory, but '"
-    				+ inFile + "' is not.", -1);
+    				+ inFile + "' is not.");
     	}
     	
     	List<File> allModelDirs = FileUtils.findByGlob(inFile, "*", true)
@@ -228,7 +228,12 @@ public class SpartanOutputReader extends ChemSoftOutputReader
 			logger.info("Log file '" + logFile + "' not found. "
 					+ "Interpreting '" + inFile + "' as a data folder.");
     	
-		parseModelDir(inFile);
+		try {
+			parseModelDir(inFile);
+		} catch (IOException e) {
+			throw new RuntimeException("Failed to parse model directory: " 
+					+ e.getMessage(), e);
+		}
     }
     
 //------------------------------------------------------------------------------
@@ -290,7 +295,7 @@ public class SpartanOutputReader extends ChemSoftOutputReader
      * corresponds to the identified of the model.
      */
     
-    private void parseModelDir(File moleculeDirectory)
+    private void parseModelDir(File moleculeDirectory) throws IOException
     {
     	String molID = moleculeDirectory.getName();
         String sprtArchFile = moleculeDirectory.getAbsolutePath() 
@@ -311,8 +316,8 @@ public class SpartanOutputReader extends ChemSoftOutputReader
 	    int nAtms = firstGeom.get(0).size();
 	    if (nAtms < 1)
 	    {
-	        Terminator.withMsgAndStatus("ERROR! Unable to find number of atoms "
-	                        + "in archive '" + sprtArchFile + "'.",-1);
+	        throw new IllegalStateException("Unable to find number of atoms "
+	                        + "in archive '" + sprtArchFile + "'.");
 	    }
 
 	    // Read in molecular definition blocks
@@ -384,10 +389,10 @@ public class SpartanOutputReader extends ChemSoftOutputReader
 	            }
 	        }
 	    } else {
-	        Terminator.withMsgAndStatus("ERROR! Unable to deal with Spartan "
+	        throw new IllegalStateException("Unable to deal with Spartan "
 	                  + SpartanConstants.INPUTFILENAME + " file that has "
 	                  + "none or more than one '" + SpartanConstants.TOPOOPN 
-	                  + "' block. Check file '" + sprtInpFile + "'.",-1);
+	                  + "' block. Check file '" + sprtInpFile + "'.");
 	    }
     	
 	    //TODO: plenty of other data we could parse, but we do not do it yet...
@@ -441,9 +446,9 @@ public class SpartanOutputReader extends ChemSoftOutputReader
             }
             catch (Throwable t)
             {
-                Terminator.withMsgAndStatus("ERROR! Unable to convert line '"
+                throw new IllegalArgumentException("Unable to convert line '"
                         + lines.get(i) + "' into an atom while reading Spartan "
-                        + "file.",-1);
+                        + "file.");
             }
         }
         return iac;

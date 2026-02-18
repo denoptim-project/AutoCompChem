@@ -24,7 +24,6 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import autocompchem.molecule.intcoords.InternalCoord;
-import autocompchem.run.Terminator;
 import autocompchem.utils.NumberUtils;
 
 
@@ -228,9 +227,8 @@ public class ZMatrixAtom implements Cloneable
                 break;
 
             default:
-                Terminator.withMsgAndStatus("Cannot construct a ZMatrixAtom "
-                        + "from string '" + string + "'.",-1);
-                break;
+                throw new IllegalArgumentException("Cannot construct a ZMatrixAtom "
+                        + "from string '" + string + "'.");
         }
     }
 

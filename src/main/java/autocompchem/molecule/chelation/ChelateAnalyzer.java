@@ -38,7 +38,6 @@ import autocompchem.molecule.AtomContainerInputProcessor;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.molecule.connectivity.ConnectivityUtils;
 import autocompchem.run.Job;
-import autocompchem.run.Terminator;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 
@@ -203,8 +202,8 @@ public class ChelateAnalyzer extends AtomContainerInputProcessor
         try {        
             wMol = (IAtomContainer) mol.clone();
         } catch (Throwable t) {
-            Terminator.withMsgAndStatus("ERROR! ChelateAnalyzer cannot make "
-                + " clone of molecule.", -1); 
+            throw new RuntimeException("ChelateAnalyzer cannot make "
+                + " clone of molecule.", t); 
         }
 
         //Identify target atoms
@@ -214,8 +213,8 @@ public class ChelateAnalyzer extends AtomContainerInputProcessor
         if (targetsmarts!=null)
         {
 //TODO
-            Terminator.withMsgAndStatus("ERROR! Use of SMARTS in "
-                        + "ChelateAnalyzer is not implemented yet", -1);
+            throw new UnsupportedOperationException("Use of SMARTS in "
+                        + "ChelateAnalyzer is not implemented yet");
 /*
             ManySMARTSQuery msq = new ManySMARTSQuery(mol,
                                                       targetsmarts,
@@ -226,9 +225,9 @@ public class ChelateAnalyzer extends AtomContainerInputProcessor
                 if (cause.contains("The AtomType") &&
                                         cause.contains("could not be found"))
                 {
-                    Terminator.withMsgAndStatus("ERROR! " + cause
+                    throw new IllegalArgumentException(cause
                         + " To solve the problem try to move this "
-                        + "element to \"Du\" an try again.",-1);
+                        + "element to \"Du\" an try again.");
                 }
                 logger.warn("WARNING! Problems in using SMARTS queries. "
                                 + cause + NL 
@@ -307,9 +306,9 @@ public class ChelateAnalyzer extends AtomContainerInputProcessor
             Object lab = a.getProperty(label);
             if (lab == null)
             {
-                Terminator.withMsgAndStatus("ERROR! Found unlabeled atom "
+                throw new IllegalStateException("Found unlabeled atom "
                         + "where there should be none in ChelateAnalyzer. "
-                        + "Please report this bug to the author.", -1);
+                        + "Please report this bug to the author.");
             }
             labSet.add(lab);
         }
@@ -323,9 +322,8 @@ public class ChelateAnalyzer extends AtomContainerInputProcessor
             }
             catch (Throwable t)
             {
-                Terminator.withMsgAndStatus("ERROR! ChelateAnalyzer cannot make "
-                + " clone of ligand.", -1);
-                return null; // should not be reached, but satisfies linter
+                throw new RuntimeException("ChelateAnalyzer cannot make "
+                + " clone of ligand.", t);
             }
 
             // remove all atoms with different ligand ID
@@ -336,10 +334,9 @@ public class ChelateAnalyzer extends AtomContainerInputProcessor
                 Object prop = atm.getProperty(label);
                 if (prop == null)
                 {
-                    Terminator.withMsgAndStatus("ERROR! Label '" + label + "' "
+                    throw new IllegalStateException("Label '" + label + "' "
                         + "is null for " + MolecularUtils.getAtomRef(atm,wMol)
-                        + ". Please report this bug to the authors.",-1);
-                    return null; // should not be reached, but satisfies linter
+                        + ". Please report this bug to the authors.");
                 }
 
                 if (!prop.equals(lab))
@@ -380,9 +377,9 @@ public class ChelateAnalyzer extends AtomContainerInputProcessor
                 denticity++;
                 if (chelCntrId.size() > 1)
                 {
-                    Terminator.withMsgAndStatus("ERROR! Cannot yet handle ligands "
+                    throw new UnsupportedOperationException("Cannot yet handle ligands "
                         + "coordinating different centers (i.e., bridges between "
-                        + "different metal centers)", -1);
+                        + "different metal centers)");
                 }
                 
             }

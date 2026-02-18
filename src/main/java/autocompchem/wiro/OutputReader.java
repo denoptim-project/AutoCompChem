@@ -43,7 +43,6 @@ import autocompchem.perception.infochannel.InfoChannelType;
 import autocompchem.perception.situation.SituationBase;
 import autocompchem.run.Job;
 import autocompchem.run.SoftwareId;
-import autocompchem.run.Terminator;
 import autocompchem.utils.StringUtils;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
@@ -175,19 +174,18 @@ public class OutputReader extends Worker
 			Worker w = builder.makeOutputReaderInstance(getNewFile(fileName));
 			if (w==null)
 			{
-				Terminator.withMsgAndStatus("ERROR: log/output file '"
+				throw new IllegalArgumentException("log/output file '"
 						+ fileName + "' could not be understood as any "
 						+ "log/output "
-						+ "that can be parsed by AutoCompChem.", -1);	
+						+ "that can be parsed by AutoCompChem.");	
 			}
 			return w;
 		} catch (FileNotFoundException e) {
-			Terminator.withMsgAndStatus("ERROR: log/output file '"
+			throw new RuntimeException("log/output file '"
 					+ fileName + "' is defined by '" 
 					+ WIROConstants.PARJOBOUTPUTFILE 
-					+ "' but does not exist.", -1);
+					+ "' but does not exist.", e);
 		}
-		return new OutputReader();
 	}
 
 //-----------------------------------------------------------------------------
@@ -209,9 +207,9 @@ public class OutputReader extends Worker
 	        FileUtils.foundAndPermissions(inFileName,true,false,false);
 	        this.inFile = getNewFile(inFileName);
         } else {
-        	Terminator.withMsgAndStatus("ERROR! No definition of the output to "
+        	throw new IllegalArgumentException("No definition of the output to "
         			+ "analyse. Please provide a value for '"
-        			+ WIROConstants.PARJOBOUTPUTFILE + "'.", -1);
+        			+ WIROConstants.PARJOBOUTPUTFILE + "'.");
         }
         
         //Get and check the output filename
@@ -301,8 +299,7 @@ public class OutputReader extends Worker
     	File logFile = getLogPathName();
 		if (logFile == null)
 		{
-			Terminator.withMsgAndStatus("ERROR! Log file is null.", -1);
-			return;
+			throw new IllegalStateException("Log file is null.");
 		}
     	LogReader logReader = null;
     	try {
@@ -310,9 +307,8 @@ public class OutputReader extends Worker
     		{
 				if (logFile.isDirectory())
 				{
-					Terminator.withMsgAndStatus("ERROR! Log file pathname points to a directory: " 
-        					+ logFile.getAbsolutePath() + ". Please, provide a file pathname.",-1);
-					return;
+					throw new IllegalArgumentException("Log file pathname points to a directory: " 
+        					+ logFile.getAbsolutePath() + ". Please, provide a file pathname.");
 				}
 	    		// This encapsulated any perception-related parsing of strings
 	    		logReader = new LogReader(new FileReader(logFile));
@@ -323,25 +319,24 @@ public class OutputReader extends Worker
     			reactToMissingLogFile(logFile);
     		}
 		} catch (FileNotFoundException fnf) {
-        	Terminator.withMsgAndStatus("ERROR! File Not Found: " 
-        			+ logFile.getAbsolutePath(),-1);
+        	throw new RuntimeException("File Not Found: " 
+        			+ logFile.getAbsolutePath(), fnf);
         } catch (IOException ioex) {
-			ioex.printStackTrace();
-        	Terminator.withMsgAndStatus("ERROR! While reading file '" 
+        	throw new RuntimeException("While reading file '" 
         			+ logFile.getAbsolutePath() + "'. Details: "
-        			+ ioex.getMessage(),-1);
+        			+ ioex.getMessage(), ioex);
         } catch (Exception e) {
-			e.printStackTrace();
-			Terminator.withMsgAndStatus("ERROR! Unable to parse data from "
+			throw new RuntimeException("Unable to parse data from "
 					+ "file '" + inFile + "'. Cause: " + e.getCause() 
-					+ ". Message: " + e.getMessage(), -1);
+					+ ". Message: " + e.getMessage(), e);
         } finally {
             try {
                 if (logReader != null)
                 	logReader.close();
             } catch (IOException ioex2) {
-                Terminator.withMsgAndStatus("ERROR! Unable to close software "
-                		+ "log file reader! " + ioex2.getMessage() ,-1);
+                // Log but don't throw - closing errors should not mask original exceptions
+                logger.error("Unable to close software log file reader! " 
+                		+ ioex2.getMessage(), ioex2);
             }
         }
     	
@@ -364,9 +359,9 @@ public class OutputReader extends Worker
         
         if (!normalTerminated && requireNormalTermination)
         {
-        	Terminator.withMsgAndStatus("Termination triggered by violation of "
-        			+ "the normal termination requirement (Keywod '" 
-        			+ WIROConstants.REQUIRENORMALTERM + "' was used).", -1);
+        	throw new IllegalStateException("Violation of "
+        			+ "the normal termination requirement (Keyword '" 
+        			+ WIROConstants.REQUIRENORMALTERM + "').");
         }
     }
     

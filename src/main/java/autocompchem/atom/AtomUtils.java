@@ -33,7 +33,6 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IElement;
 import org.openscience.cdk.tools.periodictable.PeriodicTable;
 
-import autocompchem.run.Terminator;
 
 
 /**
@@ -105,8 +104,7 @@ public class AtomUtils
                 res = true;
             }
         } catch (Throwable t) {
-            Terminator.withMsgAndStatus(
-            		"ERROR! Unable to create IsotopeFactory.", -1);
+            throw new RuntimeException("Unable to create IsotopeFactory.", t);
         }
         return res;
     }
@@ -140,9 +138,9 @@ public class AtomUtils
         } 
         catch (Throwable t) 
         {
-            Terminator.withMsgAndStatus("ERROR! Unable to create "
+            throw new RuntimeException("Unable to create "
                         + "IsotopeFactory (in AtomUtils.getElemntalSymbol) "
-                        + "from atomic number " + an ,-1);
+                        + "from atomic number " + an, t);
         }
 
         if (el == null)
@@ -171,19 +169,18 @@ public class AtomUtils
             {
                 el = ifact.getElement(symbol);
             } else {
-                Terminator.withMsgAndStatus("ERROR! Symbol '" + symbol + "' not "
-                        + "recognized as element by IsotopeFactory.",-1);
+                throw new IllegalArgumentException("Symbol '" + symbol + "' not "
+                        + "recognized as element by IsotopeFactory.");
             }
         } catch (Throwable t) {
-            Terminator.withMsgAndStatus("ERROR! Unable to create IsotopeFactory "
-                                        + " (in AtomUtils.getAtomicNumber)",-1);
+            throw new RuntimeException("Unable to create IsotopeFactory "
+                                        + " (in AtomUtils.getAtomicNumber)", t);
         }
 
         if (el == null)
         {
-            Terminator.withMsgAndStatus("ERROR! Unable to get element for symbol '"
-                    + symbol + "' from IsotopeFactory.",-1);
-            return 0; // Unreachable, but satisfies linter
+            throw new IllegalStateException("Unable to get element for symbol '"
+                    + symbol + "' from IsotopeFactory.");
         }
         int atmNum = el.getAtomicNumber();
         
@@ -350,12 +347,10 @@ public class AtomUtils
     	} 
     	else 
     	{
-    		Terminator.withMsgAndStatus("ERROR! Unexpected class in "
+    		throw new IllegalArgumentException("Unexpected class in "
     				+ "AtomUtils.isDummy() method. The IAtom which has "
-    				+ "triggered this is: " + atm.toString(), -1);
+    				+ "triggered this is: " + atm.toString());
     	}
-    	
-        return false;
     }
 
 //-----------------------------------------------------------------------------
@@ -393,10 +388,10 @@ public class AtomUtils
     	} 
     	else 
     	{
-    		Terminator.withMsgAndStatus("ERROR! Unexpected class in "
+    		throw new IllegalArgumentException("Unexpected class in "
     				+ AtomUtils.class.getSimpleName()
     				+ " method. The IAtom which has "
-    				+ "triggered this is: " + atm.toString(), -1);
+    				+ "triggered this is: " + atm.toString());
     	}
     	
         return res;

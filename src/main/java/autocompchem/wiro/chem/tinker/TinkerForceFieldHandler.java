@@ -39,7 +39,6 @@ import autocompchem.modeling.forcefield.ForceConstant;
 import autocompchem.modeling.forcefield.ForceFieldConstants;
 import autocompchem.modeling.forcefield.ForceFieldParameter;
 import autocompchem.modeling.forcefield.ForceFieldParamsSet;
-import autocompchem.run.Terminator;
 
 
 /**
@@ -269,12 +268,12 @@ public class TinkerForceFieldHandler
                             if (!w[1].equals(ateq.getProperty(
                                      ForceFieldConstants.ATMCLSINT).toString()))
                             {
-                                Terminator.withMsgAndStatus("ERROR! "
-                                    + "Inconsistent atom class '" + w[1] 
+                                throw new IllegalStateException(
+                                    "Inconsistent atom class '" + w[1] 
                                     + "' in atom class equivalency rule '" + l 
                                     + "'. Expected '" + ateq.getProperty(
                                       ForceFieldConstants.ATMCLSINT).toString()
-                                    + "'",-1);
+                                    + "'.");
                             }
                             p.addAtomType(ff.getAtomClass(w[2]));
                             p.addAtomType(ff.getAtomClass(w[3]));
@@ -286,9 +285,9 @@ public class TinkerForceFieldHandler
                         case TinkerConstants.FFKEYMMFFATPROP:
                             if (w.length < 10)
                             {
-                                Terminator.withMsgAndStatus("ERROR! Unknown "
+                                throw new IllegalArgumentException("Unknown "
                                           + "syntax for MMFF propety line '"
-                                          + l + "'.",-1); 
+                                          + l + "'."); 
                             }
                             AtomType ac = new AtomType("X");
                             try 
@@ -297,12 +296,12 @@ public class TinkerForceFieldHandler
                             }
                             catch (Throwable t)
                             {
-                                Terminator.withMsgAndStatus("ERROR! Atom class "
+                                throw new IllegalStateException("Atom class "
                                           + "'" + w[1] + "' is defined in the "
                                           + "MMFF properties section, but must "
                                           + "be first defined using the '"
                                           + TinkerConstants.FFKEYATMTYP + "' "
-                                          + "keyword.",-1);  
+                                          + "keyword.");  
                             }
                             ac.setAtomicNumber(Integer.parseInt(w[2]));
                             ac.setFormalNeighbourCount(
@@ -337,16 +336,16 @@ public class TinkerForceFieldHandler
                             break;
 
                         default:
-                            Terminator.withMsgAndStatus("ERROR! Parsing of "
+                            throw new UnsupportedOperationException("Parsing of "
                                 + "parameter '" + wUC[0]+ "' not implemented "
-                                + "yet. Check TinkerForceFieldReader.", -1);
+                                + "yet. Check TinkerForceFieldReader.");
                     }
                 }
                 catch (Throwable t)
                 {
                     t.printStackTrace();
-                    Terminator.withMsgAndStatus("ERROR! Cannot import force "
-                                + "field parameter from line '" + l + "'. ",-1);
+                    throw new RuntimeException("Cannot import force "
+                                + "field parameter from line '" + l + "'. ", t);
                 }
                 logger.trace("Parameter imported: " + p);
             }
@@ -354,7 +353,7 @@ public class TinkerForceFieldHandler
             {
                 if (ff.hasProperty(w[0]) || ff.hasProperty(wUC[0]))
                 {
-                    Terminator.withMsgAndStatus("ERROR! Unexpected repetition "
+                    throw new IllegalStateException("Unexpected repetition "
                         + "of possible keyword '" + w[0] 
                         + "' in Tinker force field "
                         + "file. Please comment out (i.e., add '"
@@ -363,7 +362,7 @@ public class TinkerForceFieldHandler
                         + "comments, and other lines that do not contain "
                         + "force field parameters, then try again. "
                         + "Alternatuvely, check the "
-                        + "implementation of TinkerForceFieldReader.",-1);
+                        + "implementation of TinkerForceFieldReader.");
                 }
                 ff.setProperty(w[0],mergeAllButFirstWord(w));
                 logger.trace("Force field property imported: "
@@ -996,7 +995,7 @@ public class TinkerForceFieldHandler
 
     private static AtomType getAtomTypeFromLine(String line)
     {
-        String msg = "ERROR! Unexpected syntax in atom type "
+        String msg = "Unexpected syntax in atom type "
                      + "definition '" + line + "'. I was expecting "
                      + "'INT INT STRING \"doubleQuotedSTRING\" INT DOUBLE INT'";
         int part = 0;
@@ -1030,7 +1029,7 @@ public class TinkerForceFieldHandler
         catch (Throwable t)
         {
             t.printStackTrace();
-            Terminator.withMsgAndStatus(msg + " Chack part: " + part,-1);
+            throw new RuntimeException(msg + " Chack part: " + part, t);
         }
         return at;
     }

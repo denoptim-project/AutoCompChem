@@ -37,7 +37,6 @@ import autocompchem.io.IOtools;
 import autocompchem.molecule.AtomContainerInputProcessor;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Job;
-import autocompchem.run.Terminator;
 import autocompchem.wiro.ITextualInputWriter;
 import autocompchem.wiro.InputWriter;
 import autocompchem.wiro.WIROConstants;
@@ -181,9 +180,9 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
         		String.format(formatCartCoord, -123456.12345);
         	} catch (Throwable t) {
 				t.printStackTrace();
-				Terminator.withMsgAndStatus("ERROR! Could not use string '"
+				throw new IllegalArgumentException("Could not use string '"
 						+ formatCartCoord + "' as a floating point format "
-						+ "definition. Please, check your input.", -1); 
+						+ "definition. Please, check your input.", t); 
         	}
         }
         
@@ -195,9 +194,9 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
         		String.format(formatIC, -126.12345);
         	} catch (Throwable t) {
 				t.printStackTrace();
-				Terminator.withMsgAndStatus("ERROR! Could not use string '"
+				throw new IllegalArgumentException("Could not use string '"
 						+ formatIC + "' as a floating point format definition. "
-						+ "Please, check your input.", -1); 
+						+ "Please, check your input.", t); 
         	}
         }
 
@@ -220,9 +219,9 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
             {
                 if (this.geomNames.contains(parts[i]))
                 {
-                    Terminator.withMsgAndStatus("ERROR! Geometry name '" 
+                    throw new IllegalArgumentException("Geometry name '" 
                                         + parts[i] + "' is used more than once."
-                                        + " Check line '" + line + "'.",-1);
+                                        + " Check line '" + line + "'.");
                 }
                 this.geomNames.add(parts[i]);
             }
@@ -242,8 +241,8 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
 					this.ccJob = CompChemJob.fromJSONFile(jdFile);
 				} catch (IOException e) {
 					e.printStackTrace();
-					Terminator.withMsgAndStatus("ERROR! Could not construct "
-							+ "job from file '" + jdFile + "'.",-1); 
+					throw new RuntimeException("Could not construct "
+							+ "job from file '" + jdFile + "'.", e); 
 				}	
             } else {
             	this.ccJob = new CompChemJob(jdFile);
@@ -269,10 +268,10 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
 	            this.ccJob = new CompChemJob(lines);
         	}
         } else {
-            Terminator.withMsgAndStatus("ERROR! Unable to get job details. "
+            throw new IllegalArgumentException("Unable to get job details. "
                     + "Neither '" + WIROConstants.PARJOBDETAILSFILE
                     + "' nor '" + ChemSoftConstants.PARJOBDETAILS 
-                    + "'found in parameters.", -1);
+                    + "'found in parameters.");
         }
         
         // We could have a definition of the geometries in the job
@@ -400,9 +399,9 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
         {
             if (geomNames.size()!=inMols.size())
             {
-            	Terminator.withMsgAndStatus("ERROR! Found " + inMols.size() 
+            	throw new IllegalArgumentException("Found " + inMols.size() 
             		+ " geometries, but " + geomNames.size() + " names. Check "
-            		+ "your input.", -1); 
+            		+ "your input."); 
             }
         	String geomName = geomNames.get(i);
         	iac.setTitle(geomName);
@@ -574,10 +573,10 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
 			try {
 				charge = Integer.valueOf(pCharge.toString());
 			} catch (NumberFormatException e) {
-				Terminator.withMsgAndStatus("ERROR! Could not interprete '" 
+				throw new IllegalArgumentException("Could not interprete '" 
 						+ pCharge.toString() + "' as charge. Check "
 						+ "value of property '" + ChemSoftConstants.PARCHARGE
-						+ "'.", -1);
+						+ "'.", e);
 			}
 		}
 		return charge;
@@ -594,10 +593,10 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
 			try {
 				sm = Integer.valueOf(pSM.toString());
 			} catch (NumberFormatException e) {
-				Terminator.withMsgAndStatus("ERROR! Could not interprete '" 
+				throw new IllegalArgumentException("Could not interprete '" 
 						+ pSM.toString() + "' as spin multiplicity. Check "
 						+ "value of property '" + ChemSoftConstants.PARSPINMULT
-						+ "'.", -1);
+						+ "'.", e);
 			}
 		}
 		return sm;

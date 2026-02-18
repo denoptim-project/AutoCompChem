@@ -28,7 +28,6 @@ import autocompchem.molecule.MolecularUtils;
 import autocompchem.molecule.intcoords.InternalCoord;
 import autocompchem.run.Job;
 import autocompchem.run.SoftwareId;
-import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
 import autocompchem.smarts.MatchingIdxs;
 import autocompchem.smarts.SMARTS;
@@ -285,11 +284,11 @@ public class VibModuleOutputReader extends ChemSoftOutputReader
 
                 if (jj > 3)
                 {
-                  Terminator.withMsgAndStatus("ERROR! More than 4 atomic "
+                  throw new IllegalArgumentException("More than 4 atomic "
                            + "SMARTS for IC-defining SMARTS rule "
                            + ii + " (last SMARTS:" + singleSmarts + "). "
                            + "These rules must identify N-tuples of "
-                           + "atoms, where N=2,3,4. Check the input.",-1);
+                           + "atoms, where N=2,3,4. Check the input.");
                 }
                 jj++;
                 String childName = masterName + SUBRULELAB + jj;
@@ -297,10 +296,10 @@ public class VibModuleOutputReader extends ChemSoftOutputReader
             }
             if (jj < 1)
             {
-                Terminator.withMsgAndStatus("ERROR! Less than 2 atomic "
+                throw new IllegalArgumentException("Less than 2 atomic "
                            + "SMARTS for IC-defining SMARTS rule "
                            + ii + ". These rules must identify N-tuples of "
-                           + "atoms, where N=2,3,4. Check input.",-1);
+                           + "atoms, where N=2,3,4. Check input.");
             }
         }
         return map;
@@ -446,7 +445,7 @@ public class VibModuleOutputReader extends ChemSoftOutputReader
                 {
                     msg = "Unexpected format in " + type 
                           + "-type line '" + line + "'.";
-                    Terminator.withMsgAndStatus("ERROR! " + msg,-1);
+                    throw new IllegalArgumentException(msg);
                 }
                 double value = 0.0;
                 try 
@@ -457,14 +456,14 @@ public class VibModuleOutputReader extends ChemSoftOutputReader
                 {
                     msg = "Unable to convert '" + words[2] + "' to "
                           + "a double. Check line '" + line + "'.";
-                    Terminator.withMsgAndStatus("ERROR! " + msg,-1);
+                    throw new IllegalArgumentException(msg);
                 }
                 String[] p = words[1].split(VibModuleConstants.BNDSTR);
                 if (p.length != 2)
                 {
                     msg = "Unexpected atom index format in " + type
                           + "-type line '" + line + "'.";
-                    Terminator.withMsgAndStatus("ERROR! " + msg,-1);
+                    throw new IllegalArgumentException(msg);
                 }
                 // WARNING! Here we change from 1- to 0-based atom index
                 int idA = Integer.parseInt(
@@ -491,7 +490,7 @@ public class VibModuleOutputReader extends ChemSoftOutputReader
                 {
                     msg = "Unexpected format in " + type
                           + "-type line '" + line + "'.";
-                    Terminator.withMsgAndStatus("ERROR! " + msg,-1);
+                    throw new IllegalArgumentException(msg);
                 }
                 double value = 0.0;
                 try
@@ -502,7 +501,7 @@ public class VibModuleOutputReader extends ChemSoftOutputReader
                 {
                     msg = "Unable to convert '" + words[4] + "' to "
                           + "a double. Check line '" + line + "'.";
-                    Terminator.withMsgAndStatus("ERROR! " + msg,-1);
+                    throw new IllegalArgumentException(msg);
                 }
                 // WARNING! Here we change from 1- to 0-based atom index
                 int idA = Integer.parseInt(
@@ -527,7 +526,7 @@ public class VibModuleOutputReader extends ChemSoftOutputReader
                 {
                     msg = "Unexpected format in " + type
                           + "-type line '" + line + "'.";
-                    Terminator.withMsgAndStatus("ERROR! " + msg,-1);
+                    throw new IllegalArgumentException(msg);
                 }
                 // WARNING! Here we change from 1- to 0-based atom index
                 int idA = Integer.parseInt(
@@ -565,7 +564,7 @@ public class VibModuleOutputReader extends ChemSoftOutputReader
                 {
                     msg = "Unable to convert '" + words[words.length-1]
                           + "' to a double. Check line '" + line + "'.";
-                    Terminator.withMsgAndStatus("ERROR! " + msg,-1);
+                    throw new IllegalArgumentException(msg);
                 }
                 increaseCountOfICs(VibModuleConstants.TYPTOR);
                 String allIDs = "";
@@ -611,7 +610,7 @@ public class VibModuleOutputReader extends ChemSoftOutputReader
                 {
                     msg = "Unexpected format in force field params "
                           + " line '" + line + "'.";
-                    Terminator.withMsgAndStatus("ERROR! " + msg,-1);
+                    throw new IllegalArgumentException(msg);
                 }
                 for (int ip=1; ip<words.length; ip+=2)
                 {
@@ -624,14 +623,14 @@ public class VibModuleOutputReader extends ChemSoftOutputReader
                     {
                         msg = "Unable to convert '" + words[ip] + "' "
                           + "into a double. Check line '" + line + "'.";
-                        Terminator.withMsgAndStatus("ERROR! " + msg,-1);
+                        throw new IllegalArgumentException(msg);
                     }
                     int icID = Integer.parseInt(words[ip-1]);
                     if (icID != (vmFFKs.size()+1))
                     {
                         msg = "Possible unsequential read of params. "
                               + "Report this bug to the authors.";
-                        Terminator.withMsgAndStatus("ERROR! " + msg,-1);
+                        throw new IllegalArgumentException(msg);
                     }
                     vmFFKs.add(value);
                     increaseCountOfICs(VibModuleConstants.PARAMDATA);
@@ -658,7 +657,7 @@ public class VibModuleOutputReader extends ChemSoftOutputReader
     {
     	// Preliminary read the topology of the chemical system
     	if (connectivityTemplate==null)
-    		Terminator.withMsgAndStatus("No Conenctivity templete provided.", -1);
+    		throw new IllegalArgumentException("No Conenctivity templete provided.");
         IAtomContainer mol = connectivityTemplate;
 
         //Identify selected internal coordinates
@@ -666,7 +665,7 @@ public class VibModuleOutputReader extends ChemSoftOutputReader
         if (msq.hasProblems()) 
         {
             String cause = msq.getMessage();
-            Terminator.withMsgAndStatus("ERROR! " + cause,-1);
+            throw new IllegalArgumentException(cause);
         }
 
         // Reorganize lists to group single-atom smarts of the same IC
@@ -858,9 +857,9 @@ public class VibModuleOutputReader extends ChemSoftOutputReader
             }
             else
             {
-                Terminator.withMsgAndStatus("ERROR! Rules meant for "
+                throw new IllegalArgumentException("Rules meant for "
                 		+ "out-of-plane must match 4 atoms. " + NL 
-                		+ "Check rule '" + rulKey + "'.", -1);
+                		+ "Check rule '" + rulKey + "'.");
             }
         }
 

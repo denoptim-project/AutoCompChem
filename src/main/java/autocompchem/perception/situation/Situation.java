@@ -274,7 +274,7 @@ public class Situation extends Concept implements Cloneable
         if (fingerprint.size() != context.size())
         {
             //TODO move to ERROR
-            throw new Exception("ERROR! Number of satisfaction flags ("
+            throw new Exception("Number of satisfaction flags ("
                                  + fingerprint.size() + ") "
                                  + "differs from the number of "
                                  + "circumstances (" + context.size() + ")");

@@ -14,7 +14,6 @@ import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
 import autocompchem.modeling.atomtuple.AtomTupleGenerator;
 import autocompchem.modeling.atomtuple.AtomTupleMatchingRule;
 import autocompchem.run.Job;
-import autocompchem.run.Terminator;
 import autocompchem.utils.NumberUtils;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
@@ -220,27 +219,24 @@ public class ConstraintsGenerator extends AtomTupleGenerator
     {
         if (constraintsA == null || constraintsA.isEmpty())
         {
-            Terminator.withMsgAndStatus("Missing or empty initial "
+            throw new IllegalArgumentException("Missing or empty initial "
                 + "set of constraints. "
                 + "Please, provide a constraintsSet as value for " 
-                + KEYSETCONSTRAINTSA + ".", -1); 
-            return new ConstraintsSet();
+                + KEYSETCONSTRAINTSA + "."); 
         }
         if (constraintsB == null || constraintsB.isEmpty())
         {
-            Terminator.withMsgAndStatus("Missing or empty final "
+            throw new IllegalArgumentException("Missing or empty final "
                 + "set of constraints. "
                 + "Please, provide a constraintsSet as value for " 
-                + KEYSETCONSTRAINTSB + ".", -1); 
-            return new ConstraintsSet();
+                + KEYSETCONSTRAINTSB + "."); 
         }
         if (interpolationFactor == null)
         {
-            Terminator.withMsgAndStatus("Missing or empty final "
+            throw new IllegalArgumentException("Missing or empty final "
                 + "set of constraints. "
                 + "Please, provide a value for " 
-                + KEYINTERPOLATIONFACTOR + ".", -1); 
-            return new ConstraintsSet();
+                + KEYINTERPOLATIONFACTOR + "."); 
         }
 
         ConstraintsSet interpolatesCnstrs = new ConstraintsSet();
@@ -274,8 +270,8 @@ public class ConstraintsGenerator extends AtomTupleGenerator
             
             if (cB == null)
             {
-                Terminator.withMsgAndStatus("No matching constraint found for "
-                    + cA.toString() + " in " + constraintsB.toString() + ".", -1); 
+                throw new IllegalStateException("No matching constraint found for "
+                    + cA.toString() + " in " + constraintsB.toString() + "."); 
             }
 
             // NB: the set value takes priority over the current value

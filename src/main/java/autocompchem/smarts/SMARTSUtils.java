@@ -15,7 +15,6 @@ import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 
-import autocompchem.run.Terminator;
 import autocompchem.utils.StringUtils;
 
 /**
@@ -115,8 +114,8 @@ public class SMARTSUtils
         if (msq.hasProblems())
         {
             String cause = msq.getMessage();
-            Terminator.withMsgAndStatus("ERROR! Cannot use SMARTS to find "
-            		+ "specific atoms " + cause, -1);
+            throw new IllegalArgumentException("Cannot use SMARTS to find "
+            		+ "specific atoms " + cause);
         }
         if (msq.getTotalMatches() == 0)
         {
@@ -194,9 +193,9 @@ public class SMARTSUtils
         if (msq.hasProblems())
         {
             String cause = msq.getMessage();
-            Terminator.withMsgAndStatus("ERROR! Cannot identify bonds: "
+            throw new IllegalArgumentException("Cannot identify bonds: "
                 + "attempt to use the SMARTS returns an error. "
-                + "Details: " + cause,-1);
+                + "Details: " + cause);
         }
         if (msq.getTotalMatches() == 0)
         {

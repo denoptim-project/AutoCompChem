@@ -21,7 +21,6 @@ import java.util.ArrayList;
 
 import org.openscience.cdk.interfaces.IAtomContainer;
 
-import autocompchem.run.Terminator;
 
 
 /**
@@ -58,8 +57,8 @@ public class InternalCoordTable
 
     public InternalCoordTable(IAtomContainer mol, int verbosity)
     {
-        Terminator.withMsgAndStatus("ERROR! Attempt to use InternalCoordTable "
-                + "which is not implemented yet...", -1);
+        throw new UnsupportedOperationException("Attempt to use InternalCoordTable "
+                + "which is not implemented yet...");
     }
 
 //------------------------------------------------------------------------------

@@ -26,7 +26,6 @@ import java.util.List;
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterUtils;
 import autocompchem.io.IOtools;
-import autocompchem.run.Terminator;
 import autocompchem.wiro.chem.ChemSoftConstants;
 import autocompchem.wiro.chem.CompChemJob;
 import autocompchem.wiro.chem.Directive;
@@ -142,10 +141,10 @@ public class GaussianJob
                 }
                 if (goon)
                 {
-                    String msg = "ERROR! A multiline block was opened but no "
+                    String msg = "A multiline block was opened but no "
                                  + "closed. Check the input, in particular the "
                                  + "following block of lines: " + line;
-                    Terminator.withMsgAndStatus(msg,-1);
+                    throw new IllegalStateException(msg);
                 }
             }
 
@@ -192,8 +191,8 @@ public class GaussianJob
     {
         if (i > numSteps)
         {
-            Terminator.withMsgAndStatus("ERROR! Trying to get step number " + i
-               + " in a Gaussian job that has only " + numSteps + " steps.",-1);
+            throw new IndexOutOfBoundsException("Trying to get step number " + i
+               + " in a Gaussian job that has only " + numSteps + " steps.");
         }
         return steps.get(i);
     }

@@ -33,7 +33,6 @@ import org.openscience.cdk.interfaces.IBond;
 
 import autocompchem.io.IOtools;
 import autocompchem.molecule.connectivity.NearestNeighborMap;
-import autocompchem.run.Terminator;
 
 /**
  * Reader for Tinker XYZ files. This class is only a quick and dirty fix of
@@ -81,8 +80,8 @@ public class TinkerXYZReader
                 String parts[] = line.trim().split("\\s+");
                 if (parts.length < 6)
                 {
-                    Terminator.withMsgAndStatus("ERROR! Not enough fields in "
-                        + "file '" + file + "'.",-1);
+                    throw new IllegalArgumentException("Not enough fields in "
+                        + "file '" + file + "'.");
                 }
                 int atmId = Integer.parseInt(parts[0]);
                 String elSym = parts[1];

@@ -35,7 +35,6 @@ import autocompchem.modeling.constraints.Constraint.ConstraintType;
 import autocompchem.modeling.constraints.ConstraintsSet;
 import autocompchem.molecule.connectivity.NearestNeighborMap;
 import autocompchem.run.Job;
-import autocompchem.run.Terminator;
 import autocompchem.utils.NumberAwareStringComparator;
 import autocompchem.utils.StringUtils;
 import autocompchem.wiro.chem.ChemSoftInputWriter;
@@ -126,13 +125,13 @@ public class XTBInputWriter extends ChemSoftInputWriter
 					+ "input file text lines.";
 			if (d.getAllSubDirectives().size()>0)
 			{
-				Terminator.withMsgAndStatus("ERROR! Unexpected sub "
-						+ "directives "+errTail, -1);
+				throw new IllegalStateException("Unexpected sub "
+						+ "directives "+errTail);
 			}
 			if (d.getAllDirectiveDataBlocks().size()>0)
 			{
-				Terminator.withMsgAndStatus("ERROR! Unexpected directive "
-						+ "data blocks "+errTail, -1);
+				throw new IllegalStateException("Unexpected directive "
+						+ "data blocks "+errTail);
 			}
 			return lines;
     	}
@@ -166,8 +165,8 @@ public class XTBInputWriter extends ChemSoftInputWriter
 					lines.add("$chrg " 
 							+ d.getAllKeywords().get(0).getValueAsString());
 				} else {
-					Terminator.withMsgAndStatus("ERROR! Expecting one keyword "
-							+ "in $chrg/$charge directive.",-1);
+					throw new IllegalArgumentException("Expecting one keyword "
+							+ "in $chrg/$charge directive.");
 				}
 				break;
 			}
@@ -179,8 +178,8 @@ public class XTBInputWriter extends ChemSoftInputWriter
 					lines.add("$spin " 
 							+ d.getAllKeywords().get(0).getValueAsString());
 				} else {
-					Terminator.withMsgAndStatus("ERROR! Expecting one keyword "
-							+ "in $spin directive.",-1);
+					throw new IllegalArgumentException("Expecting one keyword "
+							+ "in $spin directive.");
 				}
 				break;
 			}
@@ -713,7 +712,7 @@ public class XTBInputWriter extends ChemSoftInputWriter
     	CompChemJob actualJob = job;
 		if (job.getNumberOfSteps()>1)
 		{
-			throw new IllegalArgumentException("ERROR! XTB does not run "
+			throw new IllegalArgumentException("XTB does not run "
 					+ "multi-step jobs, but your input contains more than one "
 					+ "step.");
 		} else if (job.getNumberOfSteps()==1) {

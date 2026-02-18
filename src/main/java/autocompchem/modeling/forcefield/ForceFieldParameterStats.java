@@ -26,7 +26,6 @@ import java.util.Set;
 
 import com.google.common.math.StatsAccumulator;
 
-import autocompchem.run.Terminator;
 
 
 /**
@@ -100,14 +99,14 @@ public class ForceFieldParameterStats
             // check consistency with first imported
             if (!ffPar.isAnalogueTo(refFFPars.get(ffPar.getName())))
             {
-                Terminator.withMsgAndStatus("ERROR! Attempt to compare two "
+                throw new IllegalArgumentException("Attempt to compare two "
                         + "force field parameters that are not analogues: "
                         + System.getProperty("line.separator") + "NEW FFPar.: "
                         + System.getProperty("line.separator")
                         + ffPar.toString() 
                         + System.getProperty("line.separator") + "REF. FFPar.: "
                         + System.getProperty("line.separator")
-                        + refFFPars.get(ffPar.getName()).toString(),-1);
+                        + refFFPars.get(ffPar.getName()).toString());
             }
 
             // recover storage
@@ -179,9 +178,8 @@ public class ForceFieldParameterStats
             }
             catch (Throwable t)
             {
-                t.printStackTrace();
-                Terminator.withMsgAndStatus("ERROR! Failed deep-copy of force "
-                  + "field parameter. Plese report this bug to the author.",-1);
+                throw new RuntimeException("Failed deep-copy of force "
+                  + "field parameter. Plese report this bug to the author.", t);
             }
             for (int i=0; i<mFFPar.getEqValues().size(); i++)
             {

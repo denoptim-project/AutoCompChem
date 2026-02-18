@@ -25,7 +25,6 @@ import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrixAtom;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrixHandler;
 import autocompchem.run.Job;
-import autocompchem.run.Terminator;
 import autocompchem.utils.ListOfListsCombinations;
 import autocompchem.utils.StringUtils;
 import autocompchem.worker.Task;
@@ -244,7 +243,7 @@ public class ConformersGenerator extends AtomContainerInputProcessor
 				msgTors = msgTors + NL + cc.getType();
 		    }
 					
-			Terminator.withMsgAndStatus(msgTors, -1);
+			throw new IllegalArgumentException(msgTors);
 		}
 		
 		// In case of conformation space with selected conformers, determine the 
@@ -407,8 +406,8 @@ public class ConformersGenerator extends AtomContainerInputProcessor
         		conformers.addAtomContainer(conformer);
 			} catch (Throwable e) {
 				e.printStackTrace();
-				Terminator.withMsgAndStatus("Could not convert ZMatrix "
-						+ "representation to XYZ.", -1, e);
+				throw new RuntimeException("Could not convert ZMatrix "
+						+ "representation to XYZ.", e);
 			}
         }
         

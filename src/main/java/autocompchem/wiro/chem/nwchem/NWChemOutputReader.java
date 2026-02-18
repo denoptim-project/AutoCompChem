@@ -23,7 +23,6 @@ import autocompchem.files.FileFingerprint;
 import autocompchem.molecule.vibrations.NormalModeSet;
 import autocompchem.run.Job;
 import autocompchem.run.SoftwareId;
-import autocompchem.run.Terminator;
 import autocompchem.wiro.ITextualInputWriter;
 import autocompchem.wiro.chem.ChemSoftConstants;
 import autocompchem.wiro.chem.ChemSoftOutputReader;
@@ -161,9 +160,9 @@ public class NWChemOutputReader extends ChemSoftOutputReader
                 		String[] p = line.trim().split("\\s+");
                 		if (p.length < 6)
                 		{
-                			Terminator.withMsgAndStatus("ERROR! Cannot "
+                			throw new IllegalArgumentException("Cannot "
                 					+ "read coordinates from line '" 
-                					+ line + "'.",-1);
+                					+ line + "'.");
                 		}
                 		String tag = p[1];
                 		String symNoTag = tag.replaceAll("[^A-Za-z]+","");
@@ -205,9 +204,9 @@ public class NWChemOutputReader extends ChemSoftOutputReader
                 		String[] p = line.trim().split("\\s+");
                 		if (p.length < 6)
                 		{
-                			Terminator.withMsgAndStatus("ERROR! Cannot "
+                			throw new IllegalArgumentException("Cannot "
                 					+ "read coordinates from line '" 
-                					+ line + "'.",-1);
+                					+ line + "'.");
                 		}
                 		String tag = p[0];
                 		String symNoTag = tag.replaceAll("[^A-Za-z]+","");
@@ -267,9 +266,9 @@ public class NWChemOutputReader extends ChemSoftOutputReader
                 		String[] p = line.trim().split("\\s+");
                 		if (p.length < 2)
                 		{
-                			Terminator.withMsgAndStatus("ERROR! Cannot "
+                			throw new IllegalArgumentException("Cannot "
                 					+ "read normal modes indexes from line"
-                					+ " '" + line + "'.",-1);
+                					+ " '" + line + "'.");
                 		}
                 		currModes = new int[6]; //Cleanup previous numbers
                 		for (int i=0; i<p.length; i++)

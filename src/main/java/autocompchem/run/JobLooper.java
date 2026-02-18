@@ -154,9 +154,9 @@ public class JobLooper extends Worker
 			{
 				maxIterations = Integer.parseInt(value);
 			} else {
-				Terminator.withMsgAndStatus("Could not parse string '" + value 
+				throw new IllegalArgumentException("Could not parse string '" + value 
 						+ "' to an integer. Please, check your input for parameter '"
-						+ PARMAXITERATIONS + "'.", -1);
+						+ PARMAXITERATIONS + "'.");
 			}
 		}
 
@@ -240,10 +240,10 @@ public class JobLooper extends Worker
 						replacementForOriginalString = NumberUtils.calculateNewValue(
 							replacementForOriginalString, Double.valueOf(i+"")).toString();
 					} catch (Exception e) {
-						Terminator.withMsgAndStatus("Error evaluating expression '" 
+						throw new RuntimeException("Error evaluating expression '" 
 							+ replacementForOriginalString + "' at iteration " + i + ". " 
 							+ "Please, check your input for parameter '" 
-							+ PARREPLACEMENTRULES + "'.", -1, e);
+							+ PARREPLACEMENTRULES + "'.", e);
 					}
 				}
 				replacements.put(originalString, replacementForOriginalString);

@@ -36,7 +36,6 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
 import autocompchem.files.FileUtils;
-import autocompchem.run.Terminator;
 import autocompchem.utils.StringUtils;
 
 /**
@@ -134,8 +133,8 @@ public class FileAsSource extends ReadableIC
         }
         catch (Exception e)
         {
-            Terminator.withMsgAndStatus("ERROR! File "+ pathName
-            		+ " not found!.",-1);
+            throw new RuntimeException("File "+ pathName
+            		+ " not found!.", e);
         }
         return super.reader;
     }

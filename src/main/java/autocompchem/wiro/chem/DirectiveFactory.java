@@ -25,7 +25,6 @@ import java.util.TreeMap;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import autocompchem.run.Terminator;
 import autocompchem.text.TextAnalyzer;
 
 
@@ -312,9 +311,9 @@ public class DirectiveFactory
             }
             else
             {
-                Terminator.withMsgAndStatus("ERROR! Unable to parse line to "
+                throw new IllegalArgumentException("Unable to parse line to "
                             + "make content of directive '" + name + "'. "
-                            + "The problem is this line: '" + line + "'",-1);
+                            + "The problem is this line: '" + line + "'");
             } 
         }
         

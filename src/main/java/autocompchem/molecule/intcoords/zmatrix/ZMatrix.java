@@ -25,7 +25,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import autocompchem.modeling.constraints.ConstraintsSet;
-import autocompchem.run.Terminator;
 
 /**
  * Object representing a Z-matrix: an internal coordinates representation of a 
@@ -145,8 +144,8 @@ public class ZMatrix implements Cloneable
             catch (Throwable t)
             {
                 t.printStackTrace();
-                Terminator.withMsgAndStatus("Could not import '" + line + "' "
-                        + "in a ZMatrix.",-1);
+                throw new IllegalArgumentException("Could not import '" + line + "' "
+                        + "in a ZMatrix.", t);
             }
         }
     }

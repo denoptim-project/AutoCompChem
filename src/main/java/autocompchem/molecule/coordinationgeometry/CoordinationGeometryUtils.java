@@ -27,7 +27,6 @@ import org.apache.logging.log4j.Logger;
 
 import com.google.common.collect.Collections2;
 
-import autocompchem.run.Terminator;
 
 /**
  * Toolbox for determination and analysis of the geometry of atoms in terms of 
@@ -57,9 +56,9 @@ public class CoordinationGeometryUtils
         int cnB = cgB.getConnectionNumber();
         if (cnA != cnB)
         {
-            String msg = "ERROR! 'calculateMeanAngleDifference' says that "
+            String msg = "'calculateMeanAngleDifference' says that "
                          + "Coordination geometries have different CN!";
-            Terminator.withMsgAndStatus(msg, -1);
+            throw new IllegalArgumentException(msg);
         }
 
         //Generate list of indexes

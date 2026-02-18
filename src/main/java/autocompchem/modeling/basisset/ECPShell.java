@@ -20,7 +20,6 @@ package autocompchem.modeling.basisset;
 import java.util.Locale;
 import java.util.Objects;
 
-import autocompchem.run.Terminator;
 
 /**
  * Object representing a single shell for effective core potentials.
@@ -170,9 +169,9 @@ public class ECPShell extends Shell
                 break;
 
             default:
-                String msg = "ERROR! Format '" + format + "' is not a known "
+                String msg = "Format '" + format + "' is not a known "
                           + "format for reporting ECPShells. Check your input.";
-                Terminator.withMsgAndStatus(msg,-1);
+                throw new IllegalArgumentException(msg);
         }
         return sb.toString();
     }

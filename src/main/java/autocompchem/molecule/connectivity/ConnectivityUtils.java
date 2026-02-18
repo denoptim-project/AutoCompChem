@@ -37,7 +37,6 @@ import autocompchem.constants.ACCConstants;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.molecule.SeedAtom;
 import autocompchem.molecule.SeedAtomComparator;
-import autocompchem.run.Terminator;
 
 /** 
  * Toolbox for molecular connectivity
@@ -600,8 +599,8 @@ public class ConnectivityUtils
             }
             catch (Throwable t)
             {
-                Terminator.withMsgAndStatus("ERROR! Cannot clone molecule to "
-                    + "extract fragments.", -1);
+                throw new RuntimeException("Cannot clone molecule to "
+                    + "extract fragments.", t);
             }
             ArrayList<IAtom> atmsToDel = new ArrayList<IAtom>();
             for (int i=0; i<iac.getAtomCount(); i++)

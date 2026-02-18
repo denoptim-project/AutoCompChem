@@ -136,10 +136,10 @@ public class ShellJob extends Job
 		if (params.contains(ShellJobConstants.LABINTERPRETER)
 				&& params.contains(ShellJobConstants.LABCOMMAND))
 		{
-			Terminator.withMsgAndStatus("ERROR! Cannot have both "
+			throw new IllegalArgumentException("Cannot have both "
 					+ ShellJobConstants.LABCOMMAND + " and " 
 					+ ShellJobConstants.LABINTERPRETER + " as parameters "
-					+ "in a shell job. Use either one or the other.",-1);
+					+ "in a shell job. Use either one or the other.");
 		}
 		
     	// First we need to see if the command comes from the constructor or
@@ -152,9 +152,9 @@ public class ShellJob extends Job
     	
     		if (!params.contains(ShellJobConstants.LABSCRIPT))
     		{
-    			Terminator.withMsgAndStatus("ERROR! Expecting a script "
+    			throw new IllegalArgumentException("Expecting a script "
     					+ "pathname, but " + ShellJobConstants.LABSCRIPT 
-    					+ " parameter is not found.", -1);
+    					+ " parameter is not found.");
     		}
     		
     		String script = params.getParameter(
@@ -248,9 +248,8 @@ public class ShellJob extends Job
             }
             catch (Throwable t)
             {
-                t.printStackTrace();
-                Terminator.withMsgAndStatus("ERROR while running command line "
-                                   + "operation '" + commandAsString + "'.",-1);
+                throw new RuntimeException("Error while running command line "
+                                   + "operation '" + commandAsString + "'.", t);
             }
         }
 

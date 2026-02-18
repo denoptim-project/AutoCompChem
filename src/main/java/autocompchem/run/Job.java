@@ -333,9 +333,9 @@ public class Job implements Runnable
         String str = param.getValueAsString();
         if (!NumberUtils.isNumber(str))
 		{
-			Terminator.withMsgAndStatus("ERROR! Value '" + str + "' "
+			throw new IllegalArgumentException("Value '" + str + "' "
 					+ "cannot be converted to an integer. Check parameter "
-					+ ParameterConstants.VERBOSITY, -1);
+					+ ParameterConstants.VERBOSITY);
 		}
         Configurator.setLevel(logger.getName(), 
         		LogUtils.verbosityToLevel(Integer.parseInt(str)));
@@ -351,8 +351,8 @@ public class Job implements Runnable
                     JobConstants.PARWORKDIR).getValueAsString());
             if (!workDir.exists() && !workDir.mkdirs())
             {
-                Terminator.withMsgAndStatus("ERROR! Could not make the "
-                        + "required subfolder '" + workDir + "'.",-1);
+                throw new RuntimeException("Could not make the "
+                        + "required subfolder '" + workDir + "'.");
             }
             logger.trace("Created work directory '"
                     + workDir + "'.");
@@ -884,10 +884,10 @@ public class Job implements Runnable
 
     public Job getStep(int i)
     {
-        if (i > steps.size())
+        if (i >= steps.size() || i < 0)
         {
-            Terminator.withMsgAndStatus("ERROR! Trying to get step number " + i
-            		+ " in a job that has only " + steps.size() + " steps.",-1);
+            throw new IndexOutOfBoundsException("Trying to get step number " + i
+            		+ " in a job that has only " + steps.size() + " steps.");
         }
         return steps.get(i);
     }
@@ -940,8 +940,8 @@ public class Job implements Runnable
     	{
     		if (parentJob != null)
         	{
-    			Terminator.withMsgAndStatus("A Job with both parent and "
-    					+ "container should not exist. Check job " + this, -1);
+    			throw new IllegalStateException("A Job with both parent and "
+    					+ "container should not exist. Check job " + this);
         	}
     		idStr = containerJob.getId() + "." + jobId;
     	} 
@@ -1072,9 +1072,8 @@ public class Job implements Runnable
 				try {
 					com.google.common.io.Files.copy(source,dest);
 				} catch (IOException e) {
-					e.printStackTrace();
-					Terminator.withMsgAndStatus("ERROR! Could not copy "
-							+ "file '" + source + "' to work directory.",-1);
+					throw new RuntimeException("Could not copy "
+							+ "file '" + source + "' to work directory.", e);
 				}
 			} else {
 				logger.warn("WARNING: file '" + source 
@@ -1113,11 +1112,11 @@ public class Job implements Runnable
         // Subclasses overwrites this method, so if we are here
         // it is because we tried to run a job of an app for which there is
         // no implementation of app-specific Job yet.
-        Terminator.withMsgAndStatus("ERROR! Cannot run '" 
+        throw new UnsupportedOperationException("Cannot run '" 
                     + appID + "' Jobs directy within AutocompChem. "
                     + "Provide an extension of '" + Job.class.getName() 
                     + "' that enables running this job from within "
-                    + "AutoCompChem.", -1);
+                    + "AutoCompChem.");
     }
 
 //------------------------------------------------------------------------------
@@ -1641,7 +1640,12 @@ public class Job implements Runnable
     	{
             if (step.foundException())
             {
-            	throw new Error(step.thrownExc);
+                if (step.thrownExc.getMessage() != null) {
+                    throw new Error(step.thrownExc.getMessage(), step.thrownExc);
+                } else {
+                    throw new Error(step.thrownExc.getClass().getSimpleName()
+                            + " thrown by job " + step.getId() + ".", step.thrownExc);
+                }
             }
     	}
     	
@@ -1660,9 +1664,13 @@ public class Job implements Runnable
     	// final check for 
     	if (hasException)
     	{
-    		throw new Error("ERROR! " + thrownExc.getClass().getSimpleName()
-    				+ " thrown by job " + getId() + ".", thrownExc);
-    	}
+            if (thrownExc.getMessage() != null) {
+                throw new Error(thrownExc.getMessage(), thrownExc);
+            } else {
+                throw new Error(thrownExc.getClass().getSimpleName()
+                        + " thrown by job " + getId() + ".", thrownExc);
+            }
+        }
     }
 
 //------------------------------------------------------------------------------

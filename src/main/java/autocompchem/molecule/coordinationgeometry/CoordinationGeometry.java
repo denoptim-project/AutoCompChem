@@ -27,7 +27,6 @@ import org.openscience.cdk.interfaces.IAtom;
 
 import autocompchem.atom.AtomUtils;
 import autocompchem.molecule.MolecularUtils;
-import autocompchem.run.Terminator;
 
 /**
  *   Object representing a particular geometry of points surrounding a
@@ -78,8 +77,8 @@ public class CoordinationGeometry
         int cnloc = atms.size();
         if (cnloc < 2)
         {
-            Terminator.withMsgAndStatus("ERROR! Cannot define a coordination "
-                + "geometry with less than two ligands!",-1);
+            throw new IllegalArgumentException("Cannot define a coordination "
+                + "geometry with less than two ligands!");
         }
         this.cn = cnloc;
 

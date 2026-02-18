@@ -18,7 +18,6 @@ import autocompchem.files.FileFingerprint;
 import autocompchem.io.IOtools;
 import autocompchem.run.Job;
 import autocompchem.run.SoftwareId;
-import autocompchem.run.Terminator;
 import autocompchem.wiro.ITextualInputWriter;
 import autocompchem.wiro.chem.ChemSoftConstants;
 import autocompchem.wiro.chem.ChemSoftOutputReader;
@@ -194,9 +193,9 @@ public class XTBOutputReader extends ChemSoftOutputReader
             		String[] p = line.trim().split("\\s+");
             		if (p.length < 3)
             		{
-            			Terminator.withMsgAndStatus("ERROR! Cannot "
+            			throw new IllegalArgumentException("Cannot "
             					+ "read vibrationsl frequencies from line '" 
-            					+ line + "'.",-1);
+            					+ line + "'.");
             		}
             		for (int i=2; i<p.length; i++)
             		{

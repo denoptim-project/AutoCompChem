@@ -41,7 +41,6 @@ import autocompchem.modeling.atomtuple.AtomTupleMatchingRule;
 import autocompchem.molecule.geometry.GeomDescriptor;
 import autocompchem.molecule.geometry.GeomDescriptorDefinition;
 import autocompchem.run.Job;
-import autocompchem.run.Terminator;
 import autocompchem.utils.StringUtils;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
@@ -274,9 +273,9 @@ public class MolecularMeter extends AtomTupleGenerator
             {
                 type = "Dih.";
             } else {
-                Terminator.withMsgAndStatus("ERROR! Unexpected number of atoms ("
+                throw new IllegalArgumentException("Unexpected number of atoms ("
                     + ids.size() + ") for quantity '" + descriptor.getName() 
-                    + "'.", -1);
+                    + "'.");
             }
             
             String strRes = "Mol." + i + " "

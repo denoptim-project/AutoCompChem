@@ -42,7 +42,6 @@ import autocompchem.datacollections.ParameterStorage;
 import autocompchem.modeling.basisset.BasisSetConstants;
 import autocompchem.modeling.constraints.ConstraintsGenerator;
 import autocompchem.run.Job;
-import autocompchem.run.Terminator;
 import autocompchem.text.TextAnalyzer;
 import autocompchem.wiro.WIROConstants;
 import autocompchem.wiro.chem.gaussian.GaussianConstants;
@@ -1012,9 +1011,9 @@ public class Directive implements IDirectiveComponent, Cloneable
 		} 
     	else if (numOfLinesWithTask>1)
     	{
-    		Terminator.withMsgAndStatus("ERROR! Unexpected format of "
+    		throw new IllegalArgumentException("Unexpected format of "
     				+ "the directive component containing this value: '" 
-    				+ lines + "'", -1);
+    				+ lines + "'");
     	}
     	// Warning: because of the above the rest is assuming there is only one
     	// task, even if the return value is a list.
@@ -1192,9 +1191,8 @@ public class Directive implements IDirectiveComponent, Cloneable
     				{
     					newComp = ((DirectiveData) dirComp).clone();
     				} else {
-    					Terminator.withMsgAndStatus("ERROR! Unknown directive component type: "
-    							+ dirComp.getComponentType(), -1);
-    					return; // should not be reached, but satisfies linter
+    					throw new IllegalStateException("Unknown directive component type: "
+    							+ dirComp.getComponentType());
     				}
     				((IValueContainer) newComp).removeValue();
     				((IValueContainer) newComp).setValue(

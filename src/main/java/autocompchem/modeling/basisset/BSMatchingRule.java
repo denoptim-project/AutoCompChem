@@ -17,7 +17,6 @@ package autocompchem.modeling.basisset;
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import autocompchem.run.Terminator;
 
 /**
  * Object representing the chemical context-based rule to assign a basis set to
@@ -137,26 +136,26 @@ public class BSMatchingRule
     public BSMatchingRule(String txt, String refName)
     {
         String[] p = txt.split("\\s+");
-        String msg = "ERROR! The following string does not look like a "
+        String msg = "The following string does not look like a "
                              + "properly formatted rule for basis set "
                              + "generation. ";
         if (p.length < 4)
         {
-            Terminator.withMsgAndStatus(msg + "Wrong number of words. "
-                                                     + " Check line " + txt,-1);
+            throw new IllegalArgumentException(msg + "Wrong number of words. "
+                                                     + " Check line " + txt);
         }
         if (!p[0].toUpperCase().equals(BasisSetConstants.ATMMATCHBYSMARTS) &&
                  !p[0].toUpperCase().equals(BasisSetConstants.ATMMATCHBYSYMBOL))
         {
-            Terminator.withMsgAndStatus(msg + "Unknown rule type. "
-                                             + p[0] + ". Check line " + txt,-1);
+            throw new IllegalArgumentException(msg + "Unknown rule type. "
+                                             + p[0] + ". Check line " + txt);
         }
 
         if (!p[2].toUpperCase().equals(BasisSetConstants.BSSOURCENAME) &&
                      !p[2].toUpperCase().equals(BasisSetConstants.BSSOURCELINK))
         {
-            Terminator.withMsgAndStatus(msg + "Unknown basis set source "
-                                 + "type: " + p[2] + ".  Check line " + txt,-1);
+            throw new IllegalArgumentException(msg + "Unknown basis set source "
+                                 + "type: " + p[2] + ".  Check line " + txt);
         }
         String pp = "";
         for (int j=3; j<p.length; j++)

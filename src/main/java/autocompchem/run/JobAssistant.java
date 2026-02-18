@@ -150,8 +150,8 @@ public class JobAssistant extends Worker
 		{
 			runJob = (Job) params.getParameter(PARRUNJOB).getValue();
 		} else if (hasParameter(PARASSISTEDJOB)) {
-			Terminator.withMsgAndStatus("Missing definition of assisted job. "
-					+ "Please, use 'ASSISTEDJOB' in yout input.", -1);
+			throw new IllegalArgumentException("Missing definition of assisted job. "
+					+ "Please, use 'ASSISTEDJOB' in yout input.");
 		}
 		
 		if (hasParameter(PARMAXRESTART)) 
@@ -161,8 +161,8 @@ public class JobAssistant extends Worker
 			{
 				maxRestart = Integer.parseInt(value);
 			} else {
-				Terminator.withMsgAndStatus("Could not parse string '" + value 
-						+ "' to an integer. Please, check your input.", -1);
+				throw new IllegalArgumentException("Could not parse string '" + value 
+						+ "' to an integer. Please, check your input.");
 			}
 		}
 	}
@@ -301,9 +301,9 @@ public class JobAssistant extends Worker
 	    	    inputPreparationJob.run();
 	        }
 		} else {
-			Terminator.withMsgAndStatus("No situation perceived. Please, add "
+			throw new IllegalStateException("No situation perceived. Please, add "
 					+ "suitable situations and corresponding actions if you"
-					+ "what to cure the given job.", -1);
+					+ "what to cure the given job.");
 		}
         
         // Project output

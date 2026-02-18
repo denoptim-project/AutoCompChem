@@ -39,7 +39,6 @@ import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrixConstants;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrixHandler;
 import autocompchem.run.Job;
-import autocompchem.run.Terminator;
 import autocompchem.wiro.chem.ChemSoftConstants;
 import autocompchem.wiro.chem.ChemSoftConstants.CoordsType;
 import autocompchem.worker.Task;
@@ -244,11 +243,11 @@ public class MolecularGeometryHandler extends AtomContainerInputProcessor
 	    					cs = cnstrg.createConstraints(iac);
 	    				} catch (Exception e) {
 	    					e.printStackTrace();
-	    					Terminator.withMsgAndStatus("ERROR! "
-	    							+ "Unable to create constraints. "
+	    					throw new RuntimeException(
+	    							"Unable to create constraints. "
 	    							+ "Exception from the "
 	    							+ ConstraintsGenerator.class.getSimpleName() 
-	    							+ ".", -1);
+	    							+ ".", e);
 	    				}
 	                	String mode = params.getParameterValue(
 	                			ZMatrixConstants.SELECTORMODE);

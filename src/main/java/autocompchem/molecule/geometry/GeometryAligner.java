@@ -50,7 +50,6 @@ import autocompchem.io.IOtools;
 import autocompchem.molecule.AtomContainerInputProcessor;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Job;
-import autocompchem.run.Terminator;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 
@@ -164,8 +163,8 @@ public class GeometryAligner extends AtomContainerInputProcessor
 	        String[] vals = keyVal[0].split(",");
 	        if (keys.length != vals.length)
 	        {
-	        	Terminator.withMsgAndStatus("Different number of indexes in "
-	        			+ "the two sets given to parameter 'ATOMMAP'.", -1);
+	        	throw new IllegalArgumentException("Different number of indexes in "
+	        			+ "the two sets given to parameter 'ATOMMAP'.");
 	        }
 	        mappingIDs = new LinkedHashMap<Integer,Integer>();
 	        for (int i=0; i<keys.length; i++)
@@ -184,8 +183,8 @@ public class GeometryAligner extends AtomContainerInputProcessor
 	        String[] vals = valsStr.split(",");
 	        if (vals.length != mappingIDs.size())
 	        {
-	        	Terminator.withMsgAndStatus("Different number of atoms in "
-	        			+ "parameter 'ATOMMAP' and 'WEIGHTS'.", -1);
+	        	throw new IllegalArgumentException("Different number of atoms in "
+	        			+ "parameter 'ATOMMAP' and 'WEIGHTS'.");
 	        }
 	        weights = new double[vals.length];
 			for (int i=0; i<vals.length; i++)
@@ -230,10 +229,9 @@ public class GeometryAligner extends AtomContainerInputProcessor
 			}
 		} catch (IllegalStateException | IllegalArgumentException 
 				| CloneNotSupportedException e) {
-			Terminator.withMsgAndStatus("ERROR! Could not align geometries "
+			throw new RuntimeException("Could not align geometries "
 					+ "'" + MolecularUtils.getNameOrID(iac) + "' and '" 
-					+ MolecularUtils.getNameOrID(reference)+ "'.", -1, e);
-			return null; // Unreachable, but satisfies linter
+					+ MolecularUtils.getNameOrID(reference)+ "'.", e);
 		}
 		
 		result = alignment.getSecondIAC().iac;
@@ -315,9 +313,8 @@ public class GeometryAligner extends AtomContainerInputProcessor
         	String fileName = "AutoCompChem-error_uncloneable.sdf";
             IOtools.writeSDFAppend(new File(fileName),molA,false);
             IOtools.writeSDFAppend(new File(fileName),molB,true);
-            Terminator.withMsgAndStatus("ERROR! Cannot clone mols to calculate "
-                + "best geometry-aware atom mapping. See " + fileName, -1);
-            return null; // Unreachable, but satisfies linter
+            throw new RuntimeException("Cannot clone mols to calculate "
+                + "best geometry-aware atom mapping. See " + fileName);
         }
         return alignment.getMappingIndexes();
     }
@@ -499,9 +496,8 @@ public class GeometryAligner extends AtomContainerInputProcessor
         try {
             im.init(reference,structure,removeHydrogen,cleanAndConfigure);
         } catch (Throwable t) {
-            Terminator.withMsgAndStatus("ERROR! Unable to initialize "
-                        + "Isomorphism. Exception returned by Isomorphism.", -1,
-                        t );
+            throw new RuntimeException("Unable to initialize "
+                        + "Isomorphism. Exception returned by Isomorphism.", t);
         }
         im.setChemFilters(stereoMatch,fragmentMinimization,energyMinimization);
         
@@ -969,8 +965,8 @@ public class GeometryAligner extends AtomContainerInputProcessor
         //Check if conditions for running this calculation are satisfied
         if (lstA.length != lstB.length)
         {
-            Terminator.withMsgAndStatus("ERROR! Attempt to calculate RMSD "
-                        + " of structures with different number of atoms",-1);
+            throw new IllegalArgumentException("Attempt to calculate RMSD "
+                        + " of structures with different number of atoms");
         }
           
         for (int i=0; i<lstA.length; i++)
@@ -1072,8 +1068,7 @@ public class GeometryAligner extends AtomContainerInputProcessor
         }
         catch (Throwable t)
         {
-            Terminator.withMsgAndStatus("ERROR! KabschAlignment failed.", -1, t);
-            return Double.NaN; // should not be reached, but satisfies linter
+            throw new RuntimeException("KabschAlignment failed.", t);
         }
 
         //Rototranslation of molecule B (origin is in A's center of mass!!!)

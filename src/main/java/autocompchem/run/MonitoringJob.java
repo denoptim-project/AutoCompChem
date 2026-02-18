@@ -136,10 +136,10 @@ public class MonitoringJob extends EvaluationJob
     		try {
 				delay = Integer.parseInt(params.getParameterValue(DELAYPAR));
 			} catch (NumberFormatException e) {
-				Terminator.withMsgAndStatus("ERROR! Cannot convert '" 
+				throw new IllegalArgumentException("Cannot convert '" 
 						+ params.getParameterValue(DELAYPAR)
 						+ "' into an integer. Check parameter '" 
-						+ DELAYPAR + "'.", -1);
+						+ DELAYPAR + "'.", e);
 			}
     	}
     	
@@ -155,10 +155,10 @@ public class MonitoringJob extends EvaluationJob
 				
 				delay = time.convert(delay, TimeUnit.valueOf(units));
 			} else {
-				Terminator.withMsgAndStatus("ERROR! String '" + units 
+				throw new IllegalArgumentException("String '" + units 
 						+ "' is not a known time unit. Chech parameter '" 
 						+ DELAYUNITS + "'. Use one of "
-						+ acceptableUnits, -1);
+						+ acceptableUnits);
 			}
     	} else {
     		if (params.contains(DELAYPAR))
@@ -172,10 +172,10 @@ public class MonitoringJob extends EvaluationJob
     		try {
 				period = Integer.parseInt(params.getParameterValue(PERIODPAR));
 			} catch (NumberFormatException e) {
-				Terminator.withMsgAndStatus("ERROR! Cannot convert '" 
+				throw new IllegalArgumentException("Cannot convert '" 
 						+ params.getParameterValue(PERIODPAR)
 						+ "' into an integer. Check parameter '" 
-						+ PERIODPAR + "'.", -1);
+						+ PERIODPAR + "'.", e);
 			}
     	}
     	
@@ -191,10 +191,10 @@ public class MonitoringJob extends EvaluationJob
 				
 				period = time.convert(period, TimeUnit.valueOf(units));
 			} else {
-				Terminator.withMsgAndStatus("ERROR! String '" + units 
+				throw new IllegalArgumentException("String '" + units 
 						+ "' is not a known time unit. Check parameter '" 
 						+ PERIODUNITS + "'. Use one of " 
-						+ acceptableUnits, -1);
+						+ acceptableUnits);
 			}
     	} else {
     		if (params.contains(PERIODPAR))

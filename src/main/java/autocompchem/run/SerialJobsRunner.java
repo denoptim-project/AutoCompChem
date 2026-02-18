@@ -411,7 +411,7 @@ public class SerialJobsRunner extends JobsRunner
 						}
     				}
 				} else {
-					throw new IllegalArgumentException("ERROR! Case of "
+					throw new IllegalArgumentException("Case of "
 							+ action.getType() + " action on " 
 							+ action.getObject() + " not implemented "
 							+ "in " + this.getClass().getSimpleName()

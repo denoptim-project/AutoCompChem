@@ -34,7 +34,6 @@ import com.google.gson.JsonSerializer;
 
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.ParameterStorage;
-import autocompchem.run.Terminator;
 import autocompchem.text.TextBlock;
 import autocompchem.wiro.chem.gaussian.GaussianConstants;
 
@@ -82,9 +81,9 @@ public class DirectiveData extends NamedData implements IValueContainer
         
         if (parts.length < 2)
         {
-            Terminator.withMsgAndStatus("ERROR! Cannot discriminate between "
+            throw new IllegalArgumentException("Cannot discriminate between "
             		+ "reference name and block of data in '"
-            		+  jdLine + "'. Check jobdetails file.",-1);
+            		+  jdLine + "'. Check jobdetails file.");
         }
         String block = parts[1];
         if (block.toUpperCase().startsWith(System.getProperty(

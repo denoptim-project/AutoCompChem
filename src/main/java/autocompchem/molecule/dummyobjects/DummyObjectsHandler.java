@@ -44,7 +44,6 @@ import autocompchem.io.IOtools;
 import autocompchem.molecule.AtomContainerInputProcessor;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Job;
-import autocompchem.run.Terminator;
 import autocompchem.utils.NumberUtils;
 import autocompchem.utils.ThreeDimensionalSpaceUtils;
 import autocompchem.worker.Task;
@@ -208,9 +207,9 @@ public class DummyObjectsHandler extends AtomContainerInputProcessor
             List<IAtomContainer> inTmpls = IOtools.readSDF(this.tmplFile);
             if (inTmpls.size() != 1)
             {
-                Terminator.withMsgAndStatus("ERROR! Can only accept a single "
-                                + "template for adding dummy atoms. Check '" 
-                                + this.tmplFile + "'",-1);
+                throw new IllegalArgumentException("Can only accept a single "
+                                + "template for adding dummy atoms. Check '"
+                                + this.tmplFile + "'.");
             }
             this.template = inTmpls.get(0);
         }
@@ -272,9 +271,8 @@ public class DummyObjectsHandler extends AtomContainerInputProcessor
 	        if (doMultihapto)
 	        {
 	            //TODO:
-	            Terminator.withMsgAndStatus("ERROR! Code for adding dummy "
-	            		+ "atoms to multihapto systems is not implemented yet.",
-	            		-1);
+	            throw new UnsupportedOperationException("Code for adding dummy "
+	            		+ "atoms to multihapto systems is not implemented yet.");
 	        }
 	
 	        if (0 < activeSrcAtmIds.size())
@@ -312,11 +310,11 @@ public class DummyObjectsHandler extends AtomContainerInputProcessor
             nbrs = tmpl.getConnectedAtomsList(src);
             if (nbrs.size() < 3)
             {
-                    Terminator.withMsgAndStatus("ERROR! Source atom " 
+                    throw new IllegalStateException("Source atom " 
                         + MolecularUtils.getAtomRef(src,tmpl) + " is only "
                         + "connected to too few atoms for dummy "
                         + MolecularUtils.getAtomRef(du,tmpl) + " to represent "
-                        + "a linearity-breaking point.", -1); 
+                        + "a linearity-breaking point."); 
             }
 
                     //TODO: if possible (linearity can prevent it) place the Du
@@ -479,10 +477,10 @@ public class DummyObjectsHandler extends AtomContainerInputProcessor
             int atmId = srcs.get(i);
             if (0>atmId || (mol.getAtomCount()-1)<atmId)
             {
-                Terminator.withMsgAndStatus("ERROR! Atom index out of range "
+                throw new IndexOutOfBoundsException("Atom index out of range "
                     + "while adding dummy atoms. Requesting atom (1-based) '" 
                     + (atmId+1) + "' on molecule with " + mol.getAtomCount()
-                    + " atoms.", -1);
+                    + " atoms.");
             }
             IAtom srcAtm = mol.getAtom(atmId);
             IAtom duAtm = getDummyInSafePlace(mol,srcAtm);
@@ -774,7 +772,7 @@ public class DummyObjectsHandler extends AtomContainerInputProcessor
 	                            String msg3 = "More then one group of atoms may "
 	                                         + "correspond to the ligand. Not "
 	                                         + "able  to identify the ligand!";
-	                            Terminator.withMsgAndStatus(msg3, -1);
+	                            throw new IllegalStateException(msg3);
 	                        }
 	                        ligandID = i;
 	                        ligandFound = true;
@@ -790,7 +788,7 @@ public class DummyObjectsHandler extends AtomContainerInputProcessor
 	                                 + "Candidates: " + allCandidates
 	                                 + "See current molecule in 'error.sdf'";
 	                    IOtools.writeSDFAppend(new File("error.sdf"),mol,false);
-	                    Terminator.withMsgAndStatus(msg3, -1);
+	                    throw new IllegalStateException(msg3);
 	                }
 	                
 	                //Connect every atom from the multihapto ligand with

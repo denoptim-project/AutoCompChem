@@ -40,7 +40,6 @@ import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.io.IOtools.IACOutFormat;
 import autocompchem.run.Job;
-import autocompchem.run.Terminator;
 import autocompchem.utils.NumberUtils;
 import autocompchem.wiro.chem.ChemSoftConstants;
 import autocompchem.worker.Task;
@@ -263,9 +262,9 @@ public class AtomContainerInputProcessor extends Worker
 			} else if(value.toUpperCase().equals("LAST")) {
 				chosenGeomIdx = inMols.size() - 1;
 			} else {
-				Terminator.withMsgAndStatus("ERROR! Unable to "
+				throw new IllegalArgumentException("Unable to "
 						+ "understand option '" + value + "' for "
-						+ ChemSoftConstants.PARMULTIGEOMID + ". Check your input.",-1); 
+						+ ChemSoftConstants.PARMULTIGEOMID + ". Check your input."); 
 			}
 
         	if (multiGeomMode!=MultiGeomMode.INDEPENDENTJOBS)
@@ -443,18 +442,18 @@ public class AtomContainerInputProcessor extends Worker
         			{
         				this.inMols.add(iacs.get(iacs.size()-1));
         			} else {
-                    	Terminator.withMsgAndStatus("ERROR! Found request "
+                    	throw new IllegalArgumentException("Found request "
                     			+ "to take geometry " + id + " from '"
                     			+ pathname + "' but found "+ iacs.size() 
-                    			+ " geometries. Check your input.",-1); 
+                    			+ " geometries. Check your input."); 
         			}
         		} else if ("LAST".equals(idStr.toUpperCase())) {
         			this.inMols.add(iacs.get(iacs.size()-1));
         		} else {
-        			Terminator.withMsgAndStatus("ERROR! Unable to "
+        			throw new IllegalArgumentException("Unable to "
                 			+ "understand option '" + idStr + "' for "
                 			+ ChemSoftConstants.PARGEOMFILE 
-                			+ ". Check your input.",-1); 
+                			+ ". Check your input."); 
         		}
         	}
         } else {
@@ -480,11 +479,11 @@ public class AtomContainerInputProcessor extends Worker
     	// We must ensure inMols != null when inFile is null
         if (inFile==null && (inMols==null || inMols.size()==0))
         {
-            Terminator.withMsgAndStatus("ERROR! Missing parameter defining the "
+            throw new IllegalArgumentException("Missing parameter defining the "
             		+ "input geometries (" + ChemSoftConstants.PARGEOM + ") or "
             		+ "an input file to read geometries from. "
             		+ "No input to task " + task + " from "
-            		+ this.getClass().getSimpleName() + ".", -1);
+            		+ this.getClass().getSimpleName() + ".");
         }
 
         switch (multiGeomMode)

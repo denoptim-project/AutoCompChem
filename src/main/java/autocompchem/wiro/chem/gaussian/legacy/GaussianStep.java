@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import autocompchem.run.Terminator;
 import autocompchem.wiro.chem.gaussian.GaussianConstants;
 
 /**
@@ -92,8 +91,8 @@ public class GaussianStep
             //Check thet there is no multi step array of lines
             if (lineUp.contains(GaussianConstants.STEPSEPARATOR.toUpperCase()))
             {
-                Terminator.withMsgAndStatus("ERROR! Trying to submit a "
-                        + "multistep input to a single Gaussian Step.",-1);
+                throw new IllegalArgumentException("Trying to submit a "
+                        + "multistep input to a single Gaussian Step.");
             }
 
             //Identify the section this line belongs to

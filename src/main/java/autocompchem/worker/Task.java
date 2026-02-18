@@ -24,7 +24,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import autocompchem.run.Terminator;
 
 /**
  * Class representing any task that a {@link Worker} can be asked to perform.
@@ -172,9 +171,9 @@ public class Task implements Comparable<Task>
             	} else {
             		if (terminateOnMissing)
             		{
-            			Terminator.withMsgAndStatus("ERROR! String '" + taskName
+            			throw new IllegalArgumentException("String '" + taskName
             					+ "' does not match any registered Task! "
-            					+ "Check your input.", -1);
+            					+ "Check your input.");
             		}
             	}
             }

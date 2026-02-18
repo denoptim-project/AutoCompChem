@@ -176,9 +176,8 @@ public class JobEvaluator extends Worker
 			try {
 				situation = Situation.fromJSON(multilines);
 			} catch (Exception e) {
-				e.printStackTrace();
-				Terminator.withMsgAndStatus("ERROR! Unable to create Situation "
-						+ "from the given parameters. " + e.getMessage(), -1);
+				throw new RuntimeException("Unable to create Situation "
+						+ "from the given parameters. " + e.getMessage(), e);
 			}
 			if (sitsDB==null)
 			{
@@ -191,11 +190,11 @@ public class JobEvaluator extends Worker
 		{
 			if (sitsDB!=null)
 			{
-				Terminator.withMsgAndStatus("ERROR! A database of known "
+				throw new IllegalStateException("A database of known "
 						+ "situations has been provided to the job evaluation, "
 						+ "but there is an attempt to overwrite this data by "
 						+ "using the '" + ParameterConstants.SITUATIONSDBROOT 
-						+ "' parameter. Check your input.", -1);
+						+ "' parameter. Check your input.");
 			}
 			String pathName = params.getParameter(
 					ParameterConstants.SITUATIONSDBROOT).getValueAsString();
@@ -301,9 +300,8 @@ public class JobEvaluator extends Worker
 			try {
 				jobBeingEvaluated = (Job) IOtools.readJsonFile(file, Job.class);
 			} catch (IOException e) {
-				e.printStackTrace();
-				Terminator.withMsgAndStatus("ERROR! could not read JSON file "
-						+ "with definitiong of job to evaluate.", -1);
+				throw new RuntimeException("could not read JSON file "
+						+ "with definitiong of job to evaluate.", e);
 			}
 		}
 		
@@ -311,11 +309,11 @@ public class JobEvaluator extends Worker
 		{
 			if (jobBeingEvaluated!=null)
 			{
-				Terminator.withMsgAndStatus("ERROR! A job to evaluate has "
+				throw new IllegalStateException("A job to evaluate has "
 						+ "been provided to the evaluation job, "
 						+ "but there is an attempt to overwrite this data by "
 						+ "using the '" + ParameterConstants.JOBTOEVALUATE 
-						+ "' parameter. Check your input.", -1);
+						+ "' parameter. Check your input.");
 			}
 			jobBeingEvaluated = (Job) params.getParameter(
 					ParameterConstants.JOBTOEVALUATE).getValue();
@@ -334,10 +332,9 @@ public class JobEvaluator extends Worker
 				try {
 					software = ReaderWriterFactory.detectOutputFormat(jobOutFile);
 				} catch (FileNotFoundException e) {
-					Terminator.withMsgAndStatus("ERROR: cannot detect the type of "
+					throw new RuntimeException("cannot detect the type of "
 							+ "output to analyze. File not found: "
-							+ jobOutFile.getAbsolutePath(), -1, e);
-					return; // should not be reached, but satisfies linter
+							+ jobOutFile.getAbsolutePath(), e);
 				}
 			} else if (params.contains(WIROConstants.SOFTWAREID)) {
 				software = new SoftwareId(params.getParameter(
@@ -348,21 +345,19 @@ public class JobEvaluator extends Worker
 				{
 					software = temptative;
 				} else {
-					Terminator.withMsgAndStatus("ERROR: cannot infer the type of "
+					throw new IllegalStateException("cannot infer the type of "
 							+ "output to analyze from the job being evaluated. "
-							+ "Job claims software ID: '" + temptative + "'.", -1);
-					return; // should not be reached, but satisfies linter
+							+ "Job claims software ID: '" + temptative + "'.");
 				}
 			} else {
-				Terminator.withMsgAndStatus("ERROR: cannot infer the type of "
+				throw new IllegalArgumentException("cannot infer the type of "
 						+ "output to analyze. External software not identified "
 						+ "by '" + WIROConstants.SOFTWAREID + "' and no '" 
 						+ WIROConstants.PARJOBOUTPUTFILE + "' is given. "
 						+ "Cannot choose software-specific configuration. "
 						+ "Please, provide one of the above parameters or "
 						+ "manually specify which lists of knwon situations "
-						+ "and info channels to use.", -1);
-				return; // should not be reached, but satisfies linter
+						+ "and info channels to use.");
 			} 
 			
 			if (sitsDB==null)
@@ -371,14 +366,14 @@ public class JobEvaluator extends Worker
 				try {
 					sitsDB = SituationBase.getDefaultSituationDB(software.toString());
 				} catch (IOException e) {
-					Terminator.withMsgAndStatus("ERROR: cannot use default "
+					throw new RuntimeException("cannot use default "
 							+ "list of known situations when using software '" 
 							+ software + "'. "
 							+ "Try to specify a dedicated list on known "
 							+ "situations with " 
 							+ ParameterConstants.SITUATION + ", "
 							+ ParameterConstants.SITUATIONSDB + ", or "
-							+ ParameterConstants.SITUATIONSDBROOT + ".", -1, e);
+							+ ParameterConstants.SITUATIONSDBROOT + ".", e);
 				}
 			}
 			if (icDB==null)
@@ -389,7 +384,7 @@ public class JobEvaluator extends Worker
 					icDB = InfoChannelBase.getDefaultInfoChannelDB(
 							software.toString());
 				} catch (Exception e) {
-					Terminator.withMsgAndStatus("ERROR: cannot use default "
+					throw new RuntimeException("cannot use default "
 							+ "configuration of info channels when using "
 							+ "software '" + software + "'. "
 							+ "Try to specify a dedicated configuration of "
@@ -398,7 +393,7 @@ public class JobEvaluator extends Worker
 							+ ParameterConstants.INFOSRCLOGFILES + ", "
 							+ ParameterConstants.INFOSRCOUTPUTFILES + ", "
 							+ ParameterConstants.INFOSRCJOBDETAILS + ", and "
-							+ ParameterConstants.INFOSRCINPUTFILES + ".", -1, e);
+							+ ParameterConstants.INFOSRCINPUTFILES + ".", e);
 				}
 				tolerateMissingIC = true;
 				if (params.contains(WIROConstants.PARJOBOUTPUTFILE))
@@ -504,9 +499,9 @@ public class JobEvaluator extends Worker
 				&& jobBeingEvaluated.runsParallelSubjobs()
 				&& jobBeingEvaluated.getNumberOfSteps()>1)
 		{
-			Terminator.withMsgAndStatus("Analysis of parallel batches is "
+			throw new UnsupportedOperationException("Analysis of parallel batches is "
 					+ "not implemented yet. Please, contact the developers "
-					+ "and present your use case.", -1);
+					+ "and present your use case.");
 			// Must define idxFocusJob in here
 		} else {
 			// In here, we define what is the "focus job", i.e., the job
