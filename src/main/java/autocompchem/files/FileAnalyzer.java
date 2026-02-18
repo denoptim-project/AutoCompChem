@@ -133,8 +133,7 @@ public class FileAnalyzer
 
     public static List<List<Integer>> count(File file, List<String> patterns)
     {
-        try {
-            BufferedReader buffRead = new BufferedReader(new FileReader(file));
+        try (BufferedReader buffRead = new BufferedReader(new FileReader(file))) {
             return TextAnalyzer.count(buffRead, patterns);
         } catch (IOException e) {
             throw new IllegalArgumentException("Error reading file " + file, e);
@@ -227,11 +226,9 @@ public class FileAnalyzer
     {
         List<List<String>> blocks = new ArrayList<List<String>>();
 
-        BufferedReader buffRead = null;
         boolean badTermination = false;
         String msg = "";
-        try {
-            buffRead = new BufferedReader(new FileReader(inFile));
+        try (BufferedReader buffRead = new BufferedReader(new FileReader(inFile))) {
             blocks = TextAnalyzer.extractMultiTxtBlocksWithDelimiters(buffRead,
                                                               startPattrns,
                                                               endPattrns,
@@ -240,14 +237,6 @@ public class FileAnalyzer
         } catch (Throwable t) {
             badTermination = true;
             msg = t.getMessage();
-        } finally {
-            try {
-                if (buffRead != null)
-                    buffRead.close();
-            } catch (Throwable t2) {
-                badTermination = true;
-                msg = t2.getMessage();
-            }
         }
 
         if (badTermination)
@@ -291,11 +280,9 @@ public class FileAnalyzer
         endPattrns.add(endPattrn);
         
         FileUtils.foundAndPermissions(file,true,false,false);
-        BufferedReader br = null;
         List<TextBlockIndexed> blocks = null;
-        try
+        try (BufferedReader br = new BufferedReader(new FileReader(file)))
         {
-            br = new BufferedReader(new FileReader(file));
             blocks = TextAnalyzer.extractTextBlocks(br, new ArrayList<String>(),
             		startPattrns, 
             		endPattrns,
@@ -304,15 +291,6 @@ public class FileAnalyzer
             		false);
         } catch (Exception e) {
             Terminator.withMsgAndStatus("ERROR! Unable to read "+ file,-1);
-        } finally {
-	        if (br!=null)
-	        {
-				try {
-					br.close();
-				} catch (IOException e) {
-					br = null;
-				}
-	        }
         }
         return blocks;
     }
@@ -440,10 +418,8 @@ public class FileAnalyzer
         TreeMap<String,List<String>> blocks = 
                 new TreeMap<String,List<String>>(new MetchKeyComparator());
 
-        BufferedReader buffRead = null;
         String msg = "";
-        try {
-            buffRead = new BufferedReader(new FileReader(inFile));
+        try (BufferedReader buffRead = new BufferedReader(new FileReader(inFile))) {
             blocks = TextAnalyzer.extractMapOfTxtBlocksWithDelimiters(buffRead,
                                                                      slPattrns,
                                                                   startPattrns,
@@ -454,15 +430,6 @@ public class FileAnalyzer
             msg = t.getMessage();
             Terminator.withMsgAndStatus("ERROR! Unable to read file " + inFile
                 + ". " + msg,-1);
-        } finally {
-            try {
-                if (buffRead != null)
-                    buffRead.close();
-            } catch (Throwable t2) {
-                msg = t2.getMessage();
-                Terminator.withMsgAndStatus("ERROR! Unable to read file " 
-                    + inFile + ". " + msg,-1);
-            }
         }
         return blocks;
     }
@@ -530,10 +497,8 @@ public class FileAnalyzer
     		String inFile, String pattern1, int size, boolean inclPatt)
     {
         List<List<String>> blocks = new ArrayList<List<String>>();
-        BufferedReader buffRead = null;
         String msg = "";
-        try {
-            buffRead = new BufferedReader(new FileReader(inFile));
+        try (BufferedReader buffRead = new BufferedReader(new FileReader(inFile))) {
             String line = null;
             while ((line = buffRead.readLine()) != null)
             {
@@ -560,15 +525,6 @@ public class FileAnalyzer
             msg = t.getMessage();
             Terminator.withMsgAndStatus("ERROR! Unable to read file " + inFile
                 + ". " + msg,-1);
-        } finally {
-            try {
-                if (buffRead != null)
-                    buffRead.close();
-            } catch (Throwable t2) {
-                msg = t2.getMessage();
-                Terminator.withMsgAndStatus("ERROR! Unable to read file "
-                    + inFile + ". " + msg,-1);
-            }
         }
         return blocks;
     }
@@ -602,23 +558,13 @@ public class FileAnalyzer
     public static List<String> grep(String inFile, Set<String> patterns)
     {
         List<String> matches = new ArrayList<String>();
-        BufferedReader buffRead = null;
         boolean badTermination = false;
         String msg = "";
-        try {
-            buffRead = new BufferedReader(new FileReader(inFile));
+        try (BufferedReader buffRead = new BufferedReader(new FileReader(inFile))) {
             matches = TextAnalyzer.grep(buffRead,patterns);
         } catch (Throwable t) {
             badTermination = true;
             msg = t.getMessage();
-        } finally {
-            try {
-                if (buffRead != null)
-                    buffRead.close();
-            } catch (Throwable t2) {
-                badTermination = true;
-                msg = t2.getMessage();
-            }
         }
 
         if (badTermination)
