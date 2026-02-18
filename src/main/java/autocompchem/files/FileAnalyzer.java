@@ -47,16 +47,6 @@ public class FileAnalyzer
 //------------------------------------------------------------------------------
 
     /**
-     * Construct an empty FilesAnalyzer
-     */
-
-    public FileAnalyzer()
-    {
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
      * Count lines containing a patter. This method correspond to the Linux 
      * command grep -c "some pattern" filename.
      * @param filename name of the file to be analysed
@@ -70,7 +60,7 @@ public class FileAnalyzer
 
     public static int count(String filename, String pattern)
     {
-    	return count(new File(filename), pattern);
+        return count(new File(filename), pattern);
     }
     
 //------------------------------------------------------------------------------
@@ -117,7 +107,7 @@ public class FileAnalyzer
     public static List<List<Integer>> count(String pathname, 
     		List<String> patterns)
     {
-    	return count(new File(pathname), patterns);
+        return count(new File(pathname), patterns);
     }
     
 //------------------------------------------------------------------------------
@@ -143,30 +133,12 @@ public class FileAnalyzer
 
     public static List<List<Integer>> count(File file, List<String> patterns)
     {
-        List<List<Integer>> counts = new ArrayList<List<Integer>>();
-        BufferedReader buffRead = null;
-        boolean badTermination = false;
-        String msg = "";
         try {
-            buffRead = new BufferedReader(new FileReader(file));
-            counts = TextAnalyzer.count(buffRead, patterns);
-        } catch (Throwable t) {
-            badTermination = true;
-            msg = t.getMessage();
-        } finally {
-            try {
-                if (buffRead != null)
-                    buffRead.close();
-            } catch (Throwable t2) {
-                badTermination = true;
-                msg = t2.getMessage();
-            }
+            BufferedReader buffRead = new BufferedReader(new FileReader(file));
+            return TextAnalyzer.count(buffRead, patterns);
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Error reading file " + file, e);
         }
-
-        if (badTermination)
-            Terminator.withMsgAndStatus("ERROR! " + msg, -1);
-
-        return counts;
     }
 
 //------------------------------------------------------------------------------
