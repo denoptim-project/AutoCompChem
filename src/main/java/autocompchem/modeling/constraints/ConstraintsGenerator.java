@@ -156,15 +156,7 @@ public class ConstraintsGenerator extends AtomTupleGenerator
         {
             String value = params.getParameter(KEYINTERPOLATIONFACTOR)
                 .getValueAsString();
-
-            if (NumberUtils.isParsableToDouble(value))
-            {
-                interpolationFactor = Double.parseDouble(value);
-            } else {
-                ExpressionFactory expFact = ExpressionFactory.newInstance();
-                interpolationFactor = NumberUtils.calculateNewValue(
-                    value,  expFact, null);
-            }
+            interpolationFactor = NumberUtils.parseValueOrExpression(value);
         }
 
         if (params.contains(KEYSETCONSTRAINTSA))

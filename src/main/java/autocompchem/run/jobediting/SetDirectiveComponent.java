@@ -119,7 +119,6 @@ public class SetDirectiveComponent extends AddDirectiveComponent
 		
 		if (alterExisting)
 		{
-			ExpressionFactory expFact = ExpressionFactory.newInstance();
 			for (IDirectiveComponent comp : ccj.getDirectiveComponents(
 					pathToComponent))
 			{
@@ -129,8 +128,7 @@ public class SetDirectiveComponent extends AddDirectiveComponent
 					continue;
 				IValueContainer compWithVal = (IValueContainer) comp;
 				String oldStr = compWithVal.getValue().toString();
-				String newVal = NumberUtils.calculateNewValueWithUnits(expr, 
-						expFact, oldStr);
+				String newVal = NumberUtils.calculateNewValueWithUnits(expr, oldStr);
 				
 				// reassign to dir component
 				compWithVal.setValue(newVal);

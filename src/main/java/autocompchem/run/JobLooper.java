@@ -223,8 +223,6 @@ public class JobLooper extends Worker
 		// Job details alteration happens in the JSON representation of the job
 		String jobTemplateAsJson = ACCJson.getWriter().toJson(jobTmpl);
 
-		ExpressionFactory expFact = ExpressionFactory.newInstance();
-
 		NamedDataCollector results = new NamedDataCollector();
 		for (int i=0; i<maxIterations; i++)
 		{
@@ -239,8 +237,8 @@ public class JobLooper extends Worker
 				{
 					// Replacement string is an expression
 					try {
-						replacementForOriginalString = NumberUtils.calculateNewFotmattedValue(
-							replacementForOriginalString,  expFact, Double.valueOf(i+""));
+						replacementForOriginalString = NumberUtils.calculateNewValue(
+							replacementForOriginalString, Double.valueOf(i+"")).toString();
 					} catch (Exception e) {
 						Terminator.withMsgAndStatus("Error evaluating expression '" 
 							+ replacementForOriginalString + "' at iteration " + i + ". " 

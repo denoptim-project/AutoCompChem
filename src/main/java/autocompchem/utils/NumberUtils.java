@@ -23,8 +23,10 @@ import java.text.ParsePosition;
 import java.text.DecimalFormat;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -465,22 +467,30 @@ public class NumberUtils
   	/**
   	 * Use a given expression to change an old value into a new one.
   	 * @param expr the expression defining how to calculate the new value.
-  	 * @param expFact the factory generating expression language objects.
   	 * @param oldValue the initial value from which we are meant to calculate
   	 * the new value.
   	 * @return the new value with the same units of the old value.
   	 */
-  	public static String calculateNewValueWithUnits(String expr, 
-  			ExpressionFactory expFact, 
-  			String oldValue)
+  	public static String calculateNewValueWithUnits(String expr, String oldValue)
   	{
   		String oldNoUnts = stripUnits(oldValue);
   		DecimalFormat df = detectDecimalFormat(oldNoUnts);
 		String units = oldValue.replace(oldNoUnts, "").trim();
 		String spacer = spaceBetweenValueAndUnits(oldValue,units) ? " " : "";
 		
-  		String newVal = df.format(calculateNewValue(expr, expFact, 
-  				Double.parseDouble(oldNoUnts)));
+        Object newValue = NumberUtils.calculateNewValue(expr, 
+            Double.parseDouble(oldNoUnts));
+        String newVal = "";
+        if (newValue instanceof Double) {
+            newVal = df.format((Double) newValue);
+        } else if (newValue instanceof String) {
+            newVal = (String) newValue;
+        } else {
+            throw new IllegalArgumentException("Evaluation of "
+                + "expression '" + expr + "' "
+                + "returned '" + newValue.getClass() + "'). "
+                + "Check expression.");
+        }
   		
   		String newValAndUnits = "";
   		if (unitsAreInFront(oldValue, units))
@@ -491,236 +501,45 @@ public class NumberUtils
   		}
   		return newValAndUnits;
   	}
-    
+
 //------------------------------------------------------------------------------
-  	
-  	/**
-  	 * Use a given expression to change an old value into a new one.
-  	 * @param expr the expression defining how to calculate the new value.
-  	 * @param expFact the factory generating expression language objects.
-  	 * @param oldValue the initial value from which we are meant to calculate
-  	 * the new value.
-  	 * @return the new value.
-  	 */
-  	public static Double calculateNewValue(String expr, 
-  			ExpressionFactory expFact, 
-  			Double oldValue)
-  	{
-  		// Make context for interpreting expression that define how to 
-  		// alter the old variable
-  		ELContext context = new ELContext() {
 
-            FunctionMapper fm = new FunctionMapper() {
-                @Override
-                public Method resolveFunction(String prefix, String localName) {
-                    try {
-                        // Trigonometric functions
-                        if ("sin".equals(localName)) {
-                            return Math.class.getMethod("sin", double.class);
-                        } else if ("cos".equals(localName)) {
-                            return Math.class.getMethod("cos", double.class);
-                        } else if ("tan".equals(localName)) {
-                            return Math.class.getMethod("tan", double.class);
-                        } else if ("asin".equals(localName)) {
-                            return Math.class.getMethod("asin", double.class);
-                        } else if ("acos".equals(localName)) {
-                            return Math.class.getMethod("acos", double.class);
-                        } else if ("atan".equals(localName)) {
-                            return Math.class.getMethod("atan", double.class);
-                        } else if ("atan2".equals(localName)) {
-                            return Math.class.getMethod("atan2", double.class, double.class);
-                        }
-                        // Exponential and logarithmic functions
-                        else if ("exp".equals(localName)) {
-                            return Math.class.getMethod("exp", double.class);
-                        } else if ("log".equals(localName) || "ln".equals(localName)) {
-                            return Math.class.getMethod("log", double.class);
-                        } else if ("log10".equals(localName)) {
-                            return Math.class.getMethod("log10", double.class);
-                        }
-                        // Power functions
-                        else if ("sqrt".equals(localName)) {
-                            return Math.class.getMethod("sqrt", double.class);
-                        } else if ("pow".equals(localName)) {
-                            return Math.class.getMethod("pow", double.class, double.class);
-                        }
-                        // Hyperbolic functions
-                        else if ("sinh".equals(localName)) {
-                            return Math.class.getMethod("sinh", double.class);
-                        } else if ("cosh".equals(localName)) {
-                            return Math.class.getMethod("cosh", double.class);
-                        } else if ("tanh".equals(localName)) {
-                            return Math.class.getMethod("tanh", double.class);
-                        }
-                        // Rounding and absolute value
-                        else if ("abs".equals(localName)) {
-                            return Math.class.getMethod("abs", double.class);
-                        } else if ("ceil".equals(localName)) {
-                            return Math.class.getMethod("ceil", double.class);
-                        } else if ("floor".equals(localName)) {
-                            return Math.class.getMethod("floor", double.class);
-                        } else if ("round".equals(localName)) {
-                            return Math.class.getMethod("round", double.class);
-                        }
-                        // Min/Max functions
-                        else if ("max".equals(localName)) {
-                            return Math.class.getMethod("max", double.class, double.class);
-                        } else if ("min".equals(localName)) {
-                            return Math.class.getMethod("min", double.class, double.class);
-                        }
-                    } catch (NoSuchMethodException | SecurityException e) {
-                        // If method not found or access denied, return null
-                    }
-                    return null;
-                }
-            };
-
-  			VariableMapper vm = new VariableMapper() {
-                  @Override
-                  public ValueExpression resolveVariable(String varName) 
-                  {
-                      ValueExpression ve = new ValueExpression() 
-                      {   
-                          /**
-                           * Version ID
-                           */
-                          private static final long serialVersionUID = 1L;
-
-                          @SuppressWarnings("unchecked")
-						  @Override
-                          public Object getValue(ELContext c) {
-                              return oldValue;
-                          }
-
-                          @Override
-                          public void setValue(ELContext c, Object v) {
-                          }
-
-                          @Override
-                          public boolean isReadOnly(ELContext c) {
-                              return true;
-                          }
-
-                          @Override
-                          public Class<?> getType(ELContext c) {
-                              return Double.class;
-                          }
-
-                          @Override
-                          public Class<?> getExpectedType() {
-                              return Double.class;
-                          }
-
-                          @Override
-                          public String getExpressionString() {
-                              return null;
-                          }
-
-                          @Override
-                          public boolean equals(Object obj) {
-                              return false;
-                          }
-
-                          @Override
-                          public int hashCode() {
-                              //Dummy hashcode
-                              return 0;
-                          }
-
-                          @Override
-                          public boolean isLiteralText() {
-                              return false;
-                          }
-                      };
-                      return ve;
-                  }
-
-                  @Override
-                  public ValueExpression setVariable(String variable, 
-                          ValueExpression expression) 
-                  {
-                      return null;
-                  }
-              };
-
-  			@Override
-  			public ELResolver getELResolver() {
-  				return new ELResolver() {
-  					@Override
-  					public Object getValue(ELContext context, Object base, Object property) {
-  						// Not used for function resolution
-  						return null;
-  					}
-
-  					@Override
-  					public Class<?> getType(ELContext context, Object base, Object property) {
-  						// Not used for function resolution
-  						return null;
-  					}
-
-  					@Override
-  					public void setValue(ELContext context, Object base, Object property, Object value) {
-  						// Read-only
-  					}
-
-  					@Override
-  					public boolean isReadOnly(ELContext context, Object base, Object property) {
-  						return true;
-  					}
-
-  					@Override
-  					public Class<?> getCommonPropertyType(ELContext context, Object base) {
-  						return null;
-  					}
-  				};
-  			}
-
-  			@Override
-  			public FunctionMapper getFunctionMapper() {
-  				return fm;
-  			}
-
-  			@Override
-  			public VariableMapper getVariableMapper() {
-  				return vm;
-  			}
-  			
-  		};
-  		
-  		// Create the actual function for editing the old value
-  		ValueExpression valEditingFunct = expFact.createValueExpression(
-  				context, expr, Double.class);
-  		
-  		// Do the actual calculation of the new value
-  		Double newValue = null;
-  		Object result = valEditingFunct.getValue(context);
-        if (result != null) 
+    /**
+     * Parses a string to a double. If the string is a valid double, it is 
+     * parsed to a double. If the string is a valid expression, it is evaluated
+     * and the result is returned as a double.
+     * @param textValue the string to parse.
+     * @return the parsed value.
+     */
+    public static Double parseValueOrExpression(String textValue)
+    {
+        Double value = null;
+        if (NumberUtils.isParsableToDouble(textValue))
         {
+            value = Double.parseDouble(textValue);
+        } else {
+            Object result = NumberUtils.calculateValueOfExpression(textValue);
             if (result instanceof Double)
             {
-                newValue = (Double) result;
+                value = (Double) result;
+            } else if (result instanceof String) {
+                value = Double.parseDouble((String) result);
             } else {
                 throw new IllegalArgumentException("Evaluation of "
-                        + "expression '" + expr + "' "
-                        + "returned '" + result.getClass() + "'). "
-                        + "Check expression.");
-            }
-        } else {
-            throw new IllegalArgumentException("Evaluation of "
-                + "Expression Language returned null. "
+                    + "expression '" + textValue + "' "
+                    + "returned '" + result.getClass() + "'). "
                     + "Check expression.");
+            }
         }
-        
-        return newValue;
-  	}
+        return value;
+    }
     
 //------------------------------------------------------------------------------
-  	
-  	/**
-  	 * Use a given expression to change an old value into a new one that is 
-     * formatted and returned as a string.
-  	 * @param expr the expression defining how to calculate the new value. The
-     * format of numbers can be controlled by using the <code>format</code> 
+        
+    /**
+     * Use a given expression to calculate a numerical value.
+  	 * @param expr the expression defining how to calculate the result The
+     * format of the result can be controlled by using the <code>format</code> 
      * function. The syntax of the format function is <code>format(pattern, value)</code>
      * where the pattern adheres to the syntax of the {@link DecimalFormat} class.
      * For example, <code>${format('0.00', x + 2)}</code> will return <code>12.00</code>
@@ -729,170 +548,58 @@ public class NumberUtils
      * <code>${format('0.0E0', x * 100)}</code> will return <code>1.0E2</code>.
      * Rounding is also taken care of, for example, 
      * <code>${format('0.0', 12.89)}</code> will return <code>12.9</code>.
-  	 * @param expFact the factory generating expression language objects.
-  	 * @param oldValue the initial value from which we are meant to calculate
-  	 * the new value.
-  	 * @return the new value as a formatted string.
-  	 */
-  	public static String calculateNewFotmattedValue(String expr, 
-        ExpressionFactory expFact, Double oldValue)
+     * @return the result of the expression as a double, 
+     * possibly adhering to the format pattern.
+     */
+    public static Object calculateValueOfExpression(String expr)
     {
-        // Make context for interpreting expression that define how to 
-        // alter the old variable
-        ELContext context = new ELContext() {
-            VariableMapper vm = new VariableMapper() {
-                @Override
-                public ValueExpression resolveVariable(String varName) 
-                {
-                    ValueExpression ve = new ValueExpression() 
-                    {   
-                        /**
-                         * Version ID
-                         */
-                        private static final long serialVersionUID = 1L;
-
-                        @SuppressWarnings("unchecked")
-                        @Override
-                        public Object getValue(ELContext c) {
-                            return oldValue;
-                        }
-
-                        @Override
-                        public void setValue(ELContext c, Object v) {
-                        }
-
-                        @Override
-                        public boolean isReadOnly(ELContext c) {
-                            return true;
-                        }
-
-                        @Override
-                        public Class<?> getType(ELContext c) {
-                            return Double.class;
-                        }
-
-                        @Override
-                        public Class<?> getExpectedType() {
-                            return Double.class;
-                        }
-
-                        @Override
-                        public String getExpressionString() {
-                            return null;
-                        }
-
-                        @Override
-                        public boolean equals(Object obj) {
-                            return false;
-                        }
-
-                        @Override
-                        public int hashCode() {
-                            //Dummy hashcode
-                            return 0;
-                        }
-
-                        @Override
-                        public boolean isLiteralText() {
-                            return false;
-                        }
-                    };
-                    return ve;
-                }
-
-                @Override
-                public ValueExpression setVariable(String variable, 
-                        ValueExpression expression) 
-                {
-                    return null;
-                }
-            };
-
-            FunctionMapper fm = new FunctionMapper() {
-                @Override
-                public Method resolveFunction(String prefix, String localName) {
-                    // Support formatting functions: format(pattern, value)
-                    // Can be called as format(pattern, value) or ns:format(pattern, value)
-                    if ("format".equals(localName)) {
-                        try {
-                            return NumberUtils.class.getMethod("formatNumber", 
-                                String.class, Double.class);
-                        } catch (NoSuchMethodException e) {
-                            return null;
-                        }
-                    }
-                    return null;
-                }
-            };
-
-            @Override
-            public ELResolver getELResolver() {
-                return new ELResolver() {
-                    @Override
-                    public Object getValue(ELContext context, Object base, Object property) {
-                        // Not used for function resolution
-                        return null;
-                    }
-
-                    @Override
-                    public Class<?> getType(ELContext context, Object base, Object property) {
-                        // Not used for function resolution
-                        return null;
-                    }
-
-                    @Override
-                    public void setValue(ELContext context, Object base, Object property, Object value) {
-                        // Read-only
-                    }
-
-                    @Override
-                    public boolean isReadOnly(ELContext context, Object base, Object property) {
-                        return true;
-                    }
-
-                    @Override
-                    public Class<?> getCommonPropertyType(ELContext context, Object base) {
-                        return null;
-                    }
-                };
-            }
-
-            @Override
-            public FunctionMapper getFunctionMapper() {
-                return fm;
-            }
-
-            @Override
-            public VariableMapper getVariableMapper() {
-                return vm;
-            }
-            
-        };
-        
-        // Create the actual function for editing the old value
-        // Expected type is String to allow formatted output
-        ValueExpression valEditingFunct = expFact.createValueExpression(
-                context, expr, String.class);
-        
-        // Do the actual calculation of the new value
-        Object result = valEditingFunct.getValue(context);
-        if (result != null) 
+        ACCExpressionLanguage accEL = ACCExpressionLanguage.getInstance();
+  		Object result = accEL.processVariableLessExpression(
+            expr, Double.class);
+        if (result == null) 
         {
-            if (result instanceof String)
-            {
-                return (String) result;
-            } else {
-                throw new IllegalArgumentException("Evaluation of "
-                        + "expression '" + expr + "' "
-                        + "returned '" + result.getClass() + "', expected String. "
-                        + "Check expression.");
-            }
-        } else {
+            throw new IllegalArgumentException("Evaluation of "
+                + "expression '" + expr + "' "
+                + "returned null. "
+                + "Check expression.");
+        }
+        return result;
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Use a given expression to calculate a new value given an old numerical value.
+  	 * @param expr the expression defining how to calculate the new value. 
+     * The old value must be represented by 'x' in the expression.
+     * The format of the result can be controlled by using the <code>format</code> 
+     * function. The syntax of the format function is <code>format(pattern, value)</code>
+     * where the pattern adheres to the syntax of the {@link DecimalFormat} class.
+     * For example, <code>${format('0.00', x + 2)}</code> will return <code>12.00</code>
+     * if <code>x</code> is 10.0.
+     * An example with scientific notation: 
+     * <code>${format('0.0E0', x * 100)}</code> will return <code>1.0E2</code>.
+     * Rounding is also taken care of, for example, 
+     * <code>${format('0.0', 12.89)}</code> will return <code>12.9</code>.
+     * @return the result of the expression 
+     * possibly adhering to the format pattern.
+     */
+    public static Object calculateNewValue(String expr, Double oldValue)
+    {
+        Map<String, Object> variablesMap = new HashMap<String, Object>();
+        variablesMap.put("x", oldValue);
+        ACCExpressionLanguage accEL = ACCExpressionLanguage.getInstance();
+  		Object result = accEL.processExpressionWithVariables(
+            expr, Object.class, variablesMap);
+  		
+        if (result == null) 
+        {
             throw new IllegalArgumentException("Evaluation of "
                 + "Expression Language returned null. "
                     + "Check expression.");
         }
-    }
+        return result;
+  	}
     
 //------------------------------------------------------------------------------
 
