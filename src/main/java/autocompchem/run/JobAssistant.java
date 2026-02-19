@@ -208,6 +208,7 @@ public class JobAssistant extends Worker
 		
 		// Next, the actual run of the assisted job
 		Job monitoredRun = new ACCJob();
+		//TODO-MF: add monitoring job
 		//monitoredRun.addStep(monitoringJob);
 		monitoredRun.addStep(runJob);
 		assistedWorkflow.addStep(monitoredRun);
@@ -232,22 +233,18 @@ public class JobAssistant extends Worker
         	
         	assistedWorkflow.resetRunStatus();
         	
-            try {
-            	assistedWorkflow.run();
-            } catch (Throwable t) {
-            	t.printStackTrace();
-            }
+			assistedWorkflow.run();
             
-           if (evalJob.requestsAction())
-           {
-        	   Job reactiontriggeringJob = evalJob.getReactionTriggeringJob();
-        	   Job editedAssistedJob = healJob(reactiontriggeringJob, 
+            if (evalJob.requestsAction())
+            {
+        	    Job reactiontriggeringJob = evalJob.getReactionTriggeringJob();
+        	    Job editedAssistedJob = healJob(reactiontriggeringJob, 
         			   evalJob.getRequestedAction(), i, myJob, logger);
-        	   inputPreparationJob.setParameter(WIROConstants.PARJOBDETAILSOBJ, 
+        	    inputPreparationJob.setParameter(WIROConstants.PARJOBDETAILSOBJ, 
         			   editedAssistedJob);
-           } else {
-        	   break;
-           }
+            } else {
+        	    break;
+            }
 		}
 	}
 

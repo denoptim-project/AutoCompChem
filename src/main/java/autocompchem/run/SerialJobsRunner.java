@@ -241,16 +241,40 @@ public class SerialJobsRunner extends JobsRunner
     	// Mark request to start as taken care of
     	requestedToStart = false;
     	
-    	// Submit the jobs via the executor
+    	// Submit the jobs via the executor one at a time, waiting for each
+    	// to complete before submitting the next. This guarantees that if
+    	// a job throws an exception, no subsequent jobs will be submitted.
         Iterator<Job> it = todoJobs.iterator();
         int numSubmittedJobs = 0;
         while (it.hasNext())
         {
+            // Check for exceptions before submitting the next job
+            if (exceptionInSubJobs())
+            {
+            	logger.trace("Exception detected in a submitted job. " +
+            			"Stopping submission of remaining jobs.");
+            	break;
+            }
+            
             //We could use a dedicated log file for each job
             Job job = it.next();
 			job.setJobNotificationListener(new SerialJobListener());
-		    submittedJobs.put(job, job.submitThread(executor));
+		    Future<Object> future = job.submitThread(executor);
+		    submittedJobs.put(job, future);
 		    numSubmittedJobs++;
+		    
+		    // Wait for this job to complete before submitting the next one.
+		    // This guarantees that if this job throws an exception, we'll
+		    // detect it before submitting subsequent jobs.
+		    try {
+		    	future.get(); // Wait for completion; throws if job threw an exception
+		    } catch (Exception e) {
+		    	// Future.get() throws ExecutionException wrapping the original exception
+		    	// The exception has already been stored in the job via the run() method
+		    	logger.trace("Exception detected in job execution. " +
+		    			"Stopping submission of remaining jobs.");
+		    	break;
+		    }
         }
         
         //Wait for completion

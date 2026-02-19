@@ -1052,7 +1052,16 @@ public class Job implements Runnable
 	        }
         }
         
-        finalizeStatusAndNotifications(!jobIsBeingKilled);
+        try {
+            finalizeStatusAndNotifications(!jobIsBeingKilled);
+        } catch (Throwable t) {
+            // Catch any exception/error thrown during finalization
+            // (e.g., from step exceptions) and mark this job as having an exception
+            hasException = true;
+            thrownExc = t;
+            // Re-throw to ensure it's stored in the Future for executor-based execution
+            throw t;
+        }
     }
 
 //------------------------------------------------------------------------------

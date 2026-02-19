@@ -924,7 +924,11 @@ public class Directive implements IDirectiveComponent, Cloneable
 					performACCTask(mols, ps, dd, job, masterJob);
 				} catch (Throwable e) {
 					Task t = getTask(ps);
-					throw new Error("Unable to perform ACC task '" + t + "'.", e);
+                    String cause = e.getMessage();
+                    if (cause == null) {
+                        cause = "";
+                    }
+					throw new Error("Unable to perform ACC task '" + t + "'. " + cause, e);
 				}
     		}	
     	}
