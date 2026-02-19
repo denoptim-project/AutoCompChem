@@ -160,12 +160,42 @@ public class ConstraintsGenerator extends AtomTupleGenerator
 
         if (params.contains(KEYSETCONSTRAINTSA))
         {
+            if (params.getParameter(KEYSETCONSTRAINTSA).getValue() == null) {
+                throw new IllegalArgumentException("Null value for "
+                    + "set of constraints. Please, provide a constraintsSet as value for " 
+                    + KEYSETCONSTRAINTSA + "."); 
+            }
+            if (!(params.getParameter(KEYSETCONSTRAINTSA).getValue() instanceof ConstraintsSet)) {
+                String valueStr = params.getParameter(KEYSETCONSTRAINTSA).getValue().toString();
+                if (valueStr.length() > 25) {
+                    valueStr = valueStr.substring(0, 25) + "...";
+                }
+                throw new IllegalArgumentException("Invalid value for " 
+                    + KEYSETCONSTRAINTSA + ". Expected a constraintsSet object, but got " 
+                    + params.getParameter(KEYSETCONSTRAINTSA).getValue().getClass().getName() 
+                    + " (value: " + valueStr + ")."); 
+            }
             constraintsA = (ConstraintsSet) params.getParameter(
                 KEYSETCONSTRAINTSA).getValue();
         }
 
         if (params.contains(KEYSETCONSTRAINTSB))
         {
+            if (params.getParameter(KEYSETCONSTRAINTSB).getValue() == null) {
+                throw new IllegalArgumentException("Null value for "
+                    + KEYSETCONSTRAINTSB + ". Please, provide a constraintsSet as value for " 
+                    + KEYSETCONSTRAINTSB + "."); 
+            }
+            if (!(params.getParameter(KEYSETCONSTRAINTSB).getValue() instanceof ConstraintsSet)) {
+                String valueStr = params.getParameter(KEYSETCONSTRAINTSB).getValue().toString();
+                if (valueStr.length() > 25) {
+                    valueStr = valueStr.substring(0, 25) + "...";
+                }
+                throw new IllegalArgumentException("Invalid value for " 
+                    + KEYSETCONSTRAINTSB + ". Expected a constraintsSet object, but got " 
+                    + params.getParameter(KEYSETCONSTRAINTSB).getValue().getClass().getName() 
+                    + " (value: " + valueStr + ")."); 
+            }
             constraintsB = (ConstraintsSet) params.getParameter(
                 KEYSETCONSTRAINTSB).getValue();
         }
