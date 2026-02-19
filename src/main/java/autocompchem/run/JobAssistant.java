@@ -221,6 +221,11 @@ public class JobAssistant extends Worker
 		EvaluationJob evalJob = new EvaluationJob(assistedJob);
 		evalJob.setParameters(parsToEvaluationJob);
 		assistedWorkflow.addStep(evalJob);
+
+		// This is to link the assisted workflow to the workflow of the job
+		// that called this worker, thus allowing fetching of data across
+		// the 
+		myJob.addStep(assistedWorkflow);
 		
 		// Run the assisted workflow, possibly including restarts
 		for (int i=0; i<maxRestart; i++)

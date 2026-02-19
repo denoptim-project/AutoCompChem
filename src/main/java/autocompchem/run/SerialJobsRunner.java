@@ -248,6 +248,14 @@ public class SerialJobsRunner extends JobsRunner
         int numSubmittedJobs = 0;
         while (it.hasNext())
         {
+            // Check wall time before submitting the next job
+            if (weRunOutOfTime())
+            {
+            	logger.warn("WARNING! Wall time reached before submitting all jobs: "
+            			+ "stopping submission of remaining jobs.");
+            	break;
+            }
+            
             // Check for exceptions before submitting the next job
             if (exceptionInSubJobs())
             {
@@ -266,13 +274,31 @@ public class SerialJobsRunner extends JobsRunner
 		    // Wait for this job to complete before submitting the next one.
 		    // This guarantees that if this job throws an exception, we'll
 		    // detect it before submitting subsequent jobs.
-		    try {
-		    	future.get(); // Wait for completion; throws if job threw an exception
-		    } catch (Exception e) {
-		    	// Future.get() throws ExecutionException wrapping the original exception
-		    	// The exception has already been stored in the job via the run() method
-		    	logger.trace("Exception detected in job execution. " +
-		    			"Stopping submission of remaining jobs.");
+		    // Use a loop with timeout to periodically check wall time.
+		    boolean jobCompleted = false;
+		    boolean exceptionDetected = false;
+		    while (!jobCompleted && !weRunOutOfTime() && !exceptionDetected)
+		    {
+		    	try {
+		    		// Wait with a short timeout so we can check wall time periodically
+		    		future.get(100, TimeUnit.MILLISECONDS);
+		    		jobCompleted = true;
+		    	} catch (java.util.concurrent.TimeoutException te) {
+		    		// Timeout is expected - continue loop to check wall time
+		    		continue;
+		    	} catch (Exception e) {
+		    		// Future.get() throws ExecutionException wrapping the original exception
+		    		// The exception has already been stored in the job via the run() method
+		    		logger.trace("Exception detected in job execution. " +
+		    				"Stopping submission of remaining jobs.");
+		    		exceptionDetected = true;
+		    		break;
+		    	}
+		    }
+		    
+		    // If exception was detected, stop submitting more jobs
+		    if (exceptionDetected)
+		    {
 		    	break;
 		    }
         }

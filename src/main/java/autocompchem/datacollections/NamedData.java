@@ -541,6 +541,10 @@ public class NamedData implements Cloneable
     		case ("Job"):
     			tp = NamedDataType.JOB;
     			break;
+
+			case ("CompChemJob"):
+				tp = NamedDataType.JOB;
+					break;
     			
     		case ("Action"):
     			tp = NamedDataType.ACTION;

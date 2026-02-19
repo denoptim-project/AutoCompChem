@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -41,8 +42,10 @@ import org.apache.logging.log4j.core.config.Configurator;
 import com.google.gson.Gson;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
@@ -60,6 +63,7 @@ import autocompchem.utils.NumberUtils;
 import autocompchem.utils.StringUtils;
 import autocompchem.wiro.chem.CompChemJob;
 import autocompchem.wiro.chem.Directive;
+import autocompchem.wiro.chem.DirectiveData;
 import autocompchem.worker.WorkerConstants;
 
 
@@ -1038,7 +1042,7 @@ public class Job implements Runnable
         runThisJobSubClassSpecific();
         
         // Then, run the sub-jobs (steps)
-        if (steps.size()>0)
+        if (countToCompleteSteps()>0)
         {
 	        if (runsParallelSubjobs())
 	        {
@@ -1062,6 +1066,25 @@ public class Job implements Runnable
             // Re-throw to ensure it's stored in the Future for executor-based execution
             throw t;
         }
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Counts the number of steps that are not completed.
+     * @return the number of steps that are not completed.
+     */
+    public int countToCompleteSteps()
+    {
+        int count = 0;
+        for (Job step : steps)
+        {
+            if (!step.isCompleted())
+            {
+                count++;
+            }
+        }
+        return count;
     }
 
 //------------------------------------------------------------------------------
@@ -1743,6 +1766,201 @@ public class Job implements Runnable
 //------------------------------------------------------------------------------
     
     /**
+     * Recursively processes a JSON element to find and replace command calls
+     * with actual data values. This method handles nested JSON structures
+     * (objects, arrays, and primitives) and replaces command calls found in
+     * string values. Returns a new JsonElement with replacements applied.
+     * 
+     * @param element the JSON element to process
+     * @param job the job context for fetching exposed data
+     * @param commandCall the command call string to search for (e.g., "GETACCJOBSDATA")
+     * @param jsonWriter Gson writer for serializing replacement values
+     * @param jsonReader Gson reader for parsing replacement JSON values
+     * @return a new JsonElement with replacements applied, or the original if no changes
+     */
+    private static JsonElement processJsonElementRecursively(JsonElement element, 
+            Job job, String commandCall, Gson jsonWriter, Gson jsonReader)
+    {
+        if (element == null || element.isJsonNull())
+        {
+            return element;
+        }
+        
+        if (element.isJsonPrimitive())
+        {
+            JsonPrimitive primitive = element.getAsJsonPrimitive();
+            if (primitive.isString())
+            {
+                String str = primitive.getAsString();
+                String upperStr = str.toUpperCase();
+                String upperCommandCall = commandCall.toUpperCase();
+                
+                // Check if this string contains the command call
+                if (upperStr.contains(upperCommandCall))
+                {
+                    // Find all occurrences of the command call and replace them
+                    StringBuilder result = new StringBuilder();
+                    int fromIdx = 0;
+                    int lastIdx = 0;
+                    boolean edited = false;
+                    
+                    while (fromIdx < str.length())
+                    {
+                        int matchIdx = upperStr.indexOf(upperCommandCall, fromIdx);
+                        if (matchIdx == -1)
+                        {
+                            // No more matches, append the rest
+                            result.append(str.substring(lastIdx));
+                            break;
+                        }
+                        
+                        // Append the part before the match
+                        result.append(str.substring(lastIdx, matchIdx));
+                        
+                        // Find the end of the command call (including parentheses)
+                        int endIdx = findCommandCallEnd(str, matchIdx, commandCall);
+                        if (endIdx == -1)
+                        {
+                            // Malformed command call, skip it
+                            result.append(str.substring(matchIdx));
+                            break;
+                        }
+                        
+                        // Extract the command call with arguments
+                        String commandCallWithArgs = str.substring(matchIdx, endIdx);
+                        String argStr = StringUtils.getParenthesesContent(commandCallWithArgs);
+                        
+                        if (argStr != null)
+                        {
+                            // Parse arguments and fetch the data
+                            String[] args = argStr.split(",");
+                            String pathToOtherJob = "#0";
+                            String[] pathIntoExposedData = args;
+                            if (args.length > 0 && args[0].stripLeading().startsWith("#"))
+                            {
+                                pathToOtherJob = args[0].stripLeading().stripTrailing();
+                                pathIntoExposedData = Arrays.copyOfRange(args, 1, args.length);
+                            }
+                            
+                            Object value = getExposedData(job, pathToOtherJob, pathIntoExposedData);
+                            
+                            // Append the replacement value
+                            // NB: we are always in the mids of a string, never having the value 
+                            // contain only the data fetched, so we rely on the toString() method 
+                            // of the value.
+                            result.append(value.toString());
+                            
+                            edited = true;
+                        }
+                        else
+                        {
+                            // No valid parentheses content, keep original
+                            throw new IllegalArgumentException("No valid parentheses content found "
+                                    + "in the string: " + str);
+                        }
+                        
+                        lastIdx = endIdx;
+                        fromIdx = endIdx;
+                    }
+                    
+                    // Return new primitive with replaced string if edited
+                    if (edited)
+                    {
+                        return new JsonPrimitive(result.toString());
+                    }
+                }
+            }
+            // For non-string primitives, return as-is
+            return element;
+        }
+        else if (element.isJsonObject())
+        {
+            JsonObject obj = element.getAsJsonObject();
+            JsonObject newObj = new JsonObject();
+            boolean edited = false;
+            
+            for (String key : obj.keySet())
+            {
+                JsonElement child = obj.get(key);
+                JsonElement processedChild = processJsonElementRecursively(child, job, 
+                        commandCall, jsonWriter, jsonReader);
+                newObj.add(key, processedChild);
+                if (processedChild != child)
+                {
+                    edited = true;
+                }
+            }
+            
+            return edited ? newObj : element;
+        }
+        else if (element.isJsonArray())
+        {
+            JsonArray array = element.getAsJsonArray();
+            JsonArray newArray = new JsonArray();
+            boolean edited = false;
+            
+            for (int i = 0; i < array.size(); i++)
+            {
+                JsonElement child = array.get(i);
+                JsonElement processedChild = processJsonElementRecursively(child, job, 
+                        commandCall, jsonWriter, jsonReader);
+                newArray.add(processedChild);
+                if (processedChild != child)
+                {
+                    edited = true;
+                }
+            }
+            
+            return edited ? newArray : element;
+        }
+        
+        return element;
+    }
+
+//------------------------------------------------------------------------------
+    
+    /**
+     * Finds the end position of a command call in a string, including the
+     * closing parenthesis. Handles nested parentheses correctly.
+     * 
+     * @param str the string to search in
+     * @param startIdx the starting index of the command call
+     * @param commandCall the command call string (without parentheses)
+     * @return the index after the closing parenthesis, or -1 if not found
+     */
+    private static int findCommandCallEnd(String str, int startIdx, String commandCall)
+    {
+        int commandEnd = startIdx + commandCall.length();
+        if (commandEnd >= str.length() || str.charAt(commandEnd) != '(')
+        {
+            return -1;
+        }
+        
+        // Find the matching closing parenthesis
+        int parenCount = 0;
+        for (int i = commandEnd; i < str.length(); i++)
+        {
+            char c = str.charAt(i);
+            if (c == '(')
+            {
+                parenCount++;
+            }
+            else if (c == ')')
+            {
+                parenCount--;
+                if (parenCount == 0)
+                {
+                    return i + 1; // Return position after closing parenthesis
+                }
+            }
+        }
+        
+        return -1; // No matching closing parenthesis found
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
      * Replace requests for values with the actual values fetched from the job 
      * tree.
      * @param job the location of the job tree from where any relative job is
@@ -1755,41 +1973,126 @@ public class Job implements Runnable
      */
     public static void fetchValuesFromJobsTree(Job job, 
     		NamedDataCollector dataToUpdate, String commandCall)
-    {    	
-    	Gson jsonWriter = ACCJson.getWriter();
-    	Gson jsonReader = ACCJson.getReader();
-    	for (String paramKey : dataToUpdate.getAllNamedData().keySet())
-    	{
-    		NamedData data = dataToUpdate.getAllNamedData().get(paramKey);
+    {
+    	// Define keys to skip at all nesting levels with their warning message templates
+    	// The template should contain "COMMANDCALL" as a placeholder that will be replaced
+    	// with the actual commandCall value at runtime
+    	Map<String, String> keysToSkip = new HashMap<String, String>();
+    	keysToSkip.put(JobLooper.PARLOOPEDJOB, 
+    			"WARNING: entries of COMMANDCALL in values of parameter '" 
+    			+ JobLooper.PARLOOPEDJOB + "' are not altered. "
+    			+ "ACCJobs data are fetched only in the actual instances created "
+                + "from this job template.");
+    	keysToSkip.put(JobAssistant.PARASSISTEDJOB, 
+    			"WARNING: entries of COMMANDCALL in values of parameter '" 
+    			+ JobAssistant.PARASSISTEDJOB + "' are not altered. "
+    			+ "ACCJobs data are fetched only in the actual instances created "
+                + "from this job template.");
+    	
+    	// Recursively process the NamedDataCollector structure
+    	processNamedDataCollectorRecursively(job, dataToUpdate, commandCall, keysToSkip);
+    }
 
-            if (data.getValue() instanceof Job)
+//------------------------------------------------------------------------------
+    
+    /**
+     * Recursively processes a NamedDataCollector structure to find and replace
+     * command calls with actual data values. This method:
+     * 1. Skips NamedData entries whose keys are in the skip map
+     * 2. Recursively processes nested NamedDataCollector structures (e.g., ParameterStorage)
+     * 3. Processes JSON-able values that contain command calls using JSON tree traversal
+     * 
+     * @param job the job context for fetching exposed data
+     * @param collector the NamedDataCollector to process
+     * @param commandCall the command call string to search for (e.g., "GETACCJOBSDATA")
+     * @param keysToSkip map of NamedData keys to skip (key) and their warning message templates (value)
+     *                   Templates should contain "COMMANDCALL" as a placeholder
+     */
+    private static void processNamedDataCollectorRecursively(Job job,
+            NamedDataCollector collector, String commandCall, Map<String, String> keysToSkip)
+    {
+        if (collector == null)
+        {
+            return;
+        }
+
+        Logger logger = LogManager.getLogger(Job.class);
+        Gson jsonWriter = ACCJson.getWriter();
+        Gson jsonReader = ACCJson.getReader();
+        
+        // Create a copy of keys to avoid concurrent modification
+        List<String> keys = new ArrayList<String>(collector.getAllNamedData().keySet());
+        
+        for (String key : keys)
+        {
+            NamedData data = collector.getAllNamedData().get(key);
+            
+            // Skip this NamedData if its key is in the skip map
+            if (keysToSkip.containsKey(key))
             {
-                // Do not alter downstream jobs: they'll be updated at 
-                // their respective run time.
+                // Get the template message and replace COMMANDCALL with the actual commandCall
+                String template = keysToSkip.get(key);
+                String warningMessage = template.replace("COMMANDCALL", commandCall);
+                logger.warn(warningMessage);
+                continue;
+            }
+            
+            Object dataValue = data.getValue();
+            
+            // Check if the value is a nested NamedDataCollector (e.g., ParameterStorage)
+            if (dataValue instanceof NamedDataCollector)
+            {
+                // Recursively process the nested collector
+                processNamedDataCollectorRecursively(job, (NamedDataCollector) dataValue, 
+                        commandCall, keysToSkip);
                 continue;
             }
 
-    		//WARNING: this may cause problems for non JSON-able content
-    		// and also for any operation that relies on the actual instance
-    		// stored within the named data because with the JSON operation
-    		// we create a new instance, rather then modifying the existing one
-    		String jsonStr = jsonWriter.toJson(data);
-
+            // CompChemJob do not run themselfs in ACC so we their runtime is not available
+            // for fetching data. Thus, we need to process the directives of the CompChemJob.
+            if (dataValue instanceof CompChemJob)
+            {
+                Iterator<Directive> directiveIterator = ((CompChemJob) dataValue).directiveIterator();
+                while (directiveIterator.hasNext())
+                {
+                    Directive d = directiveIterator.next();
+                    processNamedDataCollectorRecursively(job, d.getTaskParams(), 
+                            commandCall, keysToSkip);
+                    for (DirectiveData dd : d.getAllDirectiveDataBlocks())
+                        {
+                            processNamedDataCollectorRecursively(job, dd.getTaskParams(), 
+                                    commandCall, keysToSkip);
+                        }
+                }
+                continue;
+            }
+            
+            // For non-collector values, check if they're JSON-able
+            if (!NamedData.jsonable.contains(data.getType()))
+            {
+                logger.warn("WARNING: the parameter '" + key + "'" 
+                    + " of type '" + data.getType() + "'" 
+                    + " is not JSON-able. Only JSON-able content can be "
+                    + "fetched. Contact the authors if you feel this data "
+                    + "type should become fetch-able.");
+                continue;
+            }
+            
+            // Check if the JSON representation contains the command call
+            String jsonStr = jsonWriter.toJson(data);
             if (!jsonStr.toUpperCase().contains(commandCall.toUpperCase()))
             {
                 continue;
             }
-
-            // See if the part to replace corresponds to the entire content of
-            // the data value
+            
+            // See if the part to replace corresponds to the entire content of the data value
             boolean replaceEntireValue = false;
-            Object dataValue = data.getValue();
             if (dataValue instanceof String)
             {
                 replaceEntireValue = StringUtils.hasSyntaxOfCommandCallWithParenthesesContent(
                     (String) dataValue, commandCall);
             }
-
+            
             if (replaceEntireValue)
             {
                 // Replace the entire value with the result of the command call
@@ -1797,75 +2100,31 @@ public class Job implements Runnable
                 String[] args = argStr.split(",");
                 String pathToOtherJob = "#0";
                 String[] pathIntoExposedData = args;
-                if (args[0].stripLeading().startsWith("#"))
+                if (args.length > 0 && args[0].stripLeading().startsWith("#"))
                 {
                     pathToOtherJob = args[0].stripLeading().stripTrailing();
                     pathIntoExposedData = Arrays.copyOfRange(args, 1, args.length);
                 }
                 
-                Object value = getExposedData(job, pathToOtherJob, 
-                        pathIntoExposedData);
-
-                dataToUpdate.getAllNamedData().put(paramKey, new NamedData(paramKey, value));
-            } else {
-                // Replace only the parts of the value that corresponds to command calls
-                List<Integer> indexes = new ArrayList<Integer>();
-                boolean edited = false;
-                int fromIdx=0;
-                while (fromIdx>-1)
-                {
-                    fromIdx = jsonStr.toUpperCase().indexOf(commandCall, fromIdx);
-                    if (fromIdx>-1)
-                    {
-                        indexes.add(fromIdx);
-                        edited = true;
-                        fromIdx++;
-                    }
-                }
-
-                StringBuilder newJson = new StringBuilder();
-                int maxEnd = jsonStr.length();
-                int startCopying = 0;
-                for (int i=0; i<indexes.size(); i++)
-                {
-                    int beginMatch = indexes.get(i);
-                    int end = maxEnd;
-                    if (indexes.size()>i+1)
-                        end = indexes.get(i+1);
-                    String argStr = StringUtils.getParenthesesContent(
-                            jsonStr.substring(beginMatch, end));
-                    String[] args = argStr.split(",");
-                    String pathToOtherJob = "#0";
-                    String[] pathIntoExposedData = args;
-                    if (args[0].stripLeading().startsWith("#"))
-                    {
-                        pathToOtherJob = args[0].stripLeading().stripTrailing();
-                        pathIntoExposedData = Arrays.copyOfRange(args, 1, args.length);
-                    }
-                    
-                    Object value = getExposedData(job, pathToOtherJob, 
-                            pathIntoExposedData);
-
-                    String init = jsonStr.substring(startCopying, beginMatch);
-                    int beginningLeftOver = beginMatch + commandCall.length() 
-                        + 2 + argStr.length();
-                    String leftover = jsonStr.substring(beginningLeftOver, end);
-                    newJson.append(init);
-                    // NB: here we rely on the toString() method of the value, not on JSON serialization
-                    // because we expect to be in the mids of a string value, not a JSON object.
-                    newJson.append(value);
-                    newJson.append(leftover);
-
-                    startCopying = end;
-                }
+                Object value = getExposedData(job, pathToOtherJob, pathIntoExposedData);
+                collector.getAllNamedData().put(key, new NamedData(key, value));
+            }
+            else
+            {
+                // Replace command calls recursively in the JSON structure
+                JsonElement jsonElement = jsonReader.fromJson(jsonStr, JsonElement.class);
+                JsonElement processedElement = processJsonElementRecursively(jsonElement, job, 
+                        commandCall, jsonWriter, jsonReader);
                 
-                if (edited)
+                // Only update if the element was actually modified
+                if (processedElement != jsonElement)
                 {
-                    dataToUpdate.getAllNamedData().put(paramKey, jsonReader.fromJson(
-                            newJson.toString(), NamedData.class));
+                    // Convert the modified JSON tree back to NamedData
+                    collector.getAllNamedData().put(key, 
+                            jsonReader.fromJson(processedElement, NamedData.class));
                 }
             }
-    	}
+        }
     }
     
 //------------------------------------------------------------------------------

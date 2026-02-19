@@ -137,7 +137,14 @@ public abstract class JobsRunner
         Configurator.setLevel(logger.getName(), master.logger.getLevel());
         
     	this.master = master;
-        this.todoJobs = new ArrayList<Job>(master.steps);
+        this.todoJobs = new ArrayList<Job>();
+        for (Job step : master.steps)
+        {
+            if (!step.isCompleted())
+            {
+                todoJobs.add(step);
+            }
+        }
 
         addShutDownHook();
     }

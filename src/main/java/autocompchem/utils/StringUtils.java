@@ -565,7 +565,7 @@ public class StringUtils
      * Checks if the given string has the syntax of a command call with 
      * parentheses content, i.e., <code>command(...)</code>. 
      * For example, the string "getACCJobsData(arg,arg)" 
-     * mathces the syntax od a command <code>getACCJobsData</code> with the 
+     * mathces the syntax of a command <code>getACCJobsData</code> with the 
      * parentheses content <code>arg,arg</code>.
      * @param txt the string to check
      * @param commandCall the command call to check for
