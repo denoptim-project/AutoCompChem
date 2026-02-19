@@ -46,5 +46,29 @@
     "casedKey": "verbosity",
     "type": "<int>",
     "doc": "Sets the amount of log messages. Values larger than 0 will make the worker write more and more detailed log reports."
+  },
+  {
+    "key": "INITIALDELAY",
+    "casedKey": "initialDelay",
+    "type": "<String>",
+    "doc": "The initial delay before first run of the monitoring job (used only for MonitoringJob). If the given string is parsable to an integer, then it is used as the value. Otherwise, the string is interpreted as an expression defining the value (e.g., '${5}', '${2+3}', or '${floor(3.7)}' would be evaluated to integer values). The value is interpreted in the units specified by INITIALDELAY-TIMEUNITS (default: milliseconds)."
+  },
+  {
+    "key": "INITIALDELAY-TIMEUNITS",
+    "casedKey": "initialDelay-TimeUnits",
+    "type": "<String>",
+    "doc": "The time units for the initial delay (used only for MonitoringJob). Acceptable values are: DAYS, HOURS, MINUTES, SECONDS, MILLISECONDS. Default: MILLISECONDS."
+  },
+  {
+    "key": "PERIOD",
+    "casedKey": "period",
+    "type": "<String>",
+    "doc": "The period between each monitoring event (used only for MonitoringJob). If the given string is parsable to an integer, then it is used as the value. Otherwise, the string is interpreted as an expression defining the value (e.g., '${5}', '${2+3}', or '${floor(3.7)}' would be evaluated to integer values). The value is interpreted in the units specified by PERIOD-TIMEUNITS (default: milliseconds)."
+  },
+  {
+    "key": "PERIOD-TIMEUNITS",
+    "casedKey": "period-TimeUnits",
+    "type": "<String>",
+    "doc": "The time units for the period between monitoring events (used only for MonitoringJob). Acceptable values are: DAYS, HOURS, MINUTES, SECONDS, MILLISECONDS. Default: MILLISECONDS."
   }
 ]

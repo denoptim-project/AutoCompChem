@@ -34,6 +34,7 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import autocompchem.atom.AtomUtils;
 import autocompchem.molecule.AtomContainerInputProcessor;
 import autocompchem.molecule.MolecularUtils;
+import autocompchem.utils.NumberUtils;
 import autocompchem.run.Job;
 import autocompchem.smarts.ManySMARTSQuery;
 import autocompchem.smarts.MatchingIdxs;
@@ -179,21 +180,21 @@ public class AtomClashAnalyzer extends AtomContainerInputProcessor
         //Allowance for all atoms
         if (params.contains("ALLOWANCE"))
         {
-            this.allowance = Double.parseDouble(
+            this.allowance = NumberUtils.parseValueOrExpression(
                  params.getParameter("ALLOWANCE").getValue().toString());
         }
 
         //Allowance for atoms in 1-3 relationship
         if (params.contains("ALLOWANCE13"))
         {
-            this.allowance13 = Double.parseDouble(
+            this.allowance13 = NumberUtils.parseValueOrExpression(
                  params.getParameter("ALLOWANCE13").getValue().toString());
         }
 
         //Allowance for atoms in 1-4 relationship
         if (params.contains("ALLOWANCE14"))
         {
-            this.allowance14 = Double.parseDouble(
+            this.allowance14 = NumberUtils.parseValueOrExpression(
                  params.getParameter("ALLOWANCE14").getValue().toString());
         }
 
@@ -215,7 +216,7 @@ public class AtomClashAnalyzer extends AtomContainerInputProcessor
 
                 VDWAllowance newAlw = new VDWAllowance(parts[0],  //SMARTS 1
                                                        parts[1],  //SMARTS 2
-                                     Double.parseDouble(parts[2])); //allowance
+                                     NumberUtils.parseValueOrExpression(parts[2])); //allowance
 
                 this.allowances.add(newAlw);
             }

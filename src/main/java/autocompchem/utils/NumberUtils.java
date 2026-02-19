@@ -535,6 +535,36 @@ public class NumberUtils
     }
     
 //------------------------------------------------------------------------------
+
+    /**
+     * Parses a string to an integer. If the string is a valid integer, it is 
+     * parsed to an integer. If the string is a valid expression, it is evaluated
+     * and the result is returned as an integer (only if the result is an integer).
+     * @param textValue the string to parse.
+     * @return the parsed value as an integer.
+     * @throws IllegalArgumentException if the expression evaluates to a non-integer value.
+     */
+    public static Integer parseValueOrExpressionToInt(String textValue)
+    {
+        Double d = NumberUtils.parseValueOrExpression(textValue);
+        if (d != Math.floor(d))
+        {
+            throw new IllegalArgumentException("Expression '" + textValue 
+                + "' evaluated to non-integer value: " + d 
+                + ". Use integer expressions like ${floor(3.7)} or ${round(3.5)}.");
+        }
+        // Check for integer overflow
+        if (d > Integer.MAX_VALUE || d < Integer.MIN_VALUE)
+        {
+            throw new IllegalArgumentException("Expression '" + textValue 
+                + "' evaluated to value " + d 
+                + " which is outside the integer range [" 
+                + Integer.MIN_VALUE + ", " + Integer.MAX_VALUE + "].");
+        }
+        return d.intValue();
+    }
+    
+//------------------------------------------------------------------------------
         
     /**
      * Use a given expression to calculate a numerical value.

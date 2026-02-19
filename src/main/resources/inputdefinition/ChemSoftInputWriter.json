@@ -20,14 +20,14 @@
   {
     "key": "CHARGE",
     "casedKey": "charge",
-    "type": "<int>",
-    "doc": "Defines the charge of the chemical system/s given as input."
+    "type": "<String>",
+    "doc": "Defines the charge of the chemical system/s given as input. If the given string is parsable to an integer, then it is used as the value. Otherwise, the string is interpreted as an expression defining the value (e.g., '${5}', '${2+3}', or '${floor(3.7)}' would be evaluated to integer values)."
   },
   {
     "key": "SPIN_MULTIPLICITY",
     "casedKey": "spin_multiplicity",
-    "type": "<int>",
-    "doc": "Defines the spin multiplicity of the chemical system/s given as input."
+    "type": "<String>",
+    "doc": "Defines the spin multiplicity of the chemical system/s given as input. If the given string is parsable to an integer, then it is used as the value. Otherwise, the string is interpreted as an expression defining the value (e.g., '${5}', '${2+3}', or '${floor(3.7)}' would be evaluated to integer values)."
   },
   {
     "key": "NOCHARGE",

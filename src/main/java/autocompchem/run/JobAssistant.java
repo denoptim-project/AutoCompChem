@@ -157,13 +157,7 @@ public class JobAssistant extends Worker
 		if (hasParameter(PARMAXRESTART)) 
 		{
 			String value = params.getParameter(PARMAXRESTART).getValueAsString();
-			if (NumberUtils.isParsableToInt(value))
-			{
-				maxRestart = Integer.parseInt(value);
-			} else {
-				throw new IllegalArgumentException("Could not parse string '" + value 
-						+ "' to an integer. Please, check your input.");
-			}
+			maxRestart = NumberUtils.parseValueOrExpressionToInt(value);
 		}
 	}
 

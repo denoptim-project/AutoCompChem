@@ -47,6 +47,7 @@ import autocompchem.atom.AtomUtils;
 import autocompchem.datacollections.NamedData;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
+import autocompchem.utils.NumberUtils;
 import autocompchem.molecule.AtomContainerInputProcessor;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Job;
@@ -189,7 +190,7 @@ public class GeometryAligner extends AtomContainerInputProcessor
 	        weights = new double[vals.length];
 			for (int i=0; i<vals.length; i++)
 		    {
-				weights[i] = Double.parseDouble(vals[i]);
+				weights[i] = NumberUtils.parseValueOrExpression(vals[i]);
 		    }
         }
     }

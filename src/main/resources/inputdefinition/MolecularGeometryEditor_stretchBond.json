@@ -8,20 +8,20 @@
   {
     "key": "SCALINGFACTORS",
     "casedKey": "scalingFactors",
-    "type": "<float> [<float> [<float> [...]]]",
-    "doc": "One or more real numbers (positive or negative) to be applied to the current value of the bond length to produce modified geometries. The default is 1.0."
+    "type": "<String> [<String> [<String> [...]]]",
+    "doc": "One or more real numbers (positive or negative) to be applied to the current value of the bond length to produce modified geometries. The default is 1.0. Each scaling factor can be either a double value or an expression. If the given string is parsable to a double, then it is used as the value. Otherwise, the string is interpreted as an expression defining the value (e.g., '${sin(0.2)}' would be evaluated to the value of the sine of 0.2)."
   },
   {
     "key": "GENERATESCALINGFACTORS",
     "casedKey": "generateScalingFactors",
-    "type": "<real> <real> <integer> | <integer> <real> <real>",
-    "doc": "Requests the generation of a sequence of scaling factors. The syntax is either <initial_value> <final_value> <#steps> or <#steps> <initial_value> <step_length>."
+    "type": "<String> <String> <String> | <String> <String> <String>",
+    "doc": "Requests the generation of a sequence of scaling factors. The syntax is either <initial_value> <final_value> <#steps> or <#steps> <initial_value> <step_length>. The initial_value, final_value, and step_length can be either double values or expressions. The #steps can be either an integer value or an integer expression. If the given string is parsable to a number, then it is used as the value. Otherwise, the string is interpreted as an expression defining the value (e.g., '${sin(0.2)}' for doubles or '${5}', '${2+3}', '${floor(3.7)}' for integers would be evaluated accordingly)."
   },
   {
     "key": "TERMINATIONCRITERIA",
     "casedKey": "terminationCriteria",
-    "type": "<string> <real>",
-    "doc": "The termination criteria to use. The syntax is <kind> <threshold>. Acceptable kinds are:\n -> 'minInterfragmentDist': the minimum distance between the fragments resulting by removing the stretched bond must be greater than the threshold."
+    "type": "<string> <String>",
+    "doc": "The termination criteria to use. The syntax is <kind> <threshold>. Acceptable kinds are:\n -> 'minInterfragmentDist': the minimum distance between the fragments resulting by removing the stretched bond must be greater than the threshold. The threshold can be either a double value or an expression. If the given string is parsable to a double, then it is used as the value. Otherwise, the string is interpreted as an expression defining the value (e.g., '${sin(0.2)}' would be evaluated to the value of the sine of 0.2)."
   },
   {
     "embeddedWorker": "autocompchem.molecule.intcoords.zmatrix.ZMatrixHandler",

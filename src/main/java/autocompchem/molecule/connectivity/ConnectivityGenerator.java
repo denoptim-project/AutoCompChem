@@ -35,6 +35,7 @@ import autocompchem.atom.AtomUtils;
 import autocompchem.datacollections.NamedData;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
+import autocompchem.utils.NumberUtils;
 import autocompchem.molecule.AtomContainerInputProcessor;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Job;
@@ -184,7 +185,7 @@ public class ConnectivityGenerator extends AtomContainerInputProcessor
         if (params.contains("TOLERANCE"))
         {
             String ts = params.getParameter("TOLERANCE").getValueAsString();
-            this.tolerance = Double.parseDouble(ts);
+            this.tolerance = NumberUtils.parseValueOrExpression(ts);
         }
 
         //Define tolerance
@@ -192,7 +193,7 @@ public class ConnectivityGenerator extends AtomContainerInputProcessor
         {
             String ts = 
                 params.getParameter("TOLERANCE2NDSHELL").getValueAsString();
-            this.tolerance2ndShell = Double.parseDouble(ts);
+            this.tolerance2ndShell = NumberUtils.parseValueOrExpression(ts);
         }
 
         //Define target element

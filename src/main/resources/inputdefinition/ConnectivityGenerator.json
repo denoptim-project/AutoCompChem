@@ -2,14 +2,14 @@
   {
     "key": "TOLERANCE",
     "casedKey": "tolerance",
-    "type": "<float>",
-    "doc": "A new bond is added only when the distance between two atoms is below the sum of their v.d.W. radii minus the tolerance (as percentage). Values between 0.0 and 1.0 should be used."
+    "type": "<String>",
+    "doc": "A new bond is added only when the distance between two atoms is below the sum of their v.d.W. radii minus the tolerance (as percentage). Values between 0.0 and 1.0 should be used. If the given string is parsable to a double, then it is used as the value. Otherwise, the string is interpreted as an expression defining the value (e.g., '${sin(0.2)}' would be evaluated to the value of the sine of 0.2)."
   },
   {
     "key": "TOLERANCE2NDSHELL",
     "casedKey": "tolerance2ndShell",
-    "type": "<float>",
-    "doc": "Additional contribution to the tolerance value of atoms in 1-3 relation (i.e., when evaluating the distance r_AC in A-B-C)."
+    "type": "<String>",
+    "doc": "Additional contribution to the tolerance value of atoms in 1-3 relation (i.e., when evaluating the distance r_AC in A-B-C). If the given string is parsable to a double, then it is used as the value. Otherwise, the string is interpreted as an expression defining the value (e.g., '${sin(0.2)}' would be evaluated to the value of the sine of 0.2)."
   },
   {
     "key": "TARGETELEMENT",

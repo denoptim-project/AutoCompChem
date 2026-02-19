@@ -20,20 +20,20 @@
   {
     "key": "SCALINGFACTORS",
     "casedKey": "scalingFactors",
-    "type": "<float> [<float> [<float> [...]]]",
-    "doc": "One or more scaling factors (real numbers, positive or negative) to be applied to the either Cartesian or ZMatrix moves or to bond stretching moves. The scaled move is applied on the initial structure per each given scaling factor. The default is 1.0."
+    "type": "<String> [<String> [<String> [...]]]",
+    "doc": "One or more scaling factors (real numbers, positive or negative) to be applied to the either Cartesian or ZMatrix moves or to bond stretching moves. The scaled move is applied on the initial structure per each given scaling factor. The default is 1.0. Each scaling factor can be either a double value or an expression. If the given string is parsable to a double, then it is used as the value. Otherwise, the string is interpreted as an expression defining the value (e.g., '${sin(0.2)}' would be evaluated to the value of the sine of 0.2)."
   },
   {
     "key": "GENERATESCALINGFACTORS",
     "casedKey": "generateScalingFactors",
-    "type": "<real> <real> <integer> | <integer> <real> <real>",
-    "doc": "Requests the generation of a sequence of scaling factors. The syntax is either <initial_value> <final_value> <#steps> or <#steps> <initial_value> <step_length>."
+    "type": "<String> <String> <String> | <String> <String> <String>",
+    "doc": "Requests the generation of a sequence of scaling factors. The syntax is either <initial_value> <final_value> <#steps> or <#steps> <initial_value> <step_length>. The initial_value, final_value, and step_length can be either double values or expressions. The #steps can be either an integer value or an integer expression. If the given string is parsable to a number, then it is used as the value. Otherwise, the string is interpreted as an expression defining the value (e.g., '${sin(0.2)}' for doubles or '${5}', '${2+3}', '${floor(3.7)}' for integers would be evaluated accordingly)."
   },
   {
     "key": "OPTIMIZESCALINGFACTORS",
     "casedKey": "optimizeScalingFactors",
-    "type": "<String> <int> <float> <float> [<float>]",
-    "doc": "Requests the optimisation of scaling factors for Cartesian moves and specifies i) the kind of distribution to be produced (one string - acceptable values are 'EVEN' and 'BALANCED'), and ii) the number of scaling factors to generate (one integer), iii) the scaling factor for the move in negative direction (e.g., 0.5 for cosidering a movement up to (-0.5)xCartesianMove), and iv) the scaling factor for the move in positive direction (e.g., 0.5 for cosidering a movement up to (+0.5)xCartesianMove), and (optional) the maximum acceptable displacement."
+    "type": "<String> <String> <String> <String> [<String>]",
+    "doc": "Requests the optimisation of scaling factors for Cartesian moves and specifies i) the kind of distribution to be produced (one string - acceptable values are 'EVEN' and 'BALANCED'), and ii) the number of scaling factors to generate (one integer or integer expression), iii) the scaling factor for the move in negative direction (e.g., 0.5 for cosidering a movement up to (-0.5)xCartesianMove), and iv) the scaling factor for the move in positive direction (e.g., 0.5 for cosidering a movement up to (+0.5)xCartesianMove), and (optional) the maximum acceptable displacement. The scaling factors and maximum displacement can be either double values or expressions. The number of scaling factors can be either an integer value or an integer expression. If the given string is parsable to a number, then it is used as the value. Otherwise, the string is interpreted as an expression defining the value (e.g., '${sin(0.2)}' for doubles or '${5}', '${2+3}', '${floor(3.7)}' for integers would be evaluated accordingly)."
   },
   {
     "key": "REFERENCESUBSTRUCTUREFILE",

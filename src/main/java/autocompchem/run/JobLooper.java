@@ -150,14 +150,7 @@ public class JobLooper extends Worker
 		if (hasParameter(PARMAXITERATIONS)) 
 		{
 			String value = params.getParameter(PARMAXITERATIONS).getValueAsString();
-			if (NumberUtils.isParsableToInt(value))
-			{
-				maxIterations = Integer.parseInt(value);
-			} else {
-				throw new IllegalArgumentException("Could not parse string '" + value 
-						+ "' to an integer. Please, check your input for parameter '"
-						+ PARMAXITERATIONS + "'.");
-			}
+			maxIterations = NumberUtils.parseValueOrExpressionToInt(value);
 		}
 
 		if (hasParameter(PARREPLACEMENTRULES))

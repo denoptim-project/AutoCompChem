@@ -1111,7 +1111,7 @@ public abstract class ChemSoftOutputReader extends OutputReader
     {
     	String iStr = Double.toString(defaultValue);
     	iStr = changeIfParameterIsFound(iStr, key, ps);
-    	return Double.parseDouble(iStr);
+    	return NumberUtils.parseValueOrExpression(iStr);
     }
 
 //------------------------------------------------------------------------------
@@ -1154,7 +1154,7 @@ public abstract class ChemSoftOutputReader extends OutputReader
     {
     	String iStr = Integer.toString(defaultValue);
     	iStr = changeIfParameterIsFound(iStr, key, ps);
-    	return Integer.parseInt(iStr);
+    	return NumberUtils.parseValueOrExpressionToInt(iStr);
     }
     
 //------------------------------------------------------------------------------

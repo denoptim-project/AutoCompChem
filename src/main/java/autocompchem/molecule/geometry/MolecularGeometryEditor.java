@@ -293,12 +293,12 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
                 double d = 1.0;
                 try
                 {
-                    d = Double.parseDouble(parts[i]);
+                    d = NumberUtils.parseValueOrExpression(parts[i]);
                 }
                 catch (Throwable t)
                 {
                     throw new IllegalArgumentException("Cannot understand scale "
-                        + "factor '" + parts[i] + "'. Expecting double.");
+                        + "factor '" + parts[i] + "'. Expecting double or expression.");
                 }
                 scaleFactors.add(d);
             }
@@ -328,17 +328,17 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
 				{
 					// #steps, initial_value, step_length
 					steps = Integer.parseInt(parts[0]);
-					initialValue = Double.parseDouble(parts[1]);
-					stepLength = Double.parseDouble(parts[2]);
+					initialValue = NumberUtils.parseValueOrExpression(parts[1]);
+					stepLength = NumberUtils.parseValueOrExpression(parts[2]);
 					for (int i=0; i<steps; i++)
 					{
 						scaleFactors.add(initialValue + i*stepLength);
 					}
 				} else {
 					// initial_value, final_value, #steps
-					initialValue = Double.parseDouble(parts[0]);
-					finalValue = Double.parseDouble(parts[1]);
-					steps = Integer.parseInt(parts[2]);
+					initialValue = NumberUtils.parseValueOrExpression(parts[0]);
+					finalValue = NumberUtils.parseValueOrExpression(parts[1]);
+					steps = NumberUtils.parseValueOrExpressionToInt(parts[2]);
 					stepLength = (finalValue - initialValue) / (steps-1);
 					for (int i=0; i<steps; i++)
 					{
@@ -377,39 +377,39 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
                         + "' as a scaling factor distribution kind.");
             }
             scalingFactorDistribution = kind;
-            String num = words[1];
+            String             num = words[1];
             try {
-            	numScalingFactors = Integer.parseInt(num);
-            } catch (Throwable t) {
+            	numScalingFactors = NumberUtils.parseValueOrExpressionToInt(num);
+            } catch (IllegalArgumentException e) {
             	throw new IllegalArgumentException("Cannot understand '" + num
                         + "' as the number of scaling factor to generate. "
-                        + "Expecting an integer.");
+                        + "Expecting an integer or integer expression.", e);
             }
             num = words[2];
             try {
-            	percOfNeg = Double.parseDouble(num);
+            	percOfNeg = NumberUtils.parseValueOrExpression(num);
             } catch (Throwable t) {
             	throw new IllegalArgumentException("Cannot understand '" + num
                         + "' as the percentage of the possible negative path. "
-                        + "Expecting a double.");
+                        + "Expecting a double or expression.");
             }
             num = words[3];
             try {
-            	percOfPos = Double.parseDouble(num);
+            	percOfPos = NumberUtils.parseValueOrExpression(num);
             } catch (Throwable t) {
             	throw new IllegalArgumentException("Cannot understand '" + num
                         + "' as the percentage of the possible positive path. "
-                        + "Expecting a double.");
+                        + "Expecting a double or expression.");
             }
             if (words.length >= 5)
             {
 	            num = words[4];
 	            try {
-	            	maxDispl = Double.parseDouble(num);
+	            	maxDispl = NumberUtils.parseValueOrExpression(num);
 	            } catch (Throwable t) {
 	            	throw new IllegalArgumentException("Cannot understand '" 
 	                        + num + "' as the maximum displacement for a "
-	                        + "single atom. Expecting a double.");
+	                        + "single atom. Expecting a double or expression.");
 	            }
             }
         }
@@ -433,8 +433,10 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
 					+ "' as a termination criterion kind. Known kinds are: " 
 					+ NL + StringUtils.mergeListToString(knownTerminationKinds, ", "));
 			}
-			terminationThreshold = Double.parseDouble(parts[1]);
-			logger.info("Bond stretching termination criteria: " + terminationKind + " " + NumberUtils.getEnglishFormattedDecimal("###.####", terminationThreshold));
+			terminationThreshold = NumberUtils.parseValueOrExpression(parts[1]);
+			logger.info("Bond stretching termination criteria: " + terminationKind 
+				+ " " 
+				+ NumberUtils.getEnglishFormattedDecimal("###.####", terminationThreshold) + ".");
 		}
 
         // Get the Cartesian move

@@ -6,6 +6,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import autocompchem.datacollections.ParameterStorage;
+import autocompchem.utils.NumberUtils;
 import autocompchem.perception.infochannel.InfoChannelBase;
 import autocompchem.perception.situation.Situation;
 import autocompchem.perception.situation.SituationBase;
@@ -133,14 +134,8 @@ public class MonitoringJob extends EvaluationJob
     	
     	if (params.contains(DELAYPAR))
     	{
-    		try {
-				delay = Integer.parseInt(params.getParameterValue(DELAYPAR));
-			} catch (NumberFormatException e) {
-				throw new IllegalArgumentException("Cannot convert '" 
-						+ params.getParameterValue(DELAYPAR)
-						+ "' into an integer. Check parameter '" 
-						+ DELAYPAR + "'.", e);
-			}
+			delay = NumberUtils.parseValueOrExpressionToInt(
+					params.getParameterValue(DELAYPAR));
     	}
     	
     	if (params.contains(DELAYUNITS))
@@ -169,14 +164,8 @@ public class MonitoringJob extends EvaluationJob
     	
     	if (params.contains(PERIODPAR))
     	{
-    		try {
-				period = Integer.parseInt(params.getParameterValue(PERIODPAR));
-			} catch (NumberFormatException e) {
-				throw new IllegalArgumentException("Cannot convert '" 
-						+ params.getParameterValue(PERIODPAR)
-						+ "' into an integer. Check parameter '" 
-						+ PERIODPAR + "'.", e);
-			}
+			period = NumberUtils.parseValueOrExpressionToInt(
+					params.getParameterValue(PERIODPAR));
     	}
     	
     	if (params.contains(PERIODUNITS))

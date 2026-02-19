@@ -13,6 +13,7 @@ import org.apache.logging.log4j.core.config.Configurator;
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.ACCFileType;
+import autocompchem.utils.NumberUtils;
 import autocompchem.files.FileAnalyzer;
 import autocompchem.io.IOtools;
 import autocompchem.log.LogUtils;
@@ -355,8 +356,9 @@ public final class JobFactory
         
         if (params.contains(ParameterConstants.PARALLELIZE))
         {
-        	int nThreadsPerSubJob = Integer.parseInt(params.getParameter(
-        			ParameterConstants.PARALLELIZE).getValueAsString());
+        	int nThreadsPerSubJob = NumberUtils.parseValueOrExpressionToInt(
+        			params.getParameter(ParameterConstants.PARALLELIZE)
+        					.getValueAsString());
         	newJob.setNumberOfThreads(nThreadsPerSubJob);
         }
         

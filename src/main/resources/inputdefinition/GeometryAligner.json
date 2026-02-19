@@ -14,8 +14,8 @@
   {
     "key": "WEIGHTS",
     "casedKey": "weights",
-    "type": "<double>,<double>,<double>...",
-    "doc": "When aligning atom sets, this parameter gives the weights of each atom mapping used for the alignment."
+    "type": "<String>,<String>,<String>...",
+    "doc": "When aligning atom sets, this parameter gives the weights of each atom mapping used for the alignment. Each weight can be either a double value or an expression. If the given string is parsable to a double, then it is used as the value. Otherwise, the string is interpreted as an expression defining the value (e.g., '${sin(0.2)}' would be evaluated to the value of the sine of 0.2)."
   },
   {
     "embeddedWorker": "autocompchem.molecule.AtomContainerInputProcessor",

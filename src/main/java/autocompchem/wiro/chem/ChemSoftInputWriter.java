@@ -37,6 +37,7 @@ import autocompchem.io.IOtools;
 import autocompchem.molecule.AtomContainerInputProcessor;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Job;
+import autocompchem.utils.NumberUtils;
 import autocompchem.wiro.ITextualInputWriter;
 import autocompchem.wiro.InputWriter;
 import autocompchem.wiro.WIROConstants;
@@ -333,14 +334,16 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
 
         if (params.contains(ChemSoftConstants.PARCHARGE))
         {
-            charge = Integer.parseInt(params.getParameter(
-                    ChemSoftConstants.PARCHARGE).getValueAsString());
+            charge = NumberUtils.parseValueOrExpressionToInt(
+                    params.getParameter(ChemSoftConstants.PARCHARGE)
+                            .getValueAsString());
         } 
 
         if (params.contains(ChemSoftConstants.PARSPINMULT))
         {
-            spinMult = Integer.parseInt(params.getParameter(
-                    ChemSoftConstants.PARSPINMULT).getValueAsString());
+            spinMult = NumberUtils.parseValueOrExpressionToInt(
+                    params.getParameter(ChemSoftConstants.PARSPINMULT)
+                            .getValueAsString());
         }
         
         if (params.contains(ChemSoftConstants.PARNOCHARGE))

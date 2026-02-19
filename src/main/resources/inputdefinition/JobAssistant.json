@@ -14,8 +14,8 @@
   {
     "key": "MAXRESTART",
     "casedKey": "maxRestart",
-    "type": "int",
-    "doc": "the maximum number of attempts to restart the assisted job or part of it."
+    "type": "<String>",
+    "doc": "the maximum number of attempts to restart the assisted job or part of it. If the given string is parsable to an integer, then it is used as the value. Otherwise, the string is interpreted as an expression defining the value (e.g., '${5}', '${2+3}', or '${floor(3.7)}' would be evaluated to integer values)."
   },
   {
     "embeddedWorker": "autocompchem.molecule.AtomContainerInputProcessor",
