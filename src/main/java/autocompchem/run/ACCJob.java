@@ -98,7 +98,8 @@ public class ACCJob extends Job
 		} catch (Throwable t) {
 			hasException = true;
 			thrownExc = new Error("Unable to make worker for " 
-					+ params.getParameterValue(WorkerConstants.PARTASK), t);
+					+ params.getParameterValue(WorkerConstants.PARTASK)
+                    + ". Reason: " + t.getMessage(), t);
 			stopJob();
 			return; // should not be reached, but satisfies linter
 		}
