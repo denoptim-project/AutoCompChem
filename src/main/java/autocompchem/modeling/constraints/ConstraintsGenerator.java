@@ -284,7 +284,7 @@ public class ConstraintsGenerator extends AtomTupleGenerator
                     boolean match = true;
                     for (int i = 0; i < idsA.size(); i++)
                     {
-                        if (idsA.get(i) != idsB.get(i))
+                        if (!idsA.get(i).equals(idsB.get(i)))
                         {
                             match = false;
                             break;
