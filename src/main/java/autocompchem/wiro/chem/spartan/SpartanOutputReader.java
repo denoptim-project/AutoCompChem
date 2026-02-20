@@ -302,8 +302,10 @@ public class SpartanOutputReader extends ChemSoftOutputReader
         		+ File.separator + SpartanConstants.ARCHIVEFILENAME;
         String sprtInpFile = moleculeDirectory.getAbsolutePath() 
         		+ File.separator + SpartanConstants.INPUTFILENAME;
-        FileUtils.foundAndPermissions(sprtArchFile,true,false,false);
-        FileUtils.foundAndPermissions(sprtInpFile,true,false,false);
+        File sprtArchFileObj = getNewFile(sprtArchFile);
+        File sprtInpFileObj = getNewFile(sprtInpFile);
+        FileUtils.foundAndPermissions(sprtArchFileObj,true,false,false);
+        FileUtils.foundAndPermissions(sprtInpFileObj,true,false,false);
         
         List<List<String>> firstGeom =
         		FileAnalyzer.extractMultiTxtBlocksWithDelimiters(sprtArchFile,

@@ -1,0 +1,33 @@
+{
+  "jobType": "ACCJob",
+  "params": [
+    {
+      "reference": "TASK",
+      "value": "AnalyseXTBOutput"
+    },
+    {
+      "reference": "VERBOSITY",
+      "value": "4"
+    },
+    {
+      "reference": "workDir",
+      "value": "../cli36_wdir"
+    },
+    {
+      "reference": "JOBOUTPUTFILE",
+      "value": "step_0/xtb.out"
+    },
+    {
+      "reference": "SAVELASTGEOMETRY",
+      "value": "SDF step_0_result.sdf"
+    },
+    {
+      "reference": "TEMPLATECONNECTIVITY",
+      "value": "step_next_input.sdf"
+    },
+    {
+      "reference": "requireNormalTermination",
+      "value": "true"
+    }
+  ]
+}

@@ -223,7 +223,7 @@ public abstract class ChemSoftOutputReader extends OutputReader
             		ChemSoftConstants.PARTEMPLATECONNECTIVITY)
             		.getValueAsString();
             String[] p = val.split("\\s+");
-            File fileWithTplt = new File(p[0]);
+            File fileWithTplt = getNewFile(p[0]);
             FileUtils.foundAndPermissions(fileWithTplt,true,false,false);
             //NB: assumption: only one atom container as template.
             this.connectivityTemplate = IOtools.readSDF(fileWithTplt).get(0);

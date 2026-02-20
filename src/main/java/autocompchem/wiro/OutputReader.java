@@ -204,8 +204,8 @@ public class OutputReader extends Worker
         {
 	        String inFileName = params.getParameter(
 	        		WIROConstants.PARJOBOUTPUTFILE).getValueAsString();
-	        FileUtils.foundAndPermissions(inFileName,true,false,false);
 	        this.inFile = getNewFile(inFileName);
+	        FileUtils.foundAndPermissions(this.inFile,true,false,false);
         } else {
         	throw new IllegalArgumentException("No definition of the output to "
         			+ "analyse. Please provide a value for '"

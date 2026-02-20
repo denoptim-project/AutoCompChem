@@ -103,7 +103,7 @@ public class GaussianJobDetailsConverter extends Worker
         //Get and check the input file (which has to be an SDF file)
         String inFilePathname = params.getParameter("INFILE").getValueAsString();
         this.inFile = getNewFile(inFilePathname);
-        FileUtils.foundAndPermissions(inFilePathname,true,false,false);
+        FileUtils.foundAndPermissions(this.inFile,true,false,false);
 
         String outFilePathname = null;
         if (params.contains("OUTFILE"))

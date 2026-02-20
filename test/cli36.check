@@ -1,0 +1,15 @@
+#!/bin/bash
+
+function not_passed() {
+  echo "NOT Passed: check condition leading to line '$1' of '$0'"
+  exit -1
+}
+
+if [ ! -f cli36.log ] ; then not_passed $LINENO ; fi
+
+if ! grep -q -i "The overall run did terminate normally" cli36.log; then not_passed $LINENO ; exit 0 ; fi
+
+n=0; n=$(grep -c -i "Termination status: 0" cli36.log)
+if [ 1 == "$n" ] ; then echo Passed ; exit 0 ; fi
+not_passed $LINENO
+exit -1
