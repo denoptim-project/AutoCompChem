@@ -97,7 +97,7 @@
    J. Seibert, L. M. Seidler, P. Shushkov, S. Spicher, M. Stahn, M. Steiner, T. Strunk,
    J. Stückrath, T. Rose, and J. Unsleber
    
- * started run on 2026/02/20 at 16:50:29.657     
+ * started run on 2026/02/21 at 11:38:50.245     
    ID    Z sym.   atoms
     1   44 Ru     1, 25
     2   17 Cl     2, 3, 26, 27
@@ -178,7 +178,7 @@ constraining angle 22 25 28 34 to  163.9213831°, actual value:  163.9211828°
            -------------------------------------------------
 
           program call               : xtb step_geom.sdf --input step_0.xcontrol --gfnff --opt --alpb toluene
-          hostname                   : c1-34
+          hostname                   : c1-3
           coordinate file            : step_geom.sdf
           omp threads                :                     6
 
@@ -350,18 +350,18 @@ WARNING: probably wrong pi occupation for system 4. Second attempt with Nel=Nel-
           Number of HB bonds (unbound hydrogen)   48
           Number of XB bonds                      12
 
- E+G (total)                   0 d,  0 h,  0 min,  0.001 sec
- distance/D3 list               ...        0 min,  0.000 sec (  0.373%)
- non bonded repulsion           ...        0 min,  0.000 sec (  5.530%)
- dCN                            ...        0 min,  0.000 sec (  3.129%)
- EEQ energy and q               ...        0 min,  0.000 sec (  6.117%)
- D3                             ...        0 min,  0.000 sec (  6.259%)
- EEQ gradient                   ...        0 min,  0.000 sec (  5.743%)
- bonds                          ...        0 min,  0.000 sec (  7.895%)
- bend and torsion               ...        0 min,  0.000 sec (  8.873%)
- bonded ATM                     ...        0 min,  0.000 sec (  6.330%)
- HB/XB (incl list setup)        ...        0 min,  0.000 sec ( 26.991%)
- GBSA                           ...        0 min,  0.000 sec ( 23.773%)
+ E+G (total)                   0 d,  0 h,  0 min,  0.023 sec
+ distance/D3 list               ...        0 min,  0.000 sec (  0.018%)
+ non bonded repulsion           ...        0 min,  0.000 sec (  1.013%)
+ dCN                            ...        0 min,  0.000 sec (  0.147%)
+ EEQ energy and q               ...        0 min,  0.000 sec (  0.761%)
+ D3                             ...        0 min,  0.000 sec (  1.075%)
+ EEQ gradient                   ...        0 min,  0.018 sec ( 81.097%)
+ bonds                          ...        0 min,  0.000 sec (  1.655%)
+ bend and torsion               ...        0 min,  0.000 sec (  1.899%)
+ bonded ATM                     ...        0 min,  0.000 sec (  1.093%)
+ HB/XB (incl list setup)        ...        0 min,  0.001 sec (  4.769%)
+ GBSA                           ...        0 min,  0.020 sec ( 86.706%)
 
          :::::::::::::::::::::::::::::::::::::::::::::::::::::
          ::                     SUMMARY                     ::
@@ -935,24 +935,24 @@ Using GFN-FF Lindh-Hessian
 ------------------------------------------------------------------------
  total energy gain   :        -0.0078427 Eh       -4.9214 kcal/mol
  total RMSD          :         0.4478611 a0        0.2370 Å
- total power (kW/mol):        -0.3885088 (step) -282.1576 (real)
+ total power (kW/mol):        -0.3885088 (step) -213.1922 (real)
 ------------------------------------------------------------------------
 
- ANCopt (total)                0 d,  0 h,  0 min,  0.073 sec
- optimizer setup                ...        0 min,  0.000 sec (  0.347%)
- model hessian                  ...        0 min,  0.007 sec ( 10.047%)
- ANC generation                 ...        0 min,  0.004 sec (  6.134%)
- coordinate transformation      ...        0 min,  0.000 sec (  0.446%)
- single point calculation       ...        0 min,  0.051 sec ( 70.208%)
- optimization log               ...        0 min,  0.004 sec (  5.727%)
- hessian update                 ...        0 min,  0.002 sec (  3.061%)
- rational function              ...        0 min,  0.002 sec (  2.638%)
+ ANCopt (total)                0 d,  0 h,  0 min,  0.097 sec
+ optimizer setup                ...        0 min,  0.000 sec (  0.261%)
+ model hessian                  ...        0 min,  0.009 sec (  9.516%)
+ ANC generation                 ...        0 min,  0.012 sec ( 12.738%)
+ coordinate transformation      ...        0 min,  0.000 sec (  0.265%)
+ single point calculation       ...        0 min,  0.064 sec ( 66.761%)
+ optimization log               ...        0 min,  0.003 sec (  3.388%)
+ hessian update                 ...        0 min,  0.005 sec (  4.706%)
+ rational function              ...        0 min,  0.002 sec (  1.622%)
 
 ================
  final structure:
 ================
  xtb: 6.7.1 (f811460)
-          02202616503D
+          02212611383D
 
  42 42  0     0  0            999 V2000
    -0.0094    0.0235   -0.0587 Ru  0  0  0  0  0  0  0  0  0  0  0  0
@@ -1202,21 +1202,21 @@ optimized geometry written to: xtbopt.sdf
 ########################################################################
 
 ------------------------------------------------------------------------
- * finished run on 2026/02/20 at 16:50:29.754     
+ * finished run on 2026/02/21 at 11:38:50.463     
 ------------------------------------------------------------------------
  total:
- * wall-time:     0 d,  0 h,  0 min,  0.096 sec
- *  cpu-time:     0 d,  0 h,  0 min,  0.457 sec
- * ratio c/w:     4.752 speedup
+ * wall-time:     0 d,  0 h,  0 min,  0.217 sec
+ *  cpu-time:     0 d,  0 h,  0 min,  0.527 sec
+ * ratio c/w:     2.426 speedup
  SCF:
- * wall-time:     0 d,  0 h,  0 min,  0.002 sec
- *  cpu-time:     0 d,  0 h,  0 min,  0.012 sec
- * ratio c/w:     4.762 speedup
+ * wall-time:     0 d,  0 h,  0 min,  0.026 sec
+ *  cpu-time:     0 d,  0 h,  0 min,  0.078 sec
+ * ratio c/w:     2.976 speedup
  ANC optimizer:
- * wall-time:     0 d,  0 h,  0 min,  0.078 sec
- *  cpu-time:     0 d,  0 h,  0 min,  0.386 sec
- * ratio c/w:     4.951 speedup
+ * wall-time:     0 d,  0 h,  0 min,  0.102 sec
+ *  cpu-time:     0 d,  0 h,  0 min,  0.304 sec
+ * ratio c/w:     2.987 speedup
 
 normal termination of xtb
-0.42user 0.03system 0:00.09elapsed 464%CPU (0avgtext+0avgdata 16868maxresident)k
-0inputs+4024outputs (14major+4452minor)pagefaults 0swaps
+0.47user 0.05system 0:00.22elapsed 240%CPU (0avgtext+0avgdata 17720maxresident)k
+80368inputs+4024outputs (31major+4357minor)pagefaults 0swaps

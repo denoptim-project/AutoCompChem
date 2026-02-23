@@ -37,6 +37,7 @@ import autocompchem.io.IOtools;
 import autocompchem.molecule.AtomContainerInputProcessor;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Job;
+import autocompchem.run.JobConstants;
 import autocompchem.utils.NumberUtils;
 import autocompchem.wiro.ITextualInputWriter;
 import autocompchem.wiro.InputWriter;
@@ -419,7 +420,7 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
         set.add(iac);
         produceSingleJobInputFiles(set, 
         		getNewFile(fileRootName+inpExtrension),
-        		fileRootName);
+        		getNewFile(fileRootName).getAbsolutePath());
         if (coordFile!=null)
         {
         	IOtools.writeAtomContainerToFile(getNewFile(coordFileNameWithId), iac, 
@@ -489,9 +490,8 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
     	// We customize a copy of the master job
 		CompChemJob molSpecJob = ccJob.clone();
 		
-		// Define the name's root for any input file created
-		molSpecJob.setParameter(WIROConstants.PAROUTFILEROOT, 
-				ccJobInputNameRoot, true);
+		// Deal with possibility of inconsistency between job's workdir and worker's pathname root
+        ensureConsistencyInWorkDirAndFileRoot(molSpecJob, ccJobInputNameRoot);
 		
 		// Add atom coordinates to the so-far possibly molecule-agnostic job
 		setChemicalSystem(molSpecJob, mols);
@@ -552,7 +552,46 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
     
 //------------------------------------------------------------------------------
     
-    private void setChemicalSystemAsJobParam(CompChemJob job, 
+    private void ensureConsistencyInWorkDirAndFileRoot(CompChemJob molSpecJob, 
+        String ccJobInputNameRoot) 
+    {
+        String actualOutFileNameRoot = ccJobInputNameRoot;
+        if (molSpecJob.hasParameter(JobConstants.PARWORKDIR))
+        {
+            // WARNING: the compChemJob may define its own work space, which may
+            // not be the same of the worker preparing the input files.
+
+            // This is dependent on the compChemJob work dir
+            File wDir = molSpecJob.getUserDir();
+
+            // This is dependent on the worker preparing the input for compChemJob
+            File fRoot = getNewFile(ccJobInputNameRoot);
+
+            if (fRoot.getParentFile()!=null)
+            {
+                if (fRoot.getParentFile().equals(wDir))
+                {
+                    // Take away the pathname part from pathname root as it will be
+                    // taken from the job's workDir
+                    molSpecJob.setParameter(WIROConstants.PAROUTFILEROOT, 
+                        fRoot.getName(), true);
+                } else {
+                    throw new IllegalArgumentException(
+                        "The work directory of the computational chemistry job "
+                        + "(" + wDir + ") "
+                        + "is not consistent with the pathname root configured to "
+                        + "the input writer (" + fRoot.getParentFile() + "). "
+                        + "Check your input.");
+                }
+            }
+        }
+        molSpecJob.setParameter(WIROConstants.PAROUTFILEROOT, 
+            actualOutFileNameRoot, true);
+    }
+
+//------------------------------------------------------------------------------
+
+private void setChemicalSystemAsJobParam(CompChemJob job, 
     		List<IAtomContainer> mols)
     {
     	if (mols==null || mols.size()==0)

@@ -5,6 +5,11 @@ function not_passed() {
   exit -1
 }
 
+# file created respecting the workDir configuration
+if [ ! -f ../cli36_wdir/step_0_result.sdf ] ; then not_passed $LINENO ; fi
+
+if ! grep -q "\-6\.813509577150" ../cli36_wdir/step_0_result.sdf ; then not_passed $LINENO ; fi
+
 if [ ! -f cli36.log ] ; then not_passed $LINENO ; fi
 
 if ! grep -q -i "The overall run did terminate normally" cli36.log; then not_passed $LINENO ; exit 0 ; fi

@@ -377,10 +377,10 @@ public class OrcaOutputReader extends ChemSoftOutputReader
 	            				"file.separator");
 				}
         		String nameSpace = p[3];
-        		File xyzOpt = new File(path + nameSpace+"_trj.xyz");
+        		File xyzOpt = getNewFile(path + nameSpace+"_trj.xyz");
         		if (!xyzOpt.exists())
         		{
-            		File xyzSP = new File(path + nameSpace + ".xyz");
+            		File xyzSP = getNewFile(path + nameSpace + ".xyz");
             		if (!xyzSP.exists())
             		{
             			logger.warn("WARNING! Found redirection"

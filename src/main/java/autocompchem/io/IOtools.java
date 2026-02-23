@@ -213,8 +213,11 @@ public class IOtools
         	br = new BufferedReader(new FileReader(file));
             result = readJson(type, br);
         } catch (JsonSyntaxException jse) {
-        	throw new RuntimeException("JSON file '" + file 
+        	throw new IOException("JSON file '" + file 
         			+ "' has illegal syntax: " + jse.getMessage(), jse);
+        }  catch (Throwable t) {
+            throw new IOException("Error in reading file '" + file + "'. " 
+                + t.getMessage(), t);
         } finally 
         {
             if (br != null)

@@ -302,7 +302,7 @@ public class JobAssistant extends Worker
 					+ "what to cure the given job.");
 		}
         
-        // Project output
+        // Expose output
         for (NamedData dataToExpose : evalJob.exposedOutput.getAllNamedData().values())
         {
         	exposeOutputData(dataToExpose);
@@ -357,7 +357,8 @@ public class JobAssistant extends Worker
 						cure,   //action to perform
 						jobToHeal.getContainer(), //serial workflow
 						idxStepEvaluated, //id of step triggering reaction
-						restartCounter); 
+						restartCounter,
+					    requestingJob.customUserDir); 
 			}
 			jobResultingFromAction = jobToHeal.getContainer();
 		} else {
@@ -376,7 +377,8 @@ public class JobAssistant extends Worker
 						cure,   //action to perform
 						embeddingWorkflow, //serial workflow
 						0, //id of step triggering reaction
-						restartCounter);
+						restartCounter,
+					    requestingJob.customUserDir);
 				jobResultingFromAction = embeddingWorkflow;
 			}
 		}

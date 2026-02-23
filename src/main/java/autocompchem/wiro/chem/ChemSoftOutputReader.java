@@ -477,7 +477,7 @@ public abstract class ChemSoftOutputReader extends OutputReader
 	        				outFileName = FileUtils.getIdSpecPathName(
 	        						outFileName, selectedMolID);
 	        			}
-	        			File outFile = new File(outFileName);
+	        			File outFile = getNewFile(outFileName);
 	        			
 	        			AtomContainerSet acs = (AtomContainerSet) 
 	        					stepData.getNamedData(ChemSoftConstants
@@ -545,7 +545,7 @@ public abstract class ChemSoftOutputReader extends OutputReader
 	        				outFileName = FileUtils.getIdSpecPathName(
 	        						outFileName, selectedMolID);
 	        			}
-	        			File outFile = new File(outFileName);
+	        			File outFile = getNewFile(outFileName);
 	        			
 	        			AtomContainerSet acs = (AtomContainerSet) 
 	        					stepData.getNamedData(ChemSoftConstants
@@ -789,7 +789,7 @@ public abstract class ChemSoftOutputReader extends OutputReader
 	        				outFileName = FileUtils.getIdSpecPathName(
 	        						outFileName, selectedMolID);
 	        			}
-	        			File outFile = new File (outFileName);
+	        			File outFile = getNewFile(outFileName);
 	        			
 	        			String idxsStr = "";
 	        			idxsStr = changeIfParameterIsFound(idxsStr, 
@@ -878,13 +878,13 @@ public abstract class ChemSoftOutputReader extends OutputReader
 					String outFileName = outFileRootName+"_lastGeom."
 							+ format.toLowerCase();
 					outFileName = changeIfParameterIsFound(outFileName,
-							ChemSoftConstants.GENERALFILENAME,atParams);
+						ChemSoftConstants.GENERALFILENAME,atParams);
         			if (modelSpecific)
         			{
         				outFileName = FileUtils.getIdSpecPathName(
         						outFileName, selectedMolID);
         			}
-					File outFile = new File(outFileName);
+					File outFile = getNewFile(outFileName);
 					
 					IAtomContainer lastGeom = null;
 					for (int stepId=0; stepId<numSteps; stepId++)
@@ -1078,6 +1078,7 @@ public abstract class ChemSoftOutputReader extends OutputReader
 	        		+ subModelID, subModelJob.exposedOutput));
 		}
 	}	
+	
 //------------------------------------------------------------------------------
 	
 	/**

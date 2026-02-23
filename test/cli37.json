@@ -1,0 +1,25 @@
+{
+  "jobType": "ACCJob",
+  "params": [
+    {
+      "reference": "task",
+      "value": "CureJob"
+    },
+    {
+      "reference": "workDir",
+      "value": "cli37_wdir"
+    },
+    {
+      "reference": "jobOutputFile",
+      "value": "cli37.out"
+    },
+    {
+      "reference": "jobDefinition",
+      "value": "cli37-jobDetails.json"
+    },
+    {
+      "reference": "situationsDBRoot",
+      "value": "../../data/knowledgebase"
+    }
+  ]
+}

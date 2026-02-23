@@ -58,10 +58,12 @@ public class ActionApplier
   	 * @param restartCounter an unique counter used to identify the version of
   	 * the workflow. It is used to archive data from 
   	 * previous runs of the workflow.
+	 * @param customUserDir the custom user directory of the job that triggered the action.
   	 */
     
     public static void performActionOnSerialWorkflow(Action action, 
-    		  Job workflow, int triggeringStepId, int restartCounter)
+    		Job workflow, int triggeringStepId, int restartCounter,
+			File customUserDir)
     {
     	ActionType aType = action.getType();
     	// No need to archive or edit the workflow if we just stop it. 
@@ -111,7 +113,8 @@ public class ActionApplier
     	archivePreviousResults(workflow.getSteps(), restartCounter, 
     			action.getFilenamePatterns(ArchivingTaskType.COPY), 
     			action.getFilenamePatterns(ArchivingTaskType.MOVE), 
-    			action.getFilenamePatterns(ArchivingTaskType.DELETE));
+    			action.getFilenamePatterns(ArchivingTaskType.DELETE),
+				customUserDir);
     	
     	// Pre-pend (i.e., added in front) any step that should be pre-pended
     	for (int i=(action.prerefinementSteps.size()-1); i>-1; i--)
@@ -239,7 +242,8 @@ public class ActionApplier
     	archivePreviousResults(stepsToReRun, restartCounter, 
     			action.getFilenamePatterns(ArchivingTaskType.COPY), 
     			action.getFilenamePatterns(ArchivingTaskType.MOVE), 
-    			action.getFilenamePatterns(ArchivingTaskType.DELETE));
+    			action.getFilenamePatterns(ArchivingTaskType.DELETE),
+				jobRequestingAction.getUserDir());
     	
     	// Pre-pend (i.e., added in front) is not possible in parallel batches
     	if (action.prerefinementSteps != null && 
@@ -303,11 +307,15 @@ public class ActionApplier
 	 * <code>*string*</code> depending on whether the string is expected to be 
 	 * at the end, the beginning, or in the middle of the last component of 
 	 * the pathname.
+	 * @param customUserDir the custom user directory of the evaluation job 
+	 * that triggered the action. This is used if the jobs to archive do not 
+	 * define their own user directory.	
      */
     static void archivePreviousResults(List<Job> jobs, int restartCounter,
     		Set<String> fileNamePatternToCopy, 
     		Set<String> fileNamePatternToArchive,
-    		Set<String> fileNamePatternToTrash)
+    		Set<String> fileNamePatternToTrash,
+			File customUserDir)
     {
 		for (Job job : jobs)
 		{
@@ -315,7 +323,7 @@ public class ActionApplier
 				continue;
 			
 			archivePreviousResults(job, restartCounter, fileNamePatternToCopy,
-					fileNamePatternToArchive, fileNamePatternToTrash);
+					fileNamePatternToArchive, fileNamePatternToTrash, customUserDir);
 		}
     }
  
@@ -349,22 +357,39 @@ public class ActionApplier
 	 * <code>*string*</code> depending on whether the string is expected to be 
 	 * at the end, the beginning, or in the middle of the last component of 
 	 * the pathname.
+	 * @param customUserDir the custom user directory of the evaluation job that triggered 
+	 * the action. This is used if the job to archive does not define its own user directory.
      */
     static void archivePreviousResults(Job job, int restartCounter,
     		Set<String> fileNamePatternToCopy, 
     		Set<String> fileNamePatternToArchive,
-    		Set<String> fileNamePatternToTrash)
+    		Set<String> fileNamePatternToTrash,
+			File customUserDir)
     {
     	Logger logger = LogManager.getLogger(ActionApplier.class);
         
     	// Define the file system location where the job's files are located
-		String path = ".";
-		if (job.getUserDir()!=null)
-			path = job.getUserDir().getAbsolutePath();
-		File jobsRootPath = new File(path);
+		File jobsRootPath = job.getNewFile("placeholder").getParentFile();
+		if (jobsRootPath==null && customUserDir!=null)
+		{
+			// When the job to heal does not define a custom work space we use the given one
+			logger.warn("WARNING: the job to heal does not define its work space."
+					+ " Using the one of the evaluation job that triggered the action.");
+			job.setUserDir(customUserDir);
+			jobsRootPath = job.getNewFile("placeholder").getParentFile();
+		}
+		if (jobsRootPath==null)
+		{
+			jobsRootPath = new File(System.getProperty("user.dir"));
+		}
 		if (!jobsRootPath.exists())
 		{
-            throw new IllegalArgumentException("Folder '" + path
+			String msg = "null";
+			if (jobsRootPath!=null)
+			{
+				msg = jobsRootPath.getAbsolutePath();
+			}
+            throw new IllegalArgumentException("Folder '" + msg
             		+ "' is expected to contain the data for job "
             		+ job.getId() + ", but is not found.");   
 		}
@@ -436,8 +461,8 @@ public class ActionApplier
 			return;
 		}
 		
-    	File archiveFolder = new File(path + File.separator 
-    			+ "Job_" + job.getId() + "_" + restartCounter);
+    	// Create archive folder using getNewFile to respect work directory configuration
+    	File archiveFolder = job.getNewFile("Job_" + job.getId() + "_" + restartCounter);
         if (!archiveFolder.mkdirs())
         {
         	//When jobs are not related to a common parent job, their IDs are
@@ -451,7 +476,7 @@ public class ActionApplier
         	int idx = 0;
         	while (true) 
         	{
-        		archiveFolder = new File(path + File.separator + "Job_" 
+        		archiveFolder = job.getNewFile("Job_" 
         			+ job.getHashCodeSnapshot() + idx + "_" + restartCounter);
         		if (archiveFolder.mkdirs())
 	            {
@@ -461,13 +486,13 @@ public class ActionApplier
         		idx++;
             }
         }
-        String pathToArchive = archiveFolder.getAbsolutePath() 
-        		+ File.separator;
         
         // Move/copy files into the archive 
         for (File file : filesToArchive)
         {
-        	File newFile = new File(pathToArchive + file.getName());
+        	// Use getNewFile to ensure the archive file path respects work directory configuration
+        	File newFile = job.getNewFile(archiveFolder.getAbsolutePath() 
+        			+ File.separator + file.getName());
         	try {
 				FileUtils.copy(file, newFile);
 			} catch (IOException e) {

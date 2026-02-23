@@ -114,7 +114,7 @@ public class XTBOutputReader extends ChemSoftOutputReader
         			
         			if (!foundOptTrajectory)
         			{
-                		File xyzOpt = new File(path + "xtbopt.log");
+                		File xyzOpt = getNewFile(path + "xtbopt.log");
                 		if (xyzOpt.exists())
                 		{
                 			List<IAtomContainer> mols = IOtools.readXYZ(xyzOpt);
@@ -315,7 +315,7 @@ public class XTBOutputReader extends ChemSoftOutputReader
         		optGeomFileName = optGeomFileName.replace("\'","");
         		optGeomFileName = optGeomFileName.replace("\'","");
         		
-        		File xyzOpt = new File(path + optGeomFileName);
+        		File xyzOpt = getNewFile(path + optGeomFileName);
         		if (!xyzOpt.exists())
         		{
         			logger.warn("WARNING! Found redirection"
@@ -366,7 +366,7 @@ public class XTBOutputReader extends ChemSoftOutputReader
         
         if (!foundOptTrajectory)
 		{
-    		File xyzOpt = new File(path + "xtbopt.log");
+    		File xyzOpt = getNewFile(path + "xtbopt.log");
     		if (xyzOpt.exists())
     		{
     			List<IAtomContainer> mols = IOtools.readXYZ(xyzOpt);
@@ -389,10 +389,10 @@ public class XTBOutputReader extends ChemSoftOutputReader
         	if (xtbopt==null)
         	{
         		// The xtbopt file is created also by Hessian jobs in cTB v6.7
-        		xtbopt = new File(path + "xtbopt.sdf");
+        		xtbopt = getNewFile(path + "xtbopt.sdf");
         		if (!xtbopt.exists())
         		{	
-        			xtbopt = new File(path + "xtbopt.xyz");
+        			xtbopt = getNewFile(path + "xtbopt.xyz");
 	        		if (!xtbopt.exists())
 	        			xtbopt = null;
         		}

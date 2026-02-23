@@ -1,0 +1,25 @@
+{
+  "jobType": "ACCJob",
+  "params": [
+    {
+      "reference": "task",
+      "value": "CureJob"
+    },
+    {
+      "reference": "jobOutputFile",
+      "value": "cli38_wdir_C/cli38.out"
+    },
+    {
+      "reference": "jobDefinition",
+      "value": "cli38_wdir_C/cli38-jd_C.json"
+    },
+    {
+      "reference": "situationsDBRoot",
+      "value": "../data/knowledgebase"
+    },
+    {
+      "reference": "ROOTPATHNAMEOUTPUT",
+      "value": "cli38_curated_C"
+    }
+  ]
+}

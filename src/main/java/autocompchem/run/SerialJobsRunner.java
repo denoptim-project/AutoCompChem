@@ -216,7 +216,8 @@ public class SerialJobsRunner extends JobsRunner
 				int idFocusJob = todoJobs.indexOf(focusJob);
 		    	
 		    	ActionApplier.performActionOnSerialWorkflow(requestedAction, 
-		    			master, idFocusJob, restartCounter.get());
+		    		master, idFocusJob, restartCounter.get(),
+					jobRequestingAction.getUserDir());
     			todoJobs = new ArrayList<Job>(master.steps);
     			
     			// Consume requested action

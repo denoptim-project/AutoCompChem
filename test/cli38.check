@@ -1,0 +1,55 @@
+#!/bin/bash
+
+function not_passed() {
+  echo "NOT Passed: check condition leading to line '$1' of '$0'"
+  exit -1
+}
+
+#
+# Case A
+#
+
+if [ ! -f cli38_wdir_A/cli38_curated_A.inp ] ; then not_passed $LINENO ; fi
+if [ ! -f cli38_wdir_A/cli38_curated_A.jd.json ] ; then not_passed $LINENO ; fi
+if ! grep -A1 -i "rootpathnameout" cli38_wdir_A/cli38_curated_A.jd.json | grep -q "\"cli38_curated_A\"" ; then not_passed $LINENO ; fi 
+if grep -q -i "workDir" cli38_wdir_A/cli38_curated_A.jd.json ; then not_passed $LINENO ; fi
+if ! grep -q -i "Termination status: 0" cli38_A.log ; then not_passed $LINENO ; fi
+
+#
+# Case B
+#
+
+if [ ! -f cli38_wdir_B/cli38_curated_B.inp ] ; then not_passed $LINENO ; fi
+if [ ! -f cli38_wdir_B/cli38_curated_B.jd.json ] ; then not_passed $LINENO ; fi
+if [ ! -d "cli38_wdir_B/Job_#0.2_0" ] ; then not_passed $LINENO ; fi
+if ! grep -A1 -i "rootpathnameout" cli38_wdir_B/cli38_curated_B.jd.json | grep -q "\"cli38_curated_B\"" ; then not_passed $LINENO ; fi
+if grep -q -i "workDir" cli38_wdir_B/cli38_curated_B.jd.json ; then not_passed $LINENO ; fi
+if ! grep -q -i "Termination status: 0" cli38_B.log ; then not_passed $LINENO ; fi
+
+#
+# Case C
+#
+
+if [ ! -f cli38_curated_C.inp ] ; then not_passed $LINENO ; fi
+if [ ! -f cli38_curated_C.jd.json ] ; then not_passed $LINENO ; fi
+if ! grep -A1 -i "rootpathnameout" cli38_curated_C.jd.json | grep -q "\"cli38_curated_C\"" ; then not_passed $LINENO ; fi
+if ! grep -q -i "workDir" cli38_curated_C.jd.json ; then not_passed $LINENO ; fi
+if ! grep -q -i "Termination status: 0" cli38_C.log ; then not_passed $LINENO ; fi
+
+#
+# Case D
+#
+if [ ! -f cli38_wdir_D/cli38_curated_D.inp ] ; then not_passed $LINENO ; fi
+if [ ! -f cli38_wdir_D/cli38_curated_D.jd.json ] ; then not_passed $LINENO ; fi
+if [ ! -d "cli38_wdir_D/Job_#0.2_0" ] ; then not_passed $LINENO ; fi
+if ! grep -A1 -i "rootpathnameout" cli38_wdir_D/cli38_curated_D.jd.json | grep -q "\"cli38_curated_D\"" ; then not_passed $LINENO ; fi
+if ! grep -q -i "workDir" cli38_wdir_D/cli38_curated_D.jd.json ; then not_passed $LINENO ; fi
+if ! grep -q -i "Termination status: 0" cli38_D.log ; then not_passed $LINENO ; fi
+
+#
+# Case E
+#
+if ! grep -q -i "Termination status: -1" cli38_E.log ; then not_passed $LINENO ; fi
+if grep -q -i "work directory .* not consistent" cli38_E.log ; then echo passed ; exit 0 ; fi
+not_passed $LINENO
+exit -1

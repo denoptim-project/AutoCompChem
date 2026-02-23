@@ -58,7 +58,10 @@ public class JobAssistantTest
     	
     	Action cure = new Action(ActionType.REDO, ActionObject.FOCUSJOB);
     	
-    	Job healedJob = JobAssistant.healJob(jobToHeal, cure, 0, null, null);
+		// Dummy evaluation job only to satisfy the method signature
+		EvaluationJob evalJob = new EvaluationJob();
+
+    	Job healedJob = JobAssistant.healJob(jobToHeal, cure, 0, evalJob, null);
     	
     	assertNotNull(healedJob);
     	assertEquals(1, healedJob.getNumberOfSteps());
@@ -72,7 +75,7 @@ public class JobAssistantTest
     	cure.addJobEditingTask(new SetJobParameter(
     			new NamedData("PARAM_2", "NEW_VALUE")));
     	
-    	healedJob = JobAssistant.healJob(jobToHeal, cure, 0, null, null);
+    	healedJob = JobAssistant.healJob(jobToHeal, cure, 0, evalJob, null);
     	
     	assertNotNull(healedJob);
     	assertEquals(1, healedJob.getNumberOfSteps());
@@ -90,7 +93,7 @@ public class JobAssistantTest
     	cure.addJobEditingTask(new SetDirectiveComponent(address, 
     			new Keyword("NEW_KEY", false, "keyword_value")));
     	
-    	healedJob = JobAssistant.healJob(jobToHeal, cure, 0, null, null);
+    	healedJob = JobAssistant.healJob(jobToHeal, cure, 0, evalJob, null);
     	
     	assertNotNull(healedJob);
     	assertEquals(1, healedJob.getNumberOfSteps());

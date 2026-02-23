@@ -126,7 +126,7 @@ public class ActionApplierTest
     			"*"+labD+"E", "*"+labD+"M*", labD+"S*"));
     	
     	ActionApplier.archivePreviousResults(job, 6, ratternaToCopy, 
-    			ratternaToArchive, ratternaToTrash);
+    			ratternaToArchive, ratternaToTrash, this.tempDir);
     	
     	File archiveDir = new File(tempDir+SEP+"Job_#0_6");
     	assertTrue(archiveDir.exists());
@@ -192,13 +192,13 @@ public class ActionApplierTest
     	action.addJobArchivingDetails(
     			new DataArchivingRule(ArchivingTaskType.COPY, "*"+labC+"*"));
     	
-    	// Dummy job only to satisfy the fingerprint of the method
-    	EvaluationJob dummy = new EvaluationJob();
-    	
+    	// Effectivly, sets only the custom user directory of the evaluation job that triggered the action
+    	EvaluationJob evalJob = new EvaluationJob();
+		evalJob.setUserDir(this.tempDir);
     	
     	// Do the magic
     	ActionApplier.performActionOnParallelBatch(action, parentJob, focusJob, 
-    			dummy, 0);
+    			evalJob, 0);
     	
         assertEquals(3, FileUtils.findByGlob(tempDir, "Job_*", true).size());
         assertEquals(0, FileUtils.findByGlob(tempDir, "*toMv*", true).size());
@@ -249,7 +249,7 @@ public class ActionApplierTest
     	action.addSettingsInheritedTask(new InheritJobParameter("ParamC"));
     	
     	// Do the magic
-    	ActionApplier.performActionOnSerialWorkflow(action, parentJob, 1, 1);
+    	ActionApplier.performActionOnSerialWorkflow(action, parentJob, 1, 1, this.tempDir);
     
     	assertEquals(4,parentJob.getNumberOfSteps());
     	

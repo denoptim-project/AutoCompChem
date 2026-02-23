@@ -94,7 +94,7 @@ public class PathnameEditor extends Worker
 	{
     	super.initialize();
     	
-        // Multiple ways to define the input pathname are here processes from
+        // Multiple ways to define the input pathname are here processed from
         // the lowest priority to the highest. Thus, here we implicitly define
         // the priority order.
         if (params.contains(WIROConstants.PAROUTFILEROOT))
@@ -110,6 +110,7 @@ public class PathnameEditor extends Worker
             		params.getParameter("PATHNAME").getValueAsString());
         }
 
+        // Other parameters
         if (params.contains("PREFIX"))
         {
             this.prefix = params.getParameter("PREFIX").getValueAsString();

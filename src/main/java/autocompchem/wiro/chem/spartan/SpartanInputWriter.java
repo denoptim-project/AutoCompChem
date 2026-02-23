@@ -711,7 +711,7 @@ public class SpartanInputWriter extends ChemSoftInputWriter
         
         // Create folder tree
         File jobFolder = output;
-        File molSpecFolder = new File(jobFolder + sep + molName);
+        File molSpecFolder = getNewFile(jobFolder.getAbsolutePath() + sep + molName);
         if (!molSpecFolder.mkdirs())
         {
             throw new RuntimeException("Unable to create folder '"
@@ -719,19 +719,19 @@ public class SpartanInputWriter extends ChemSoftInputWriter
         }
         
         //Create Spartan's flag files
-        IOtools.writeTXTAppend(new File(jobFolder + sep + 
+        IOtools.writeTXTAppend(getNewFile(jobFolder.getAbsolutePath() + sep + 
         		SpartanConstants.ROOTFLGFILENAME), 
         		SpartanConstants.ROOTFLGFILEHEAD, false);
-        IOtools. writeTXTAppend(new File(molSpecFolder + sep +
+        IOtools. writeTXTAppend(getNewFile(molSpecFolder.getAbsolutePath() + sep +
         		SpartanConstants.MOLFLGFILENAME),
         		SpartanConstants.MOLFLGFILEHEAD, false);
         
         //Create cell file
-        IOtools.writeTXTAppend(new File(molSpecFolder + sep +
+        IOtools.writeTXTAppend(getNewFile(molSpecFolder.getAbsolutePath() + sep +
         		SpartanConstants.CELLFILENAME),
         		getCellDirective(mol), false);  		
         
-        return new File(molSpecFolder + sep + SpartanConstants.INPUTFILENAME);
+        return getNewFile(molSpecFolder.getAbsolutePath() + sep + SpartanConstants.INPUTFILENAME);
   	}
   	
 //------------------------------------------------------------------------------

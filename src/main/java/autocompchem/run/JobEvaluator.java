@@ -222,9 +222,10 @@ public class JobEvaluator extends Worker
 			String[] list = pathNames.trim().split(File.pathSeparator);
 			for (int i=0; i<list.length; i++)
 			{
+				File file = getNewFile(list[i]);
 				if (!tolerateMissingIC)
-					FileUtils.foundAndPermissions(list[i], true, false, false);
-				InfoChannel ic = new FileAsSource(list[i]);
+					FileUtils.foundAndPermissions(file, true, false, false);
+				InfoChannel ic = new FileAsSource(file.getAbsolutePath());
 				ic.setType(InfoChannelType.INPUTFILE);
 				icDB.addChannel(ic);
 			}
@@ -241,9 +242,10 @@ public class JobEvaluator extends Worker
 			String[] list = pathNames.trim().split(File.pathSeparator);
 			for (int i=0; i<list.length; i++)
 			{
+				File file = getNewFile(list[i]);
 				if (!tolerateMissingIC)
-					FileUtils.foundAndPermissions(list[i], true, false, false);
-				InfoChannel ic = new FileAsSource(list[i]);
+					FileUtils.foundAndPermissions(file, true, false, false);
+				InfoChannel ic = new FileAsSource(file.getAbsolutePath());
 				ic.setType(InfoChannelType.LOGFEED);
 				icDB.addChannel(ic);
 			}
@@ -260,9 +262,10 @@ public class JobEvaluator extends Worker
 			String[] list = pathNames.trim().split(File.pathSeparator);
 			for (int i=0; i<list.length; i++)
 			{
+				File file = getNewFile(list[i]);
 				if (!tolerateMissingIC)
-					FileUtils.foundAndPermissions(list[i], true, false, false);
-				InfoChannel ic = new FileAsSource(list[i]);
+					FileUtils.foundAndPermissions(file, true, false, false);
+				InfoChannel ic = new FileAsSource(file.getAbsolutePath());
 				ic.setType(InfoChannelType.OUTPUTFILE);
 				icDB.addChannel(ic);
 			}
@@ -279,9 +282,10 @@ public class JobEvaluator extends Worker
 			String[] list = pathNames.trim().split(File.pathSeparator);
 			for (int i=0; i<list.length; i++)
 			{
+				File file = getNewFile(list[i]);
 				if (!tolerateMissingIC)
-					FileUtils.foundAndPermissions(list[i], true, false, false);
-				InfoChannel ic = new FileAsSource(list[i]);
+					FileUtils.foundAndPermissions(file, true, false, false);
+				InfoChannel ic = new FileAsSource(file.getAbsolutePath());
 				ic.setType(InfoChannelType.JOBDETAILS);
 				icDB.addChannel(ic);
 			}
@@ -301,7 +305,7 @@ public class JobEvaluator extends Worker
 				jobBeingEvaluated = (Job) IOtools.readJsonFile(file, Job.class);
 			} catch (IOException e) {
 				throw new RuntimeException("could not read JSON file "
-						+ "with definitiong of job to evaluate.", e);
+						+ "'" + file + "'. " + e.getMessage(), e);
 			}
 		}
 		
