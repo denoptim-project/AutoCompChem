@@ -832,6 +832,7 @@ public class NamedData implements Cloneable
 				JsonDeserializationContext context)
 				throws JsonParseException 
 		{
+			Logger logger = LogManager.getLogger(NamedDataDeserializer.class);
 			JsonObject jo = json.getAsJsonObject();
 			Object joValue = null;
 			NamedDataType joType = NamedDataType.STRING;
@@ -846,11 +847,11 @@ public class NamedData implements Cloneable
 			// We do this here to avoid nesting the exception in the switch block
 			if (!jsonable.contains(joType))
 			{
-				System.err.println("Type '" + joType + "' is not "
-						+ "serializable to JSON. Returning null for '" 
+				logger.debug("WARNING: Type '" + joType 
+						+ "' is not deserializable from JSON. "
+						+ "Returning null for '" 
 						+ reference + "'");
-				return new NamedData(jo.get("reference").getAsString(),
-						joType, null);
+				return new NamedData(reference, joType, null);
 			}
 			
 			//NB: this list of cases must reflect the content of "jsonable"
