@@ -181,8 +181,23 @@ public class InputWriter extends Worker implements ITextualInputWriter
 
         if (params.contains(WIROConstants.PAROUTFILEROOT))
         {
-            outFileNameRoot = params.getParameter(
+            String paramValue = params.getParameter(
                     WIROConstants.PAROUTFILEROOT).getValueAsString();
+            // PAROUTFILEROOT should be a filename prefix only, not a pathname
+            // Extract just the filename part if a path is provided
+            File tempFile = new File(paramValue);
+            if (tempFile.getParent() != null)
+            {
+                logger.warn("WARNING: " + WIROConstants.PAROUTFILEROOT 
+                        + " should be a filename prefix only, not a pathname. "
+                        + "Provided value '" + paramValue + "' contains a path. "
+                        + "Using only the filename part: '" + tempFile.getName() 
+                        + "'. The work directory is controlled separately by the Job's "
+                        + "work directory configuration.");
+                outFileNameRoot = tempFile.getName();
+            } else {
+                outFileNameRoot = paramValue;
+            }
             outFile = getNewFile(outFileNameRoot + inpExtrension);
         } else if (params.contains(WIROConstants.PAROUTFILE))
         {

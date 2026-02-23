@@ -785,7 +785,7 @@
       ]
     },
     {
-      "reference": "ROOTPATHNAMEOUTPUT",
+      "reference": "BASENAMEOUTPUT",
       "value": "t40-mol"
     }
   ],
@@ -794,7 +794,7 @@
       "jobType": "CompChemJob",
       "params": [
         {
-          "reference": "ROOTPATHNAMEOUTPUT",
+          "reference": "BASENAMEOUTPUT",
           "value": "t40-mol"
         }
       ],
@@ -1688,7 +1688,7 @@
       "jobType": "CompChemJob",
       "params": [
         {
-          "reference": "ROOTPATHNAMEOUTPUT",
+          "reference": "BASENAMEOUTPUT",
           "value": "t40-mol"
         }
       ],
@@ -1807,7 +1807,7 @@
       "jobType": "CompChemJob",
       "params": [
         {
-          "reference": "ROOTPATHNAMEOUTPUT",
+          "reference": "BASENAMEOUTPUT",
           "value": "t40-mol"
         }
       ],
@@ -1926,7 +1926,7 @@
       "jobType": "CompChemJob",
       "params": [
         {
-          "reference": "ROOTPATHNAMEOUTPUT",
+          "reference": "BASENAMEOUTPUT",
           "value": "t40-mol"
         }
       ],
@@ -2060,7 +2060,7 @@
       "jobType": "CompChemJob",
       "params": [
         {
-          "reference": "ROOTPATHNAMEOUTPUT",
+          "reference": "BASENAMEOUTPUT",
           "value": "t40-mol"
         }
       ],

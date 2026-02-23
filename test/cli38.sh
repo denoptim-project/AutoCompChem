@@ -28,18 +28,10 @@ cp ../cli38.out ../cli38-jd_C.json cli38_wdir_C
 "$javaDir/java" -jar "$ACCHome/target/autocompchem-$accVersion-jar-with-dependencies.jar" -j ../cli38_C.json  > cli38_C.log
 
 #
-# Case D: wdir set in both worker and ccJob (consistent)
+# Case D: wdir set in both worker and ccJob 
 #
 rm -rf cli38_wdir_D
 mkdir cli38_wdir_D
 cp ../cli38.out ../cli38-jd_D.json cli38_wdir_D
 "$javaDir/java" -jar "$ACCHome/target/autocompchem-$accVersion-jar-with-dependencies.jar" -j ../cli38_D.json  > cli38_D.log
-
-#
-# Case E: wdir set in both worker and ccJob, but INconsistent
-#
-rm -rf cli38_wdir_E
-mkdir cli38_wdir_E
-cp ../cli38.out ../cli38-jd_E.json cli38_wdir_E
-"$javaDir/java" -jar "$ACCHome/target/autocompchem-$accVersion-jar-with-dependencies.jar" -j ../cli38_E.json  > cli38_E.log
 

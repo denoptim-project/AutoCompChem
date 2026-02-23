@@ -6,7 +6,7 @@
       "value": "Gaussian"
     },
     {
-      "reference": "ROOTPATHNAMEOUTPUT",
+      "reference": "BASENAMEOUTPUT",
       "value": "t11-mol"
     }
   ],
@@ -15,7 +15,7 @@
       "jobType": "CompChemJob",
       "params": [
         {
-          "reference": "ROOTPATHNAMEOUTPUT",
+          "reference": "BASENAMEOUTPUT",
           "value": "t11-mol"
         }
       ],
@@ -1102,7 +1102,7 @@
       "jobType": "CompChemJob",
       "params": [
         {
-          "reference": "ROOTPATHNAMEOUTPUT",
+          "reference": "BASENAMEOUTPUT",
           "value": "t11-mol"
         }
       ],
@@ -1216,7 +1216,7 @@
       "jobType": "CompChemJob",
       "params": [
         {
-          "reference": "ROOTPATHNAMEOUTPUT",
+          "reference": "BASENAMEOUTPUT",
           "value": "t11-mol"
         }
       ],
@@ -1334,7 +1334,7 @@
       "jobType": "CompChemJob",
       "params": [
         {
-          "reference": "ROOTPATHNAMEOUTPUT",
+          "reference": "BASENAMEOUTPUT",
           "value": "t11-mol"
         }
       ],
@@ -1463,7 +1463,7 @@
       "jobType": "CompChemJob",
       "params": [
         {
-          "reference": "ROOTPATHNAMEOUTPUT",
+          "reference": "BASENAMEOUTPUT",
           "value": "t11-mol"
         }
       ],
@@ -1582,7 +1582,7 @@
       "jobType": "CompChemJob",
       "params": [
         {
-          "reference": "ROOTPATHNAMEOUTPUT",
+          "reference": "BASENAMEOUTPUT",
           "value": "t11-mol"
         }
       ],
@@ -1730,7 +1730,7 @@
       "jobType": "CompChemJob",
       "params": [
         {
-          "reference": "ROOTPATHNAMEOUTPUT",
+          "reference": "BASENAMEOUTPUT",
           "value": "t11-mol"
         }
       ],
@@ -1844,7 +1844,7 @@
       "jobType": "CompChemJob",
       "params": [
         {
-          "reference": "ROOTPATHNAMEOUTPUT",
+          "reference": "BASENAMEOUTPUT",
           "value": "t11-mol"
         }
       ],
@@ -1962,7 +1962,7 @@
       "jobType": "CompChemJob",
       "params": [
         {
-          "reference": "ROOTPATHNAMEOUTPUT",
+          "reference": "BASENAMEOUTPUT",
           "value": "t11-mol"
         }
       ],
@@ -2091,7 +2091,7 @@
       "jobType": "CompChemJob",
       "params": [
         {
-          "reference": "ROOTPATHNAMEOUTPUT",
+          "reference": "BASENAMEOUTPUT",
           "value": "t11-mol"
         }
       ],
@@ -2209,7 +2209,7 @@
       "jobType": "CompChemJob",
       "params": [
         {
-          "reference": "ROOTPATHNAMEOUTPUT",
+          "reference": "BASENAMEOUTPUT",
           "value": "t11-mol"
         }
       ],
@@ -2352,7 +2352,7 @@
       "jobType": "CompChemJob",
       "params": [
         {
-          "reference": "ROOTPATHNAMEOUTPUT",
+          "reference": "BASENAMEOUTPUT",
           "value": "t11-mol"
         }
       ],
@@ -2471,7 +2471,7 @@
       "jobType": "CompChemJob",
       "params": [
         {
-          "reference": "ROOTPATHNAMEOUTPUT",
+          "reference": "BASENAMEOUTPUT",
           "value": "t11-mol"
         }
       ],
@@ -2604,7 +2604,7 @@
       "jobType": "CompChemJob",
       "params": [
         {
-          "reference": "ROOTPATHNAMEOUTPUT",
+          "reference": "BASENAMEOUTPUT",
           "value": "t11-mol"
         }
       ],

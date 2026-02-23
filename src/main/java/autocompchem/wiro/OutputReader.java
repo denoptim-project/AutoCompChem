@@ -215,8 +215,23 @@ public class OutputReader extends Worker
         //Get and check the output filename
         if (params.contains(WIROConstants.PAROUTFILEROOT))
         {
-            outFileRootName = params.getParameter(
+            String paramValue = params.getParameter(
             		WIROConstants.PAROUTFILEROOT).getValueAsString();
+            // PAROUTFILEROOT should be a filename prefix only, not a pathname
+            // Extract just the filename part if a path is provided
+            File tempFile = new File(paramValue);
+            if (tempFile.getParent() != null)
+            {
+                logger.warn("WARNING: " + WIROConstants.PAROUTFILEROOT 
+                        + " should be a filename prefix only, not a pathname. "
+                        + "Provided value '" + paramValue + "' contains a path. "
+                        + "Using only the filename part: '" + tempFile.getName() 
+                        + "'. The work directory is controlled separately by the Job's "
+                        + "work directory configuration.");
+                outFileRootName = tempFile.getName();
+            } else {
+                outFileRootName = paramValue;
+            }
         } else {
         	if (inFile!=null)
         	{

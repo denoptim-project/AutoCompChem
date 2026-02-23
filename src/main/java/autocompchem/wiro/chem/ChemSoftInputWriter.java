@@ -37,7 +37,6 @@ import autocompchem.io.IOtools;
 import autocompchem.molecule.AtomContainerInputProcessor;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Job;
-import autocompchem.run.JobConstants;
 import autocompchem.utils.NumberUtils;
 import autocompchem.wiro.ITextualInputWriter;
 import autocompchem.wiro.InputWriter;
@@ -297,8 +296,23 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
 
         if (params.contains(WIROConstants.PAROUTFILEROOT))
         {
-            ccJobInputNameRoot = params.getParameter(
+            String paramValue = params.getParameter(
                     WIROConstants.PAROUTFILEROOT).getValueAsString();
+            // PAROUTFILEROOT should be a filename prefix only, not a pathname
+            // Extract just the filename part if a path is provided
+            File tempFile = new File(paramValue);
+            if (tempFile.getParent() != null)
+            {
+                logger.warn("WARNING: " + WIROConstants.PAROUTFILEROOT 
+                        + " should be a filename prefix only, not a pathname. "
+                        + "Provided value '" + paramValue + "' contains a path. "
+                        + "Using only the filename part: '" + tempFile.getName() 
+                        + "'. The work directory is controlled separately by the Job's "
+                        + "work directory configuration.");
+                ccJobInputNameRoot = tempFile.getName();
+            } else {
+                ccJobInputNameRoot = paramValue;
+            }
             ccJobInputFile = getNewFile(ccJobInputNameRoot + inpExtrension);
         } else if (params.contains(WIROConstants.PAROUTFILE))
         {
@@ -555,36 +569,27 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
     private void ensureConsistencyInWorkDirAndFileRoot(CompChemJob molSpecJob, 
         String ccJobInputNameRoot) 
     {
+        // PAROUTFILEROOT should now be a filename prefix only (no path).
+        // The work directory is handled separately by the Job's work directory configuration.
+        // This method ensures that when passing PAROUTFILEROOT to the CompChemJob,
+        // we use only the filename prefix, not any path component.
         String actualOutFileNameRoot = ccJobInputNameRoot;
-        if (molSpecJob.hasParameter(JobConstants.PARWORKDIR))
+        
+        // Extract just the filename part if somehow a path was still provided
+        // (this should not happen with the new validation, but kept for safety)
+        File tempFile = new File(ccJobInputNameRoot);
+        if (tempFile.getParent() != null)
         {
-            // WARNING: the compChemJob may define its own work space, which may
-            // not be the same of the worker preparing the input files.
-
-            // This is dependent on the compChemJob work dir
-            File wDir = molSpecJob.getUserDir();
-
-            // This is dependent on the worker preparing the input for compChemJob
-            File fRoot = getNewFile(ccJobInputNameRoot);
-
-            if (fRoot.getParentFile()!=null)
-            {
-                if (fRoot.getParentFile().equals(wDir))
-                {
-                    // Take away the pathname part from pathname root as it will be
-                    // taken from the job's workDir
-                    molSpecJob.setParameter(WIROConstants.PAROUTFILEROOT, 
-                        fRoot.getName(), true);
-                } else {
-                    throw new IllegalArgumentException(
-                        "The work directory of the computational chemistry job "
-                        + "(" + wDir + ") "
-                        + "is not consistent with the pathname root configured to "
-                        + "the input writer (" + fRoot.getParentFile() + "). "
-                        + "Check your input.");
-                }
-            }
+            // If a path is still present, extract just the filename
+            actualOutFileNameRoot = tempFile.getName();
+            logger.warn("WARNING: In ensureConsistencyInWorkDirAndFileRoot, "
+                    + "PAROUTFILEROOT still contains a path: '" + ccJobInputNameRoot 
+                    + "'. Using only the filename part: '" + actualOutFileNameRoot 
+                    + "'. This should have been caught earlier.");
         }
+        
+        // Set the parameter with just the filename prefix
+        // The work directory for the CompChemJob is controlled separately
         molSpecJob.setParameter(WIROConstants.PAROUTFILEROOT, 
             actualOutFileNameRoot, true);
     }

@@ -39,6 +39,7 @@ import autocompchem.datacollections.ParameterConstants;
 import autocompchem.files.FileAnalyzer;
 import autocompchem.io.IOtools;
 import autocompchem.run.Job;
+import autocompchem.run.JobConstants;
 import autocompchem.run.JobFactory;
 import autocompchem.wiro.WIROConstants;
 import autocompchem.wiro.chem.ChemSoftConstants;
@@ -127,7 +128,9 @@ public class XTBInputWriterTest
     			+ ParameterConstants.SEPARATOR + inpRoot);
     	parLines.add(WIROConstants.PARJOBDETAILSFILE
         		+ ParameterConstants.SEPARATOR + jdFile.getAbsolutePath());
-    	
+		parLines.add(JobConstants.PARWORKDIR
+        		+ ParameterConstants.SEPARATOR + tmpDir1);
+				
         IOtools.writeTXTAppend(parFile, parLines, false);
 
         assertTrue(molFile.exists(),"Mol file exists");
@@ -152,7 +155,7 @@ public class XTBInputWriterTest
  
         // Now we do the almost the same, but we give the job details 
         // just a nested block
-        // of text in side the job-defining parameters file (paramFile2)
+        // of text inside the job-defining parameters file (paramFile2)
         
         File parFile2 = new File(tmpDir2.getAbsolutePath() + SEP + "acc2.par");
     	String inpRoot2 = tmpDir2.getAbsolutePath() + SEP + INPNAMEROOT;
@@ -164,9 +167,12 @@ public class XTBInputWriterTest
         		+ ParameterConstants.SEPARATOR +  molFile.getAbsolutePath());
     	parLines2.add(WIROConstants.PAROUTFILEROOT
     			+ ParameterConstants.SEPARATOR + inpRoot2);
+		parLines2.add(JobConstants.PARWORKDIR
+				+ ParameterConstants.SEPARATOR + tmpDir2);
     	parLines2.add(ChemSoftConstants.PARJOBDETAILS
         		+ ParameterConstants.SEPARATOR 
         		+ ParameterConstants.STARTMULTILINE);
+
     	parLines2.addAll(ccj.toLinesJobDetails());
     	parLines2.add(ParameterConstants.ENDMULTILINE);
 

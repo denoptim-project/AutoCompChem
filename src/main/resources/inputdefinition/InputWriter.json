@@ -12,10 +12,10 @@
     "doc": "The pathname of the output of the input writing taks, i.e., the input file for the job for which we are going to generate the input file/s."
   },
   {
-    "key": "ROOTPATHNAMEOUTPUT",
-    "casedKey": "rootPathnameOutput",
+    "key": "BASENAMEOUTPUT",
+    "casedKey": "basenameOutput",
     "type": "<String>",
-    "doc": "The pathname's root of any input file for the job for which we are going to generate the input file/s."
+    "doc": "The filename prefix (without extension) for any input file for the job for which we are going to generate the input file/s. This must be a filename prefix only, NOT a pathname. The work directory is controlled separately by the Job's work directory configuration."
   },
   {
     "key": "NOJSONOUTPUT",

@@ -53,16 +53,21 @@ public class WIROConstants
 	public static final String PARIGNOREINPUTIAC = "IGNOREINPUTIAC";
 
 	/**
-	 * Key for parameter defining the pathname's root for any output file (i.e.,
-	 * the input for the computational chemistry software),
-	 * i.e., a pathname without
-	 * extension that can be used a root pathname for generating pathnames
-	 * that are meant to be related. E.g., the string
-	 * <code>dir/filename</code> is pathname's root of files such 
-	 * <code>dir/filename.inp</code>, <code>dir/filename.log</code>,
-	 * <code>dir/filename_tmp1.out</code>, etc.
+	 * Key for parameter defining the filename prefix (without extension) for any 
+	 * output file (i.e., the input for the computational chemistry software).
+	 * This must be a filename prefix only, NOT a pathname. The work directory 
+	 * is handled separately by the Job's work directory configuration.
+	 * <p>
+	 * For example, the prefix <code>filename</code> (not <code>dir/filename</code>)
+	 * will be used to generate files such as <code>filename.inp</code>, 
+	 * <code>filename.log</code>, <code>filename_tmp1.out</code>, etc., all within
+	 * the configured work directory.
+	 * <p>
+	 * If a pathname is provided (containing directory separators), only the 
+	 * filename part will be used and a warning will be logged. Use the Job's
+	 * work directory parameter to control where files are created.
 	 */
-	public static final String PAROUTFILEROOT = "ROOTPATHNAMEOUTPUT";
+	public static final String PAROUTFILEROOT = "BASENAMEOUTPUT";
 
 	/**
 	 * Key for parameter defining the pathname of the main output file (i.e.,

@@ -6,10 +6,10 @@
     "doc": "The pathname to the output file that should be analyzed (i.e., the input for a task aiming to analyze the output of a job)."
   },
   {
-    "key": "ROOTPATHNAMEOUTPUT",
-    "casedKey": "rootPathnameOutput",
+    "key": "BASENAMEOUTPUT",
+    "casedKey": "basenameOutput",
     "type": "<String>",
-    "doc": "The pathname's root of all output files that should be analyzed  (i.e., the input for a task aiming to analyze the output of a job)."
+    "doc": "The filename prefix (without extension) for all output files that should be analyzed (i.e., the input for a task aiming to analyze the output of a job). This must be a filename prefix only, NOT a pathname. The work directory is controlled separately by the Job's work directory configuration."
   },
   {
     "key": "VERBOSITY",

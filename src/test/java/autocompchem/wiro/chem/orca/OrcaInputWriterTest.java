@@ -40,6 +40,7 @@ import autocompchem.datacollections.ParameterConstants;
 import autocompchem.files.FileAnalyzer;
 import autocompchem.io.IOtools;
 import autocompchem.run.Job;
+import autocompchem.run.JobConstants;
 import autocompchem.run.JobFactory;
 import autocompchem.wiro.WIROConstants;
 import autocompchem.wiro.chem.ChemSoftConstants;
@@ -64,7 +65,6 @@ public class OrcaInputWriterTest
     File tempDir;
     
 //-----------------------------------------------------------------------------
-
     
     @Test
     public void testJobDetailsSources() throws Exception
@@ -123,6 +123,8 @@ public class OrcaInputWriterTest
     			+ ParameterConstants.SEPARATOR + inpRoot);
     	parLines.add(WIROConstants.PARJOBDETAILSFILE
         		+ ParameterConstants.SEPARATOR + jdFile.getAbsolutePath());
+		parLines.add(JobConstants.PARWORKDIR
+        		+ ParameterConstants.SEPARATOR + tmpDir1);
 
         IOtools.writeTXTAppend(parFile, parLines, false);
 
@@ -160,6 +162,8 @@ public class OrcaInputWriterTest
         		+ ParameterConstants.STARTMULTILINE);
     	parLines2.addAll(ccj.toLinesJobDetails());
     	parLines2.add(ParameterConstants.ENDMULTILINE);
+		parLines2.add(JobConstants.PARWORKDIR
+        		+ ParameterConstants.SEPARATOR + tmpDir2);
 
         IOtools.writeTXTAppend(parFile2, parLines2, false);
         

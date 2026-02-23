@@ -44,6 +44,7 @@ import autocompchem.modeling.basisset.BasisSetConstants;
 import autocompchem.modeling.basisset.BasisSetGenerator;
 import autocompchem.modeling.constraints.ConstraintsGenerator;
 import autocompchem.run.Job;
+import autocompchem.run.JobConstants;
 import autocompchem.run.JobFactory;
 import autocompchem.wiro.WIROConstants;
 import autocompchem.wiro.chem.ChemSoftConstants;
@@ -107,6 +108,8 @@ public class GaussianInputWriterTest
     			+ ParameterConstants.SEPARATOR + inpRoot);
     	parLines.add(WIROConstants.PARJOBDETAILSFILE
         		+ ParameterConstants.SEPARATOR + jdFile.getAbsolutePath());
+		parLines.add(JobConstants.PARWORKDIR
+        		+ ParameterConstants.SEPARATOR + this.tempDir);
     	
         IOtools.writeTXTAppend(parFile, parLines, false);
 

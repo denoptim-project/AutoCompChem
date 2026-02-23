@@ -789,7 +789,7 @@
       ]
     },
     {
-      "reference": "ROOTPATHNAMEOUTPUT",
+      "reference": "BASENAMEOUTPUT",
       "value": "t8-mol"
     }
   ],

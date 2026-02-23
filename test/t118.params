@@ -5,7 +5,7 @@
 VERBOSITY: 6
 TASK: AnalyseORCAOutput
 JobOutputFile: ../t118-orca.log
-ROOTPATHNAMEOUTPUT: t118_analysis
+BASENAMEOUTPUT: t118_analysis
 SaveAllGeometries: XYZ t118_allGeoms.xyz
 SaveLastGeometry: SDF t118_lastGeom.sdf
 SaveVibModes: 6 7 t118_vibModes_6_7.xyz

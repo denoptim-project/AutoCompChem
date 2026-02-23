@@ -6,7 +6,7 @@
       "value": "Gaussian"
     },
     {
-      "reference": "ROOTPATHNAMEOUTPUT",
+      "reference": "BASENAMEOUTPUT",
       "value": "11restarted"
     }
   ],
@@ -15,7 +15,7 @@
       "jobType": "CompChemJob",
       "params": [
         {
-          "reference": "ROOTPATHNAMEOUTPUT",
+          "reference": "BASENAMEOUTPUT",
           "value": "11restarted"
         }
       ],
@@ -132,7 +132,7 @@
       "jobType": "CompChemJob",
       "params": [
         {
-          "reference": "ROOTPATHNAMEOUTPUT",
+          "reference": "BASENAMEOUTPUT",
           "value": "11restarted"
         }
       ],
@@ -246,7 +246,7 @@
       "jobType": "CompChemJob",
       "params": [
         {
-          "reference": "ROOTPATHNAMEOUTPUT",
+          "reference": "BASENAMEOUTPUT",
           "value": "11restarted"
         }
       ],
@@ -364,7 +364,7 @@
       "jobType": "CompChemJob",
       "params": [
         {
-          "reference": "ROOTPATHNAMEOUTPUT",
+          "reference": "BASENAMEOUTPUT",
           "value": "11restarted"
         }
       ],
@@ -493,7 +493,7 @@
       "jobType": "CompChemJob",
       "params": [
         {
-          "reference": "ROOTPATHNAMEOUTPUT",
+          "reference": "BASENAMEOUTPUT",
           "value": "11restarted"
         }
       ],
@@ -611,7 +611,7 @@
       "jobType": "CompChemJob",
       "params": [
         {
-          "reference": "ROOTPATHNAMEOUTPUT",
+          "reference": "BASENAMEOUTPUT",
           "value": "11restarted"
         }
       ],
@@ -754,7 +754,7 @@
       "jobType": "CompChemJob",
       "params": [
         {
-          "reference": "ROOTPATHNAMEOUTPUT",
+          "reference": "BASENAMEOUTPUT",
           "value": "11restarted"
         }
       ],
@@ -873,7 +873,7 @@
       "jobType": "CompChemJob",
       "params": [
         {
-          "reference": "ROOTPATHNAMEOUTPUT",
+          "reference": "BASENAMEOUTPUT",
           "value": "11restarted"
         }
       ],
@@ -1006,7 +1006,7 @@
       "jobType": "CompChemJob",
       "params": [
         {
-          "reference": "ROOTPATHNAMEOUTPUT",
+          "reference": "BASENAMEOUTPUT",
           "value": "11restarted"
         }
       ],
