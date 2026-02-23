@@ -384,7 +384,7 @@ public class DirectiveData extends NamedData implements IValueContainer
         	dd.setType(nd.getType());
         	if (nd.getValue()!=null)
         		dd.setValue(nd.getValue());
-        	// Then deserialize what this class add on top of the fields of the
+        	// Then deserialize what this class adds on top of the fields of the
         	// superclass.
         	if (jsonObjSrc.has("accTaskParams"))
             { 
