@@ -841,12 +841,14 @@ public class NamedData implements Cloneable
 			}
 
 			JsonElement je = jo.get("value");
+			String reference = jo.get("reference").getAsString();
 			
 			// We do this here to avoid nesting the exception in the switch block
 			if (!jsonable.contains(joType))
 			{
 				System.err.println("Type '" + joType + "' is not "
-						+ "serializable to JSON. Returning null.");
+						+ "serializable to JSON. Returning null for '" 
+						+ reference + "'");
 				return new NamedData(jo.get("reference").getAsString(),
 						joType, null);
 			}
@@ -920,7 +922,9 @@ public class NamedData implements Cloneable
 					
 				default:
 					System.err.println("WARINING: attempt to deserialize "
-							+ "non-JSONable type '" + joType + "'");
+							+ "non-JSONable value of '"
+							+ reference 
+							+ "'' with type '" + joType + "'");
 					break;
 				}
 			} catch (JsonParseException e) {
@@ -932,8 +936,7 @@ public class NamedData implements Cloneable
 								", ", true) 
 						+ ". The content with mismatching type is: " + je, e);
 			}
-			return new NamedData(jo.get("reference").getAsString(),
-					joType, joValue);
+			return new NamedData(reference, joType, joValue);
 		}
     }
     

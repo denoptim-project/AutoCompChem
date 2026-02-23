@@ -2070,7 +2070,7 @@ public class Job implements Runnable
             // For non-collector values, check if they're JSON-able
             if (!NamedData.jsonable.contains(data.getType()))
             {
-                logger.warn("WARNING: the parameter '" + key + "'" 
+                logger.debug("WARNING: the parameter '" + key + "'" 
                     + " of type '" + data.getType() + "'" 
                     + " is not JSON-able. Only JSON-able content can be "
                     + "fetched. Contact the authors if you feel this data "

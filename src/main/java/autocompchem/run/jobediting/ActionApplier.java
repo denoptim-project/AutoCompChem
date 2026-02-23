@@ -373,7 +373,7 @@ public class ActionApplier
 		if (jobsRootPath==null && customUserDir!=null)
 		{
 			// When the job to heal does not define a custom work space we use the given one
-			logger.warn("WARNING: the job to heal does not define its work space."
+			logger.debug("NB: the job to heal does not define its work space."
 					+ " Using the one of the evaluation job that triggered the action.");
 			job.setUserDir(customUserDir);
 			jobsRootPath = job.getNewFile("placeholder").getParentFile();
