@@ -303,7 +303,7 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
             File tempFile = new File(paramValue);
             if (tempFile.getParent() != null)
             {
-                logger.warn("WARNING: " + WIROConstants.PAROUTFILEROOT 
+                logger.debug("WARNING: " + WIROConstants.PAROUTFILEROOT 
                         + " should be a filename prefix only, not a pathname. "
                         + "Provided value '" + paramValue + "' contains a path. "
                         + "Using only the filename part: '" + tempFile.getName() 
@@ -582,7 +582,7 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
         {
             // If a path is still present, extract just the filename
             actualOutFileNameRoot = tempFile.getName();
-            logger.warn("WARNING: In ensureConsistencyInWorkDirAndFileRoot, "
+            logger.debug("WARNING: In ensureConsistencyInWorkDirAndFileRoot, "
                     + "PAROUTFILEROOT still contains a path: '" + ccJobInputNameRoot 
                     + "'. Using only the filename part: '" + actualOutFileNameRoot 
                     + "'. This should have been caught earlier.");
