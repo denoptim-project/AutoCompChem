@@ -25,6 +25,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import autocompchem.modeling.constraints.ConstraintsSet;
+import autocompchem.molecule.intcoords.InternalCoord;
 
 /**
  * Object representing a Z-matrix: an internal coordinates representation of a 
@@ -372,6 +373,99 @@ public class ZMatrix implements Cloneable
             if (zatm.usesTorsion(idI, idJ))
             {
             	matches.add(zatm);
+            }
+        }
+        return matches;
+    }
+    
+//-----------------------------------------------------------------------------
+
+    /**
+     * Returns all {@link ZMatrixAtom} of which the first internal
+     * coordinate is the angle involving the given center(s).
+     * @param ids 1 to 3 center indexes: 1 = any angle involving that center;
+     *        2 = angle between the two centers; 3 = angle between the three centers
+     * @return the list of {@link ZMatrixAtom}
+     */
+    public List<ZMatrixAtom> findAllFirstAngles(int... ids)
+    {
+        if (ids == null || ids.length < 1 || ids.length > 3)
+            throw new IllegalArgumentException("ids must have between 1 and 3 elements");
+        List<ZMatrixAtom> matches = new ArrayList<ZMatrixAtom>();
+        for (ZMatrixAtom zatm : zatoms)
+        {
+            if (zatm.icJ == null)
+                continue;
+
+            int r0 = zatm.icJ.getIDs().get(0);
+            int r1 = zatm.icJ.getIDs().get(1);
+            int r2 = zatm.icJ.getIDs().get(2);
+            if (ids.length == 1)
+            {
+                if (r0 == ids[0] || r1 == ids[0] || r2 == ids[0])
+                    matches.add(zatm);
+            }
+            else if (ids.length == 2)
+            {
+                if ((r0 == ids[0] && r1 == ids[1]) 
+                    || (r0 == ids[1] && r1 == ids[0])
+                    || (r1 == ids[0] && r2 == ids[1])
+                    || (r1 == ids[1] && r2 == ids[0]))
+                    matches.add(zatm);
+            }
+            else
+            {
+                if ((r0 == ids[0] && r1 == ids[1] && r2 == ids[2])
+                    || (r0 == ids[2] && r1 == ids[1] && r2 == ids[0]))
+                    matches.add(zatm);
+            }
+        }
+        return matches;
+    }
+    
+//-----------------------------------------------------------------------------
+
+    /**
+     * Returns all {@link ZMatrixAtom} of which the second internal
+     * coordinate is an angle involving the given center(s).
+     * @param ids 1 to 3 center indexes: 1 = any angle involving that center;
+     *        2 = angle between the two centers; 3 = angle between the three centers
+     * @return the list of {@link ZMatrixAtom}
+     */
+    public List<ZMatrixAtom> findAllSecondAngles(int... ids)
+    {
+        if (ids == null || ids.length < 1 || ids.length > 3)
+            throw new IllegalArgumentException("ids must have between 1 and 3 elements");
+        List<ZMatrixAtom> matches = new ArrayList<ZMatrixAtom>();
+        for (ZMatrixAtom zatm : zatoms)
+        {
+            if (zatm.icJ == null)
+                continue;
+            if (zatm.icK == null)
+                continue;
+            if (zatm.icK.getType().equals("0"))
+                continue;
+            if (zatm.icK.getType().equals(InternalCoord.NOTYPE))
+                continue;
+
+            int r0 = zatm.icK.getIDs().get(0);
+            int r1 = zatm.icK.getIDs().get(1);
+            int r2 = zatm.icK.getIDs().get(2);
+            if (ids.length == 1)
+            {
+                if (r0 == ids[0] || r1 == ids[0] || r2 == ids[0])
+                    matches.add(zatm);
+            }
+            else if (ids.length == 2)
+            {
+                if ((r0 == ids[0] && r1 == ids[1]) || (r0 == ids[1] && r1 == ids[0]))
+                    matches.add(zatm);
+            }
+            else
+            {
+                if ((r0 == ids[0] && r1 == ids[1] && r2 == ids[2])
+                    || (r0 == ids[2] && r1 == ids[1] && r2 == ids[0]))
+                    matches.add(zatm);
             }
         }
         return matches;

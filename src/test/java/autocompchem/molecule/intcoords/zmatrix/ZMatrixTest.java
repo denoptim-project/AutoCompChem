@@ -3,10 +3,12 @@ package autocompchem.molecule.intcoords.zmatrix;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.jupiter.api.Test;
@@ -259,7 +261,117 @@ public class ZMatrixTest
     	assertEquals(2.1, original.getZAtom(2).getIC(0).getValue(), 0.0001, 
     			"Original atom 2 IC value should be unchanged");
     }
-    
+
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testFindAllFirstAnglesInvalidArgs()
+    {
+    	ZMatrix zm = getTestZMatrix();
+    	assertThrows(IllegalArgumentException.class, () -> zm.findAllFirstAngles(),
+    			"Zero ids should throw");
+    	assertThrows(IllegalArgumentException.class, () -> zm.findAllFirstAngles(null),
+    			"Null ids should throw");
+    	assertThrows(IllegalArgumentException.class,
+    			() -> zm.findAllFirstAngles(0, 1, 2, 3),
+    			"Four ids should throw");
+    }
+
+    @Test
+    public void testFindAllFirstAngles()
+    {
+    	ZMatrix zm = getTestZMatrix();
+    	// Test matrix: atom 2 has first angle (refs 0,1) = 1,0; atoms 3,4,5 have first angle = 2,1
+
+    	// Two indexes: angle between the two centers (order independent)
+    	List<ZMatrixAtom> list = zm.findAllFirstAngles(1, 0);
+    	assertEquals(1, list.size(), "Exactly one atom has first angle 1-0");
+    	assertTrue(list.contains(zm.getZAtom(2)), "Atom 2 has first angle 1-0");
+
+    	list = zm.findAllFirstAngles(2, 1);
+    	assertEquals(4, list.size(), "Three atoms have first angle 2-1");
+    	assertTrue(list.contains(zm.getZAtom(3)) && list.contains(zm.getZAtom(4))
+    			&& list.contains(zm.getZAtom(5)) && list.contains(zm.getZAtom(2)), "Atoms 3,4,5 have first angle 2-1");
+
+    	// One index: any first angle involving that center (ref0 or ref1)
+    	list = zm.findAllFirstAngles(0);
+    	assertEquals(1, list.size(), "One atom has first refs involving 0 (atom 1: dist to 0)");
+    	assertTrue(list.contains(zm.getZAtom(2)));
+
+    	list = zm.findAllFirstAngles(1);
+    	assertEquals(4, list.size(), "Four atoms have first angle involving 1");
+    	list = zm.findAllFirstAngles(2);
+    	assertEquals(4, list.size(), "Three atoms have first angle involving 2");
+
+    	// Three indexes: first angle between any two of the three centers
+    	list = zm.findAllFirstAngles(0, 1, 2);
+    	assertEquals(1, list.size(), "One atom has first angle between two of {0,1,2}");
+    	assertTrue(list.contains(zm.getZAtom(2)));
+    }
+
+    @Test
+    public void testFindAllSecondAnglesInvalidArgs()
+    {
+    	ZMatrix zm = getTestZMatrix();
+    	assertThrows(IllegalArgumentException.class, () -> zm.findAllSecondAngles(),
+    			"Zero ids should throw");
+    	assertThrows(IllegalArgumentException.class, () -> zm.findAllSecondAngles(null),
+    			"Null ids should throw");
+    	assertThrows(IllegalArgumentException.class,
+    			() -> zm.findAllSecondAngles(0, 1, 2, 3),
+    			"Four ids should throw");
+    }
+
+    @Test
+    public void testFindAllSecondAngles()
+    {
+    	ZMatrix zm = getTestZMatrix();
+
+		zm.addZMatrixAtom(new ZMatrixAtom("He", 1, 2, 3, 
+				new InternalCoord("He-dist", 0.85, 
+						new ArrayList<Integer>(Arrays.asList(6,1))),
+				new InternalCoord("He-ang1", 109.5, 
+						new ArrayList<Integer>(Arrays.asList(6,1,2))),
+				new InternalCoord("He-ang2", -120.09, 
+						new ArrayList<Integer>(Arrays.asList(6,1,3)), "1")));
+
+		zm.addZMatrixAtom(new ZMatrixAtom("He", 1, 2, 3, 
+				new InternalCoord("He-dist", 0.85, 
+						new ArrayList<Integer>(Arrays.asList(7,1))),
+				new InternalCoord("He-ang1", 109.5, 
+						new ArrayList<Integer>(Arrays.asList(7,1,2))),
+				new InternalCoord("He-ang2", -120.09, 
+						new ArrayList<Integer>(Arrays.asList(7,1,3)), "-1")));
+
+    	// Two indexes: angle between the two centers
+    	List<ZMatrixAtom> list = zm.findAllSecondAngles(1, 0);
+    	assertEquals(0, list.size(), "No atom has second angle 1-0");
+
+    	list = zm.findAllSecondAngles(2, 1);
+    	assertEquals(0, list.size(), "No atom has second angle 2-1");
+
+    	// One index: any second angle involving that center
+    	list = zm.findAllSecondAngles(1);
+    	assertEquals(2, list.size(), "Two atoms have second angle involving 1");
+    	list = zm.findAllSecondAngles(0);
+    	assertEquals(0, list.size(), "No atom has second angle involving 0");
+    	list = zm.findAllSecondAngles(2);
+    	assertEquals(0, list.size(), "No atoms have second angle involving 2");
+    	list = zm.findAllSecondAngles(3);
+    	assertEquals(2, list.size(), "Two atoms have second angle involving 3");
+    	assertTrue(list.contains(zm.getZAtom(6)) && list.contains(zm.getZAtom(7)));
+
+    	// Three indexes: second angle between any two of the three centers
+    	list = zm.findAllSecondAngles(0, 1, 2);
+		assertEquals(0, list.size(), "No atom has second angle between two of {0,1,2}");
+		list = zm.findAllSecondAngles(6, 1, 3);
+    	assertEquals(1, list.size(), "One atom has second angle between two of {6,2,3}");
+    	assertTrue(list.contains(zm.getZAtom(6)));
+		list = zm.findAllSecondAngles(3, 1, 6);
+    	assertEquals(1, list.size(), "One atom has second angle between two of {3,2,6}");
+    	assertTrue(list.contains(zm.getZAtom(6)));
+    }
+
 //------------------------------------------------------------------------------
 
 }
