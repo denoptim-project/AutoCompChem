@@ -921,14 +921,14 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
                         {
                             c = Math.sqrt(c)*sign;
                         }
-                        else if (c < -t)
+                        else if (Math.abs(c) < Math.abs(t))
                         {
                             String msg = "negligible c=" + c + " for "
                                         + "atom (0-based) " + i + ". Low accuracy "
                                         + "is expected. To improve the results add "
                                         + "a dummy on atom (0-based) " 
                                         + zatm.getIdRef(0) + ", reorder atom list, "
-                                        + "and build a more healty ZMatrix.";
+                                        + "and build a more healthy ZMatrix.";
                             if (highAccuracy)
                             {
                                 throw new Throwable(msg);
