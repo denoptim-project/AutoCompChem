@@ -226,7 +226,29 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
 	/**
 	 * New line character
 	 */
-    private final String NL =System.getProperty("line.separator"); 
+    private final String NL =System.getProperty("line.separator");
+
+	/**
+	 * Maximum bond angle (degrees) allowed when randomizing; angles are clamped
+	 * so they do not get closer than this to 180° (linearity).
+	 */
+	private static final double MAX_ANGLE_AVOID_LINEARITY_DEG = 177.0;
+
+	/**
+	 * Clamps an angle (degrees) so it does not fall in the linearity band (too close to ±180°).
+	 * Values in (177, 180] and [-180, -177) are clamped to 177 and -177 respectively.
+	 * @param angleDeg angle in degrees (any range)
+	 * @return angle in degrees, clamped to [-177, 177] after normalizing to [-180, 180]
+	 */
+	private static double clampAngleAwayFromLinearity(double angleDeg)
+	{
+		double n = angleDeg;
+		while (n > 180.0) n -= 360.0;
+		while (n < -180.0) n += 360.0;
+		if (n > MAX_ANGLE_AVOID_LINEARITY_DEG) return MAX_ANGLE_AVOID_LINEARITY_DEG;
+		if (n < -MAX_ANGLE_AVOID_LINEARITY_DEG) return -MAX_ANGLE_AVOID_LINEARITY_DEG;
+		return n;
+	}
     
     /**
      * String defining the task of altering a geometry
@@ -1552,8 +1574,12 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
 				double initialValue = alteredZMat.getZAtom(idx).getIC(0).getValue();
 				double newValue = initialValue + rnd.nextDouble() * maxDistanceDistorsion * sign;
 				alteredZMat.getZAtom(idx).getIC(0).setValue(newValue);
-				logger.debug("Bond " + zatmIdxToBondKey.get(idx) + " altered by " 
-				    + NumberUtils.formatNumber("###.####", newValue - initialValue));
+				logger.debug("Bond " +  alteredZMat.getZAtom(idx).getIC(0).getIDs().get(0) + "-" 
+				+ alteredZMat.getZAtom(idx).getIC(0).getIDs().get(1) 
+				+ " altered by " 
+				+ NumberUtils.formatNumber("###.####", newValue - initialValue)
+				+ " (Initial: " + NumberUtils.formatNumber("###.####", initialValue) 
+				+ " New: " + NumberUtils.formatNumber("###.####", newValue) + ")");
 			}
 
 			for (int idx : idxsOfCandidateFirstAngles) 
@@ -1562,9 +1588,12 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
 				if (rnd.nextBoolean()) sign = -1.0;
 				double initialValue = alteredZMat.getZAtom(idx).getIC(1).getValue();
 				double newValue = initialValue + rnd.nextDouble() * maxAngleDistorsion * sign;
+				newValue = clampAngleAwayFromLinearity(newValue);
 				alteredZMat.getZAtom(idx).getIC(1).setValue(newValue);
-				logger.debug("First angle of ZMatrixAtom" + idx + " altered by " 
-				    + NumberUtils.formatNumber("###.####", newValue - initialValue));
+				logger.debug("First angle of ZMatrixAtom " + idx + " altered by " 
+				+ NumberUtils.formatNumber("###.####", newValue - initialValue)
+				+ " (Initial: " + NumberUtils.formatNumber("###.####", initialValue) 
+				+ " New: " + NumberUtils.formatNumber("###.####", newValue) + ")");
 			}
 
 			for (int idx : idxsOfCandidateSecondAngles) 
@@ -1573,9 +1602,12 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
 				if (rnd.nextBoolean()) sign = -1.0;
 				double initialValue = alteredZMat.getZAtom(idx).getIC(2).getValue();
 				double newValue = initialValue + rnd.nextDouble() * maxAngleDistorsion * sign;
+				newValue = clampAngleAwayFromLinearity(newValue);
 				alteredZMat.getZAtom(idx).getIC(2).setValue(newValue);
-				logger.debug("Second angle of ZMatrixAtom" + idx + " altered by " 
-				    + NumberUtils.formatNumber("###.####", newValue - initialValue));
+				logger.debug("Second angle of ZMatrixAtom " + idx + " altered by " 
+				    + NumberUtils.formatNumber("###.####", newValue - initialValue)
+				    + " (Initial: " + NumberUtils.formatNumber("###.####", initialValue) 
+					+ " New: " + NumberUtils.formatNumber("###.####", newValue) + ")");
 			}
 
 			for (int idx : idxsOfCandidateTorsions) 
@@ -1603,8 +1635,15 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
 
 			IAtomContainer alteredMol = null;
 			try {
-				alteredMol = ZMatrixHandler.convertZMatrixToIAC(alteredZMat, reorderedIAC, true);
+				alteredMol = ZMatrixHandler.convertZMatrixToIAC(alteredZMat, reorderedIAC);
 			} catch (Throwable e) {
+
+				List<String> lines = alteredZMat.toLinesOfText(false,true);
+				for (int j=0; j<lines.size(); j++)
+				{
+					lines.set(j, "  Line-" + j + ": " + lines.get(j));
+				}
+				logger.error("Resulting ZMatrix: " + NL + StringUtils.mergeListToString(lines, NL));
 				throw new RuntimeException("Exception while converting ZMatrix to IAC. Cause of the exception: " + e.getMessage(), e);
 			}
 

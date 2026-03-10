@@ -743,28 +743,6 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
     public static IAtomContainer convertZMatrixToIAC(ZMatrix zmat, 
             IAtomContainer oldMol) throws Throwable
     {
-        return convertZMatrixToIAC(zmat, oldMol, false);
-    }
-
-//----------------------------------------------------------------------------
-
-    /**
-     * Convert ZMatrix into chemical object with Cartesian coordinates
-     * @param zmat the ZMatrix to convert
-     * @param oldMol a template CDK representation (used for connectivity)
-     * @param highAccuracy flag controlling whether to use high accuracy 
-     * when converting the ZMatrix. If true, we will throw an exception if the
-     * ZMatrix is not convertible to an IAtomContainer and may require dummy
-     * atoms. If false, only a warning will be issued and the result might
-     * be less accurate.
-     * @return the chemical object
-     * @throws Throwable when there are issues converting the ZMatrix and it 
-     * is preferable to redefine the ZMatrix, possibly adding dummy atoms
-     */
-
-    public static IAtomContainer convertZMatrixToIAC(ZMatrix zmat, 
-    		IAtomContainer oldMol, boolean highAccuracy) throws Throwable
-    {
         Logger logger = LogManager.getLogger(ZMatrixHandler.class);
         
         IAtomContainer mol = new AtomContainer();
@@ -924,17 +902,16 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
                         else if (Math.abs(c) < Math.abs(t))
                         {
                             String msg = "negligible c=" + c + " for "
-                                        + "atom (0-based) " + i + ". Low accuracy "
-                                        + "is expected. To improve the results add "
+                                        + "atom (0-based) " + i 
+                                        + ". This atom is defined by two angles, "
+                                        + "which makes it hard to be accurate. "
+                                        + "To improve accuracy, add "
                                         + "a dummy on atom (0-based) " 
                                         + zatm.getIdRef(0) + ", reorder atom list, "
-                                        + "and build a more healthy ZMatrix.";
-                            if (highAccuracy)
-                            {
-                                throw new Throwable(msg);
-                            } else {
-                                logger.warn("WARNING: " + msg);
-                            }
+                                        + "and build a ZMatrix that exploits a "
+                                        + "dihedral angle instead of two angles.";
+                            logger.debug("WARNING: " + msg);
+                            c = 0.0;
                         }
                         else
                         {
