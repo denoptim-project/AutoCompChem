@@ -1,0 +1,32 @@
+#!/bin/bash
+
+function not_passed() {
+  echo "NOT Passed: check condition leading to line '$1' of '$0'"
+  exit -1
+}
+
+if [ ! -f t166.log ] ; then not_passed $LINENO ; fi
+
+if ! grep -i -q "35 first angles" t166.log; then not_passed $LINENO ; fi
+
+if ! grep -i -q "8 second angles" t166.log; then not_passed $LINENO ; fi
+
+if ! grep -i -q "11 torsions" t166.log; then not_passed $LINENO ; fi
+
+n=0;n=$(grep -c -i 'Generating randomized geometry' t166.log)
+if [ $n != 5 ] ; then not_passed $LINENO ; fi
+
+n=0;n=$(grep -c -i 'RMSD after' t166.log)
+if [ $n != 10 ] ; then not_passed $LINENO ; fi
+
+# RMSD should be all different because we do alteration of both ZMatrix and Cartesian coordinates
+n=0;n=$(grep -i 'RMSD after' t166.log | awk '{print $NF}' | sort -n -u | wc -l | awk '{print $1}')
+if [ $n != 10 ] ; then not_passed $LINENO ; fi
+
+if grep -q 'Termination status: 0' t166.log ; then
+  echo Passed
+  exit 0
+else
+  echo NOT Passed 99
+  exit -1
+fi

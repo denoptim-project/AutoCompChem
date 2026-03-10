@@ -23,10 +23,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 import javax.vecmath.Point3d;
@@ -51,6 +53,7 @@ import autocompchem.molecule.MolecularMeter;
 import autocompchem.molecule.MolecularReorderer;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.molecule.connectivity.BondEditingRule;
+import autocompchem.molecule.dummyobjects.DummyObjectsHandler;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrixAtom;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrixHandler;
@@ -178,6 +181,48 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
 	 */
 	private double terminationThreshold = 5.0;
 
+	/** 
+	 * Random seed for geometry randomization (reproducible when set).
+	 * Must be a positive integer.
+	 */
+	private long randomSeed = 0L;
+
+	/** 
+	 * Number of new geometries to generate in randomizeGeometry.
+	 * Must be a positive integer.
+	 */
+	private int numNewGeometries = 1;
+
+	/** 
+	 * Max random distortion for bond distances.
+	 * Must be a positive number.
+	 */
+	private double maxDistanceDistorsion = 0.0;
+
+	/** 
+	 * Max random distortion for angles.
+	 * Must be a positive number.
+	 */
+	private double maxAngleDistorsion = 0.0;
+
+	/** 
+	 * Max random distortion for torsions.
+	 * Must be a positive number.
+	 */
+	private double maxTorsionDistorsion = 0.0;
+
+	/** 
+	 * Max random distortion for Cartesian coordinates.
+	 * Must be a positive number.
+	 */
+	private double maxCartesianDistorsion = 0.0;
+
+	/** 
+	 * Whether to report RMSD after internal-coord and after Cartesian alteration.
+	 * Requesting the RMSD will increase the computational time significantly.
+	 */
+	private boolean reportRMSD = false;
+
 	/**
 	 * New line character
 	 */
@@ -192,6 +237,11 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
      * String defining the task of altering stretching a bond
      */
     public static final String STRETCHBONDTASKNAME = "stretchBond";
+
+    /**
+     * String defining the task of altering a geometry by randomized changes
+     */
+    public static final String RANDOMIZEGEOMETRYTASKNAME = "randomizeGeometry";
 
     /**
      * Task about altering a geometry
@@ -209,6 +259,14 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
     	STRETCHBONDTASK = Task.make(STRETCHBONDTASKNAME);
     }
 
+    /**
+     * Task about altering a geometry by randomized changes
+     */
+    public static final Task RANDOMIZEGEOMETRYTASK;
+    static {
+    	RANDOMIZEGEOMETRYTASK = Task.make(RANDOMIZEGEOMETRYTASKNAME);
+    }
+
 //-----------------------------------------------------------------------------
     
     /**
@@ -222,7 +280,7 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
     @Override
     public Set<Task> getCapabilities() {
         return Collections.unmodifiableSet(new HashSet<Task>(
-                Arrays.asList(MODIFYGEOMETRYTASK, STRETCHBONDTASK)));
+                Arrays.asList(MODIFYGEOMETRYTASK, STRETCHBONDTASK, RANDOMIZEGEOMETRYTASK)));
     }
 
 //------------------------------------------------------------------------------
@@ -476,6 +534,48 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
 			this.smartsBondToStretch = new SMARTS(params.getParameter(
 				"SMARTSBONDTOSTRETCH").getValueAsString());
 		}
+
+		// Randomize geometry parameters
+		if (params.contains(WorkerConstants.PARRANDOMSEED))
+		{
+			String value = params.getParameter(WorkerConstants.PARRANDOMSEED).getValueAsString();
+			this.randomSeed =  Long.parseLong(value);
+		}
+
+		if (params.contains("NUMNEWGEOMETRIES"))
+		{
+			String value = params.getParameter("NUMNEWGEOMETRIES").getValueAsString();
+			this.numNewGeometries = NumberUtils.parseValueOrExpressionToInt(value);
+		}
+
+		if (params.contains("MAXDISTANCEDISTORSION"))
+		{
+			String value = params.getParameter("MAXDISTANCEDISTORSION").getValueAsString();
+			this.maxDistanceDistorsion = NumberUtils.parseValueOrExpression(value);
+		}
+
+		if (params.contains("MAXANGLEDISTORSION"))
+		{
+			String value = params.getParameter("MAXANGLEDISTORSION").getValueAsString();
+			this.maxAngleDistorsion = NumberUtils.parseValueOrExpression(value);
+		}
+
+		if (params.contains("MAXTORSIONDISTORSION"))
+		{
+			String value = params.getParameter("MAXTORSIONDISTORSION").getValueAsString();
+			this.maxTorsionDistorsion = NumberUtils.parseValueOrExpression(value);
+		}
+
+		if (params.contains("MAXCARTESIANDISTORSION"))
+		{
+			String value = params.getParameter("MAXCARTESIANDISTORSION").getValueAsString();
+			this.maxCartesianDistorsion = NumberUtils.parseValueOrExpression(value);
+		}
+
+		if (params.contains("REPORTRMSD"))
+		{
+			this.reportRMSD = StringUtils.parseBoolean(params.getParameter("REPORTRMSD").getValueAsString());
+		}
     }
     
 //-----------------------------------------------------------------------------
@@ -542,6 +642,19 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
 		        		result));
         	}
     		
+    		tryWritingToOutfile(result);
+    		outFileAlreadyUsed = true;
+    	} else if (task.equals(RANDOMIZEGEOMETRYTASK)) {
+			try {
+				result = randomizeGeometry(iac);
+			} catch (CloneNotSupportedException e) {
+				throw new RuntimeException("Cannot randomize geometry. Cause of the exception: " + e.getMessage(), e);
+			}
+    		if (exposedOutputCollector != null)
+    		{
+    			String molID = "mol-" + i;
+    			exposeOutputData(new NamedData(task.ID + molID, result));
+    		}
     		tryWritingToOutfile(result);
     		outFileAlreadyUsed = true;
     	} else {
@@ -1268,6 +1381,260 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
 					break;
 				}
 			}
+		}
+		return results;
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Randomize a geometry by altering internal coordinates and optionally Cartesian coordinates.
+     * Torsion changes around rotatable bonds are compensated per bond so that the net rotation
+     * is applied without overwriting (accumulated distortion per bond, then compensate once).
+     * @param iac the atom container to randomize
+     * @return the set of randomized geometries
+     * @throws CloneNotSupportedException 
+     */
+    private AtomContainerSet randomizeGeometry(IAtomContainer iac) throws CloneNotSupportedException
+    {
+		String duLabel = "Du";
+		IAtomContainer iacWithDummies = iac.clone();
+		DummyObjectsHandler.addDummyAtoms(iacWithDummies, null, 
+			true, true, false, 
+			new ArrayList<Integer>(), duLabel);
+
+		IAtomContainer reorderedIAC = iacWithDummies;
+		ParameterStorage locPar = params.copy();
+		locPar.setParameter(WorkerConstants.PARTASK, ZMatrixHandler.CONVERTTOZMATTASK.ID);
+		locPar.removeData(WorkerConstants.PAROUTFILE);
+		locPar.removeData(WorkerConstants.PARINFILE);
+		locPar.setParameter(WorkerConstants.PARNOOUTFILEMODE);
+		locPar.setParameter(ZMatrixHandler.PARNULLONFAILURE, "true");
+		locPar.setParameter(ChemSoftConstants.PARGEOM, reorderedIAC);
+		Worker w;
+		try {
+			w = WorkerFactory.createWorker(locPar, this.getMyJob());
+		} catch (ClassNotFoundException e) {
+			throw new IllegalStateException(e);
+		}
+		ZMatrix zmatMol = null;
+		Object output = null;
+		try {
+			w.performTask();
+			output = w.getMyJob().getOutputCollector().getNamedData(
+				ZMatrixHandler.CONVERTTOZMATTASK.ID + "mol-" + 0).getValue();
+		} catch (Throwable t) {
+			output = null;
+		}
+		if (output != null) {
+			zmatMol = (ZMatrix) output;
+		} else {
+			logger.warn("Cannot make ZMatrix with input atom list. Reordering atom list.");
+			MolecularReorderer mr = new MolecularReorderer();
+			reorderedIAC = mr.reorderContainer(iacWithDummies);
+			locPar.setParameter(ChemSoftConstants.PARGEOM, reorderedIAC);
+			try {
+				w = WorkerFactory.createWorker(locPar, this.getMyJob());
+			} catch (ClassNotFoundException cnf) {
+				throw new IllegalStateException(cnf);
+			}
+			w.performTask();
+			Object output2 = w.getMyJob().getOutputCollector().getNamedData(
+				ZMatrixHandler.CONVERTTOZMATTASK.ID + "mol-" + 0).getValue();
+			if (output2 != null) {
+				zmatMol = (ZMatrix) output2;
+			} else {
+				throw new IllegalStateException("Cannot make ZMatrix. " 
+				    + "Alter the connectivity or the list of atoms to enable "
+					+ "ZMatrix representation.");
+			}
+		}
+
+		// Make a copy used only to report RMSD
+		IAtomContainer reorderedIACForRMSD = null;
+		if (reportRMSD) {
+			reorderedIACForRMSD = reorderedIAC.clone();
+			DummyObjectsHandler.removeDummyAtoms(reorderedIACForRMSD, true, true, false, duLabel);
+		}
+
+		Map<String, SMARTS> smartsBondToTwist = Map.of("bondToTwist", 
+		    new SMARTS("[!X1]!@[!X1]"));
+		Map<String, List<IBond>> bondsToTwist = SMARTSUtils.identifyBondsBySMARTS(
+			reorderedIAC, smartsBondToTwist);
+
+		Map<Integer, String> zatmIdxToBondKey = new HashMap<>();
+		Map<String, List<Integer>> positiveCompensationsPerBondKey = new HashMap<>();
+		Map<String, List<Integer>> negativeCompensationsPerBondKey = new HashMap<>();
+		List<Integer> idxsOfCandidateBonds = new ArrayList<>();
+		List<Integer> idxsOfCandidateFirstAngles = new ArrayList<>();
+		List<Integer> idxsOfCandidateSecondAngles = new ArrayList<>();
+		List<Integer> idxsOfCandidateTorsions = new ArrayList<>();
+		List<String> bondKeysOfCandidateTorsions = new ArrayList<>();
+		for (Map.Entry<String, List<IBond>> entry : bondsToTwist.entrySet()) 
+		{
+			List<IBond> bonds = entry.getValue();
+			for (IBond bond : bonds) 
+			{
+				int idLower = Math.min(reorderedIAC.indexOf(bond.getBegin()), 
+				    reorderedIAC.indexOf(bond.getEnd()));
+				int idUpper = Math.max(reorderedIAC.indexOf(bond.getBegin()), 
+				    reorderedIAC.indexOf(bond.getEnd()));
+				String bondKey = idLower + "-" + idUpper;
+
+				// Take note of the possibility to stretch the bond
+				int idxZAtomUsingBndDistance = zmatMol.zatoms().indexOf(
+					zmatMol.findBondDistance(idLower, idUpper));
+				if (!idxsOfCandidateBonds.contains(idxZAtomUsingBndDistance)) 
+				{
+					idxsOfCandidateBonds.add(idxZAtomUsingBndDistance);
+				}
+
+				// Take note of the possibility to distort the torsion around the bond
+				List<ZMatrixAtom> torsionsToAdjust = zmatMol.findAllTorsions(idUpper, idLower);
+				if (!torsionsToAdjust.isEmpty() && !bondKeysOfCandidateTorsions.contains(bondKey)) 
+				{
+					ZMatrixAtom chosenTorsion = torsionsToAdjust.get(0);
+					int zatmIdx = zmatMol.zatoms().indexOf(chosenTorsion);
+					idxsOfCandidateTorsions.add(zatmIdx);
+					zatmIdxToBondKey.put(zatmIdx, bondKey);
+					bondKeysOfCandidateTorsions.add(bondKey);
+					positiveCompensationsPerBondKey.put(bondKey, new ArrayList<Integer>());
+					negativeCompensationsPerBondKey.put(bondKey, new ArrayList<Integer>());
+					for (int iOtherTorsions=1; iOtherTorsions<torsionsToAdjust.size(); iOtherTorsions++) 
+					{
+						ZMatrixAtom otherTorsion = torsionsToAdjust.get(iOtherTorsions);
+						positiveCompensationsPerBondKey.get(bondKey).add(
+							zmatMol.zatoms().indexOf(otherTorsion));
+					}
+					for (ZMatrixAtom otherTorsion : zmatMol.findAllTorsions(idLower, idUpper)) 
+					{
+						negativeCompensationsPerBondKey.get(bondKey).add(
+							zmatMol.zatoms().indexOf(otherTorsion));
+					}
+				}
+
+				for (ZMatrixAtom atomToMove : zmatMol.findAllFirstAngles(
+					reorderedIAC.indexOf(bond.getBegin()), reorderedIAC.indexOf(bond.getEnd()))) 
+				{
+					if (!idxsOfCandidateFirstAngles.contains(zmatMol.zatoms().indexOf(atomToMove))) {
+						idxsOfCandidateFirstAngles.add(zmatMol.zatoms().indexOf(atomToMove));
+					}
+				}
+
+				for (ZMatrixAtom atomToMove : zmatMol.findAllSecondAngles(
+					reorderedIAC.indexOf(bond.getBegin()), reorderedIAC.indexOf(bond.getEnd()))) 
+				{
+					if (!idxsOfCandidateSecondAngles.contains(zmatMol.zatoms().indexOf(atomToMove))) {
+						idxsOfCandidateSecondAngles.add(zmatMol.zatoms().indexOf(atomToMove));
+					}
+				}
+			}
+		}
+		
+		logger.info("Randomization of internal coordinates will consider: " + NL 
+		    + idxsOfCandidateBonds.size() + " bonds," + NL 
+			+ idxsOfCandidateFirstAngles.size() + " first angles," + NL 
+			+ idxsOfCandidateSecondAngles.size() + " second angles," + NL 
+			+ idxsOfCandidateTorsions.size() + " torsions.");
+
+		Random rnd = new Random(randomSeed);
+		AtomContainerSet results = new AtomContainerSet();
+
+		for (int i = 0; i < numNewGeometries; i++) 
+		{
+			logger.info("Generating randomized geometry " + i + "...");
+			ZMatrix alteredZMat = zmatMol.clone();
+
+			for (int idx : idxsOfCandidateBonds) 
+			{
+				double sign = 1.0;
+				if (rnd.nextBoolean()) sign = -1.0;
+				double initialValue = alteredZMat.getZAtom(idx).getIC(0).getValue();
+				double newValue = initialValue + rnd.nextDouble() * maxDistanceDistorsion * sign;
+				alteredZMat.getZAtom(idx).getIC(0).setValue(newValue);
+				logger.debug("Bond " + zatmIdxToBondKey.get(idx) + " altered by " 
+				    + NumberUtils.formatNumber("###.####", newValue - initialValue));
+			}
+
+			for (int idx : idxsOfCandidateFirstAngles) 
+			{
+				double sign = 1.0;
+				if (rnd.nextBoolean()) sign = -1.0;
+				double initialValue = alteredZMat.getZAtom(idx).getIC(1).getValue();
+				double newValue = initialValue + rnd.nextDouble() * maxAngleDistorsion * sign;
+				alteredZMat.getZAtom(idx).getIC(1).setValue(newValue);
+				logger.debug("First angle of ZMatrixAtom" + idx + " altered by " 
+				    + NumberUtils.formatNumber("###.####", newValue - initialValue));
+			}
+
+			for (int idx : idxsOfCandidateSecondAngles) 
+			{
+				double sign = 1.0;
+				if (rnd.nextBoolean()) sign = -1.0;
+				double initialValue = alteredZMat.getZAtom(idx).getIC(2).getValue();
+				double newValue = initialValue + rnd.nextDouble() * maxAngleDistorsion * sign;
+				alteredZMat.getZAtom(idx).getIC(2).setValue(newValue);
+				logger.debug("Second angle of ZMatrixAtom" + idx + " altered by " 
+				    + NumberUtils.formatNumber("###.####", newValue - initialValue));
+			}
+
+			for (int idx : idxsOfCandidateTorsions) 
+			{
+				double sign = 1.0;
+				if (rnd.nextBoolean()) sign = -1.0;
+				double initialValue = alteredZMat.getZAtom(idx).getIC(2).getValue();
+				double distorsion = rnd.nextDouble() * maxTorsionDistorsion * sign;
+				double newValue = initialValue + distorsion;
+				alteredZMat.getZAtom(idx).getIC(2).setValue(newValue);
+				String bondKey = zatmIdxToBondKey.get(idx);
+				logger.debug("Torsion around bond " + bondKey + " (ZMatrixAtom " + idx + ")" 
+				    + " altered by " + NumberUtils.formatNumber("###.####", distorsion));
+				for (Integer idxToCompensate : positiveCompensationsPerBondKey.get(bondKey)) 
+				{
+					double compInitial = alteredZMat.getZAtom(idxToCompensate).getIC(2).getValue();
+					alteredZMat.getZAtom(idxToCompensate).getIC(2).setValue(compInitial - distorsion);
+				}
+				for (Integer idxToCompensate : negativeCompensationsPerBondKey.get(bondKey)) 
+				{
+					double compInitial = alteredZMat.getZAtom(idxToCompensate).getIC(2).getValue();
+					alteredZMat.getZAtom(idxToCompensate).getIC(2).setValue(compInitial + distorsion);
+				}
+			}
+
+			IAtomContainer alteredMol = null;
+			try {
+				alteredMol = ZMatrixHandler.convertZMatrixToIAC(alteredZMat, reorderedIAC, true);
+			} catch (Throwable e) {
+				throw new RuntimeException("Exception while converting ZMatrix to IAC. Cause of the exception: " + e.getMessage(), e);
+			}
+
+			// Remove dummy atoms
+			DummyObjectsHandler.removeDummyAtoms(alteredMol, true, true, false, duLabel);
+
+			if (reportRMSD) {
+				GeometryAlignment alignment = GeometryAligner.alignGeometries(reorderedIACForRMSD, alteredMol);
+				logger.info("  -> RMSD after alteration of ZMatrix: " + NumberUtils.formatNumber("###.####", alignment.getRMSD()));
+			}
+
+			// Change Cartesian coordinates
+			for (IAtom atom : alteredMol.atoms()) 
+			{
+				double sign = 1.0;
+				if (rnd.nextBoolean()) sign = -1.0;
+				atom.setPoint3d(new Point3d(
+					atom.getPoint3d().x + rnd.nextDouble() * maxCartesianDistorsion * sign,
+					atom.getPoint3d().y + rnd.nextDouble() * maxCartesianDistorsion * sign,
+					atom.getPoint3d().z + rnd.nextDouble() * maxCartesianDistorsion * sign));
+			}
+
+			if (reportRMSD) {
+				GeometryAlignment alignment = GeometryAligner.alignGeometries(reorderedIACForRMSD, alteredMol);
+				logger.info("  -> RMSD after Cartesian alteration: " + NumberUtils.formatNumber("###.####", alignment.getRMSD()));
+			}
+
+			String outMolBasename = MolecularUtils.getNameOrID(iac);
+			alteredMol.setProperty(CDKConstants.TITLE, outMolBasename + " - randomized " + i);
+			results.addAtomContainer(alteredMol);
 		}
 		return results;
     }

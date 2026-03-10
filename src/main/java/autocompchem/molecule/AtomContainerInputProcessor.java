@@ -599,7 +599,7 @@ public class AtomContainerInputProcessor extends Worker
     
 //------------------------------------------------------------------------------
     
-    private void setPropertiesToOutgoingIAC(IAtomContainer iac)
+    protected void setPropertiesToOutgoingIAC(IAtomContainer iac)
     {
     	// We may need to update the values, if any of the properties requires
     	// values from the job of this worker

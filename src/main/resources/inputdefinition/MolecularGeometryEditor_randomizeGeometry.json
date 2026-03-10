@@ -1,0 +1,63 @@
+[
+  {
+    "key": "RANDOMSEED",
+    "casedKey": "randomSeed",
+    "type": "<String>",
+    "doc": "Random seed for randomization (reproducible when set). Must be a positive integer."
+  },
+  {
+    "key": "NUMNEWGEOMETRIES",
+    "casedKey": "numNewGeometries",
+    "type": "<Integer>",
+    "doc": "Number of new geometries to generate. Must be a positive integer."
+  },
+  {
+    "key": "MAXCARTESIANDISTORSION",
+    "casedKey": "maxCartesianDistorsion",
+    "type": "<Double>",
+    "doc": "Maximum distortion for Cartesian coordinates (Angstroms). The sign is altered randomly."
+  },
+  {
+    "key": "MAXDISTANCEDISTORSION",
+    "casedKey": "maxDistanceDistorsion",
+    "type": "<Double>",
+    "doc": "Maximum distortion for bond distances (Angstroms). The sign is altered randomly."
+  },
+  {
+    "key": "MAXANGLEDISTORSION",
+    "casedKey": "maxAngleDistorsion",
+    "type": "<Double>",
+    "doc": "Maximum distortion for angles (degrees). The sign is altered randomly."
+  },
+  {
+    "key": "MAXTORSIONDISTORSION",
+    "casedKey": "maxTorsionDistorsion",
+    "type": "<Double>",
+    "doc": "Maximum distortion for torsions (degrees). The sign is altered randomly."
+  },
+  {
+    "key": "REPORTRMSD",
+    "casedKey": "reportRMSD",
+    "type": "<Boolean>",
+    "doc": "Whether to report the RMSD after internal-coord and after Cartesian alteration. Requesting the RMSD will increase the computational time significantly."
+  },
+  {
+    "embeddedWorker": "autocompchem.molecule.intcoords.zmatrix.ZMatrixHandler",
+    "tag": "generation of ZMatrix from the input structure",
+    "task": "convertToZMatrix",
+    "ignorableWorkers": [
+      "autocompchem.molecule.AtomContainerInputProcessor"
+    ],
+    "ignorableItems": [
+      "outFile",
+      "nullOnFailure"
+    ]
+  },
+  {
+    "embeddedWorker": "autocompchem.molecule.AtomContainerInputProcessor",
+    "tag": "the input/output of chemical objects (e.g., molecular geometries)",
+    "ignorableItems": [
+      "onlyLastStructure"
+    ]
+  }
+]

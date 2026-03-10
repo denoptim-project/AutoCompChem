@@ -74,7 +74,7 @@ public class SeedAtom
      */
     public Integer getMassNumber()
     {
-    	Integer a = null;
+    	Integer a = 0;
 
 		try {
 			if (Isotopes.getInstance().isElement(seed.getSymbol()))

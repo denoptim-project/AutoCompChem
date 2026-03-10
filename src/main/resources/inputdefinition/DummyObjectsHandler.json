@@ -2,20 +2,20 @@
   {
     "key": "LINEARITIES",
     "casedKey": "linearities",
-    "type": "",
-    "doc": "Makes the tool add/remove dummy atoms used to represent linear arrangements of atoms with internal coordinates. It is assumed that such dummy atom are explicitly bonded to only one other atom."
+    "type": "<Boolean>",
+    "doc": "Makes the tool add/remove dummy atoms used to represent linear arrangements of atoms with internal coordinates. It is assumed that such dummy atom are explicitly bonded to only one other atom. The value can be 'yes/y/true' or 'no/n/false' (default is 'no', if any parameter among LINEARITIES, PLANARITIES, MULTIHAPTO is present, otherwisethe default is 'yes'). Ingored if a template is provided."
   },
   {
     "key": "PLANARITIES",
     "casedKey": "planarities",
-    "type": "",
-    "doc": "Makes the tool add/remove dummy atoms used to heal planar systems of atoms in internal coordinates. It is assumed that such dummy atom are explicitly bonded to only one other atom."
+    "type": "<Boolean>",
+    "doc": "Makes the tool add/remove dummy atoms used to heal planar systems of atoms in internal coordinates. It is assumed that such dummy atom are explicitly bonded to only one other atom. The value can be 'yes/y/true' or 'no/n/false' (default is 'no', if any parameter among LINEARITIES, PLANARITIES, MULTIHAPTO is present, otherwisethe default is 'yes'). Ingored if a template is provided."
   },
   {
     "key": "MULTIHAPTO",
     "casedKey": "multiHapto",
-    "type": "<String>",
-    "doc": "Makes the tool add/remove dummy atoms used to describe multihapto systems. It is assumed that a dummy atom is places somewhere in the ligands (i.e., the centroid, usually) and connected to the other end of the multihapto connection, and all the atoms contributing to the metal-ligand bond. For instance, one dummy atom connected to the 5 carbon atoms of a cyclopentadienyl ligand and to the metal atom."
+    "type": "<Boolean>",
+    "doc": "Makes the tool add/remove dummy atoms used to describe multihapto systems. It is assumed that a dummy atom is placed somewhere in the ligands (i.e., the centroid, usually) and connected to the other end of the multihapto connection, and all the atoms contributing to the metal-ligand bond. For instance, one dummy atom connected to the 5 carbon atoms of a cyclopentadienyl ligand and to the metal atom. The value can be 'yes/y/true' or 'no/n/false' (default is 'no', if any parameter among LINEARITIES, PLANARITIES, MULTIHAPTO is present, otherwisethe default is 'yes'). Ingored if a template is provided."
   },
   {
     "key": "DUSYMBOL",

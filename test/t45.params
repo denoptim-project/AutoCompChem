@@ -8,6 +8,6 @@
 #
 VERBOSITY: 7
 TASK: RemoveDummyAtoms
-LINEARITIES: m
+LINEARITIES: true
 INFILE: ../t45-mol.sdf
 OUTFILE: t45-out.sdf

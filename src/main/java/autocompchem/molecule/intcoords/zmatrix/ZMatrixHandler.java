@@ -741,7 +741,29 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
      */
 
     public static IAtomContainer convertZMatrixToIAC(ZMatrix zmat, 
-    		IAtomContainer oldMol) throws Throwable
+            IAtomContainer oldMol) throws Throwable
+    {
+        return convertZMatrixToIAC(zmat, oldMol, false);
+    }
+
+//----------------------------------------------------------------------------
+
+    /**
+     * Convert ZMatrix into chemical object with Cartesian coordinates
+     * @param zmat the ZMatrix to convert
+     * @param oldMol a template CDK representation (used for connectivity)
+     * @param highAccuracy flag controlling whether to use high accuracy 
+     * when converting the ZMatrix. If true, we will throw an exception if the
+     * ZMatrix is not convertible to an IAtomContainer and may require dummy
+     * atoms. If false, only a warning will be issued and the result might
+     * be less accurate.
+     * @return the chemical object
+     * @throws Throwable when there are issues converting the ZMatrix and it 
+     * is preferable to redefine the ZMatrix, possibly adding dummy atoms
+     */
+
+    public static IAtomContainer convertZMatrixToIAC(ZMatrix zmat, 
+    		IAtomContainer oldMol, boolean highAccuracy) throws Throwable
     {
         Logger logger = LogManager.getLogger(ZMatrixHandler.class);
         
@@ -901,22 +923,18 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
                         }
                         else if (c < -t)
                         {
-//TODO: decide when to throw the exception and when to accept a negligible c
-// Throw exception only if high accuracy is requested
-/*
-                            throw new Throwable("Generating linearity with "
-                                    + "atom (0-based) " + i + ". Need a "
-                                    + "linearity-breaking dummy atom bonded to "
-                                    + "atom (0-based) " + zatm.getIdRef(0));
-*/
-                        
-                            logger.warn("WARNING: negligible c="
-                                + c + " for "
-                                + "atom (0-based) " + i + ". Low accuracy "
-                                + "is expected. To improve the results add "
-                                + "a dummy on atom (0-based) " 
-                                + zatm.getIdRef(0) + ", reorder atom list, "
-                                + "and build a more healty ZMatrix.");
+                            String msg = "negligible c=" + c + " for "
+                                        + "atom (0-based) " + i + ". Low accuracy "
+                                        + "is expected. To improve the results add "
+                                        + "a dummy on atom (0-based) " 
+                                        + zatm.getIdRef(0) + ", reorder atom list, "
+                                        + "and build a more healty ZMatrix.";
+                            if (highAccuracy)
+                            {
+                                throw new Throwable(msg);
+                            } else {
+                                logger.warn("WARNING: " + msg);
+                            }
                         }
                         else
                         {

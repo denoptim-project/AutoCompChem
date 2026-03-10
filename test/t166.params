@@ -1,0 +1,11 @@
+TASK: randomizeGeometry
+verbosity: 4
+INFILE: ../t166-mol.sdf
+randomSeed: 192837465
+maxCartesianDistorsion: 0.1
+maxDistanceDistorsion: 0.1
+maxAngleDistorsion: 5.0
+maxTorsionDistorsion: 180.0
+numNewGeometries: 5
+reportrmsd: yes
+outfile: t166_results.sdf

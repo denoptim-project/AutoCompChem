@@ -3,6 +3,6 @@
 #
 VERBOSITY: 7
 TASK: RemoveDummyAtoms
-MULTIHAPTO: n
+MULTIHAPTO: true
 INFILE: ../t44-mol.sdf
 OUTFILE: t44-out.sdf

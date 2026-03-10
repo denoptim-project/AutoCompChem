@@ -76,4 +76,9 @@ public class WorkerConstants
 	 */
 	public static final String PARONLYLASTSTRUCTURE = "ONLYLASTSTRUCTURE";
 
+	/**
+	 * Key of parameter defining the seed for the random number generator.
+	 */
+    public static final String PARRANDOMSEED = "RANDOMSEED";
+
 }

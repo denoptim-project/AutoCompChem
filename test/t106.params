@@ -3,8 +3,8 @@
 #
 VERBOSITY: 6
 TASK: AddDummyAtoms
-LINEARITIES: do linearities
-PLANARITIES: do planarities
+LINEARITIES: yes
+PLANARITIES: true
 SOURCEATOMS: 16
 INFILE: ../t106-mol.sdf
 OUTFILE: t106-out.sdf

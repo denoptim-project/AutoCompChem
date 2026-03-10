@@ -31,6 +31,8 @@ import javax.vecmath.Point2d;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openscience.cdk.Bond;
 import org.openscience.cdk.PseudoAtom;
 import org.openscience.cdk.interfaces.IAtom;
@@ -45,6 +47,7 @@ import autocompchem.molecule.AtomContainerInputProcessor;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Job;
 import autocompchem.utils.NumberUtils;
+import autocompchem.utils.StringUtils;
 import autocompchem.utils.ThreeDimensionalSpaceUtils;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
@@ -95,8 +98,28 @@ public class DummyObjectsHandler extends AtomContainerInputProcessor
     private boolean doPlanarities = false;
 
     //Elemental symbol of dummy atoms to deal with
-    private String elm = null;
-    
+    private String elm = AtomConstants.DUMMYATMLABEL;
+
+    /**
+     * Kay for parameter defining whether to handle linbearities
+     */
+    public static final String PARLINEARITIES = "LINEARITIES";
+
+    /**
+     * Kay for parameter defining whether to handle planarities
+     */
+    public static final String PARPLANARITIES = "PLANARITIES";
+
+    /**
+     * Kay for parameter defining whether to handle multihapto systems
+     */
+    public static final String PARMULTIHAPTO = "MULTIHAPTO";
+
+    /**
+     * Kay for parameter defining the symbol of dummy atoms
+     */
+    public static final String PARDUSYMBOL = "DUSYMBOL";
+
     /**
      * String defining the task of adding dummy atoms
      */
@@ -165,21 +188,34 @@ public class DummyObjectsHandler extends AtomContainerInputProcessor
     	super.initialize();
 
         // Get options
-        if (params.contains("LINEARITIES"))
+        if (params.contains(PARLINEARITIES))
+        {
+            this.doLinearities = StringUtils.parseBoolean(
+                params.getParameter(PARLINEARITIES).getValue().toString());
+        }
+        if (params.contains(PARPLANARITIES))
+        {
+            this.doPlanarities = StringUtils.parseBoolean(
+                params.getParameter(PARPLANARITIES).getValue().toString());
+        }
+        if (params.contains(PARMULTIHAPTO))
+        {
+            this.doMultihapto = StringUtils.parseBoolean(
+                params.getParameter(PARMULTIHAPTO).getValue().toString());
+        }
+
+        if (!params.contains(PARLINEARITIES) 
+            && !params.contains(PARPLANARITIES) 
+            && !params.contains(PARMULTIHAPTO))
         {
             this.doLinearities = true;
-        }
-        if (params.contains("PLANARITIES"))
-        {
             this.doPlanarities = true;
-        }
-        if (params.contains("MULTIHAPTO"))
-        {
             this.doMultihapto = true;
         }
-        if (params.contains("DUSYMBOL"))
+
+        if (params.contains(PARDUSYMBOL))
         {
-            String e = params.getParameter("DUSYMBOL").getValue().toString(); 
+            String e = params.getParameter(PARDUSYMBOL).getValue().toString(); 
             this.elm = e;
         }
 
@@ -253,32 +289,55 @@ public class DummyObjectsHandler extends AtomContainerInputProcessor
 
     private void addDummyAtoms(IAtomContainer iac)
     {
+        addDummyAtoms(iac, template, doLinearities, doPlanarities, doMultihapto,
+             activeSrcAtmIds, elm);
+        this.activeSrcAtmIds.clear();
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Add dummy atoms according to the given parameters.
+     * @param iac the atom container to be edited
+     * @param template the template to be used for adding dummy atoms. 
+     * Ignored if null. If not null, the dummy atoms of the template must be 
+     * all at the end of the atom list.
+     * @param doLinearities whether to add dummy atoms for linearities
+     * @param doPlanarities whether to add dummy atoms for planarities
+     * @param doMultihapto whether to add dummy atoms for multihapto systems
+     * @param activeSrcAtmIds the list of source atoms to add dummy atoms to
+     * @param elm the element of the dummy atoms
+     */
+
+    public static void addDummyAtoms(IAtomContainer iac, IAtomContainer template, 
+        boolean doLinearities, boolean doPlanarities, boolean doMultihapto,
+        List<Integer> activeSrcAtmIds, String elm)
+    {
 	    if (template != null)
 	    {
-	        copypasteDummyAtoms(iac, template);
+	        copypasteDummyAtoms(iac, template, elm);
 	    }
 	    else
 	    {
 	        if (doLinearities)
 	        {
-	            includeLinearities(iac);
+	            includeLinearities(iac, activeSrcAtmIds);
 	        }
 	
 	        if (doPlanarities)
 	        {
-	            includePlanarities(iac);
+	            includePlanarities(iac, activeSrcAtmIds);
 	        }
 	        if (doMultihapto)
 	        {
-	            //TODO:
+	            //TODO?
 	            throw new UnsupportedOperationException("Code for adding dummy "
 	            		+ "atoms to multihapto systems is not implemented yet.");
 	        }
 	
 	        if (0 < activeSrcAtmIds.size())
 	        {
-	            addDummiedOnSources(iac, this.activeSrcAtmIds);
-	            this.activeSrcAtmIds.clear();
+	            addDummiedOnSources(iac, activeSrcAtmIds, elm);
 	        }
 	    }
     }
@@ -294,7 +353,7 @@ public class DummyObjectsHandler extends AtomContainerInputProcessor
      */
 
     private static void copypasteDummyAtoms(IAtomContainer mol, 
-    		IAtomContainer tmpl)
+    		IAtomContainer tmpl, String elm)
     {
         for (IAtom du : tmpl.atoms())
         {
@@ -323,7 +382,7 @@ public class DummyObjectsHandler extends AtomContainerInputProcessor
                     // When not possible fall back on general behaviour.
 
             IAtom srcInMol = mol.getAtom(srcId);
-            IAtom duAtm = getDummyInSafePlace(mol,srcInMol);
+            IAtom duAtm = getDummyInSafePlace(mol,srcInMol, elm);
             mol.addAtom(duAtm);
             IBond dummyBnd = new Bond(duAtm,srcInMol);
             mol.addBond(dummyBnd);
@@ -339,6 +398,24 @@ public class DummyObjectsHandler extends AtomContainerInputProcessor
      */
 
     private void removeDummyAtoms(IAtomContainer iac)
+    {
+        removeDummyAtoms(iac, doLinearities, doPlanarities, doMultihapto, elm);
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Remove dummy atoms and alter connectivity accordingly to the stored
+     * parameters.
+     * @param iac the atom container to be edited
+     * @param doLinearities whether to remove dummy atoms for linearities
+     * @param doPlanarities whether to remove dummy atoms for planarities
+     * @param doMultihapto whether to remove dummy atoms for multihapto systems
+     * @param elm the element of the dummy atoms
+     */
+
+    public static void removeDummyAtoms(IAtomContainer iac, boolean doLinearities, 
+        boolean doPlanarities, boolean doMultihapto, String elm)
     {
         if (doLinearities)
         {
@@ -368,8 +445,8 @@ public class DummyObjectsHandler extends AtomContainerInputProcessor
 
     public void addDummiesOnLinearities(IAtomContainer mol)
     {
-        includeLinearities(mol);
-        addDummiedOnSources(mol,activeSrcAtmIds);
+        includeLinearities(mol, activeSrcAtmIds);
+        addDummiedOnSources(mol,activeSrcAtmIds, elm);
     }
 
 //-----------------------------------------------------------------------------
@@ -384,8 +461,8 @@ public class DummyObjectsHandler extends AtomContainerInputProcessor
 
     public void addDummiesOnPlanarities(IAtomContainer mol)
     {
-        includePlanarities(mol);
-        addDummiedOnSources(mol,activeSrcAtmIds);
+        includePlanarities(mol, activeSrcAtmIds);
+        addDummiedOnSources(mol,activeSrcAtmIds, elm);
     }
 
 //-----------------------------------------------------------------------------
@@ -395,11 +472,11 @@ public class DummyObjectsHandler extends AtomContainerInputProcessor
      * @param mol the molecular object to be modified
      */
 
-    private void includeLinearities(IAtomContainer mol)
+    private static void includeLinearities(IAtomContainer mol, List<Integer> activeSrcAtmIds)
     { 
+        Logger logger = LogManager.getLogger(DummyObjectsHandler.class);
         for (IAtom srcAtm : mol.atoms())
         {
-//TODO replace with method from AtomGeometryDetector
             List<IAtom> nbrs = mol.getConnectedAtomsList(srcAtm);
             for(int i=0; i<nbrs.size(); i++)
             {
@@ -419,7 +496,7 @@ public class DummyObjectsHandler extends AtomContainerInputProcessor
                         logger.trace("Adding linearity-breaking "
                                 + "dummy atom on: "  
                                 + MolecularUtils.getAtomRef(srcAtm,mol));
-                        this.activeSrcAtmIds.add(mol.indexOf(srcAtm));
+                        activeSrcAtmIds.add(mol.indexOf(srcAtm));
                     }
                 }
             }
@@ -433,8 +510,9 @@ public class DummyObjectsHandler extends AtomContainerInputProcessor
      * @param mol the molecular object to be modified
      */
 
-    private void includePlanarities(IAtomContainer mol)
+    private static void includePlanarities(IAtomContainer mol, List<Integer> activeSrcAtmIds)
     {
+        Logger logger = LogManager.getLogger(DummyObjectsHandler.class);
         for (IAtom srcAtm : mol.atoms())
         {
 //TODO replace with method from AtomGeometryDetector
@@ -457,7 +535,7 @@ public class DummyObjectsHandler extends AtomContainerInputProcessor
             {
                 logger.debug("Adding planarity-breaking du on: " 
                                        + MolecularUtils.getAtomRef(srcAtm,mol));
-                this.activeSrcAtmIds.add(mol.indexOf(srcAtm));
+                activeSrcAtmIds.add(mol.indexOf(srcAtm));
             }
         }
     }
@@ -468,9 +546,11 @@ public class DummyObjectsHandler extends AtomContainerInputProcessor
      * Add dummy atoms to all atoms in a given set of atoms
      * @param mol the existing atom list
      * @param srcs the list of atoms to which we want to add dummies
+     * @param elm the element of the dummy atoms
      */
 
-    public void addDummiedOnSources(IAtomContainer mol, List<Integer> srcs)
+    public static void addDummiedOnSources(IAtomContainer mol, List<Integer> srcs, 
+        String elm)
     {
         for (int i=0; i< srcs.size(); i++)
         {
@@ -483,7 +563,7 @@ public class DummyObjectsHandler extends AtomContainerInputProcessor
                     + " atoms.");
             }
             IAtom srcAtm = mol.getAtom(atmId);
-            IAtom duAtm = getDummyInSafePlace(mol,srcAtm);
+            IAtom duAtm = getDummyInSafePlace(mol,srcAtm, elm);
             mol.addAtom(duAtm);
             IBond dummyBnd = new Bond(duAtm,srcAtm);
             mol.addBond(dummyBnd);
@@ -496,9 +576,12 @@ public class DummyObjectsHandler extends AtomContainerInputProcessor
      * Chose a position of a dummy atom. 
      * @param mol the existing atom list
      * @param src the atom to which the dummy is meant to be bound
+     * @param duLabel the label of the dummy atom
+     * @return the dummy atom
      */
 
-    private static IAtom getDummyInSafePlace(IAtomContainer mol, IAtom src)
+    private static IAtom getDummyInSafePlace(IAtomContainer mol, IAtom src,
+         String duLabel)
     {
         // Define forbidden zones: places where we cannot place the dummy atom 
         ArrayList<Vector3d> allForbiddenDirs = new ArrayList<Vector3d>();
@@ -509,7 +592,8 @@ public class DummyObjectsHandler extends AtomContainerInputProcessor
             // Find versor towards bonded neighbour to forbidden direction
             Vector3d v = MolecularUtils.getVectorFromTo(src,nbr);
             v.normalize();
-                //TODO: check if already existing before adding
+            
+            //TODO: check if already existing before adding
 
             allForbiddenDirs.add(v);
             // Find versor on inverted direction to forbidden direction
@@ -582,17 +666,18 @@ public class DummyObjectsHandler extends AtomContainerInputProcessor
         Point3d duP3d = new Point3d(bestCandidate.x + srcP3d.x,
                                     bestCandidate.y + srcP3d.y,
                                     bestCandidate.z + srcP3d.z);
-        IAtom duAtm = new PseudoAtom(AtomConstants.DUMMYATMLABEL,duP3d);
-        duAtm.setProperty(AtomConstants.DUMMYATMLABEL, AtomConstants.DUMMYATMLABEL);
+        IAtom duAtm = new PseudoAtom(duLabel,duP3d);
+        duAtm.setProperty(AtomConstants.DUMMYATMLABEL, duLabel);
         
         return duAtm;
     }
     
 //------------------------------------------------------------------------------
     
-    private void removeSpecialDummyAtoms(IAtomContainer mol, String elm, 
+    private static void removeSpecialDummyAtoms(IAtomContainer mol, String elm, 
     		DummyAtomType type)
     {
+        Logger logger = LogManager.getLogger(DummyObjectsHandler.class);
         List<IAtom> dummiesList = new ArrayList<IAtom>();
         List<Integer> dummiesIdxs = new ArrayList<Integer>();
         
@@ -837,7 +922,7 @@ public class DummyObjectsHandler extends AtomContainerInputProcessor
      * @param doneFlag vector of boolean flags
      * @return the group of atoms reachable via bonds between atoms in inList
      */
-    private Set<IAtom> exploreConnectedToAtom(IAtom seed, 
+    private static Set<IAtom> exploreConnectedToAtom(IAtom seed, 
                                                      List<IAtom> inList, 
                                                      IAtomContainer mol, 
                                                      List<Boolean> doneFlag)
@@ -877,7 +962,7 @@ public class DummyObjectsHandler extends AtomContainerInputProcessor
      * @param size of vector of flags has to be generated.
      * @return a vector of flags.
      */
-    private List<Boolean> getFlagsVector(int size)
+    private static List<Boolean> getFlagsVector(int size)
     {
         //create a vector with false entries
         int atoms = size;

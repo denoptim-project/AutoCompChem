@@ -50,7 +50,7 @@ import autocompchem.worker.WorkerFactory;
 public class ACCMain
 {
     //Software version number
-    private static final String version = "3.4.0";
+    private static final String version = "3.5.0";
     
     // System.spec line separator
     private static final String NL = System.getProperty("line.separator");
@@ -169,6 +169,7 @@ public class ACCMain
                             + "message returned. Please "
                             + "report this to the author.", -1, t);
                 } else {
+                    t.printStackTrace();
                     Terminator.withMsgAndStatus(t.getMessage(), -1, t);
                 }
             }
@@ -176,6 +177,7 @@ public class ACCMain
             // Exit
             Terminator.withMsgAndStatus("Normal Termination", 0);
         } catch (Throwable e) {
+            e.printStackTrace();
             Terminator.withMsgAndStatus("ERROR! " +e.getMessage(), -1, e);
         }
     }

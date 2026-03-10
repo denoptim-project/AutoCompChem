@@ -3,7 +3,7 @@
 #
 VERBOSITY: 7
 TASK: RemoveDummyAtoms
-MULTIHAPTO: n
+MULTIHAPTO: true
 DUSYMBOL: ATO
 INFILE: ../t47-mol.sdf
 OUTFILE: t47-out.sdf
