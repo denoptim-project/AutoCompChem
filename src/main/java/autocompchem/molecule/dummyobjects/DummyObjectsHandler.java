@@ -191,17 +191,17 @@ public class DummyObjectsHandler extends AtomContainerInputProcessor
         if (params.contains(PARLINEARITIES))
         {
             this.doLinearities = StringUtils.parseBoolean(
-                params.getParameter(PARLINEARITIES).getValue().toString());
+                params.getParameter(PARLINEARITIES).getValueAsString(), true);
         }
         if (params.contains(PARPLANARITIES))
         {
             this.doPlanarities = StringUtils.parseBoolean(
-                params.getParameter(PARPLANARITIES).getValue().toString());
+                params.getParameter(PARPLANARITIES).getValueAsString(), true);
         }
         if (params.contains(PARMULTIHAPTO))
         {
             this.doMultihapto = StringUtils.parseBoolean(
-                params.getParameter(PARMULTIHAPTO).getValue().toString());
+                params.getParameter(PARMULTIHAPTO).getValueAsString(), true);
         }
 
         if (!params.contains(PARLINEARITIES) 
@@ -215,13 +215,13 @@ public class DummyObjectsHandler extends AtomContainerInputProcessor
 
         if (params.contains(PARDUSYMBOL))
         {
-            String e = params.getParameter(PARDUSYMBOL).getValue().toString(); 
+            String e = params.getParameter(PARDUSYMBOL).getValueAsString(); 
             this.elm = e;
         }
 
         if (params.contains("SOURCEATOMS"))
         {
-            String l = params.getParameter("SOURCEATOMS").getValue().toString();
+            String l = params.getParameter("SOURCEATOMS").getValueAsString();
             String[] words = l.trim().split("\\s+");
             for (int i=0; i<words.length; i++)
             {
