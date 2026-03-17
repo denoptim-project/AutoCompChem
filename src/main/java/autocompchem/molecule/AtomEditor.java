@@ -26,56 +26,39 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
+
+import javax.vecmath.Point3d;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openscience.cdk.Atom;
+import org.openscience.cdk.Bond;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
+import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 
-import autocompchem.modeling.atomtuple.AtomTupleMatchingRule;
+import autocompchem.atom.AtomUtils;
+import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
+import autocompchem.modeling.atomtuple.AtomTupleGenerator;
+import autocompchem.molecule.intcoords.InternalCoord;
 import autocompchem.run.Job;
-import autocompchem.smarts.SMARTS;
-import autocompchem.smarts.SMARTSUtils;
+import autocompchem.utils.NumberUtils;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 
 /**
- * Tool to edit or remove one or more atoms.
+ * Tool to add, edit, or remove one or more atoms.
  * 
  * @author Marco Foscato
  */
 
-
-public class AtomEditor extends AtomContainerInputProcessor
-{   
+public class AtomEditor extends AtomTupleGenerator
+{
     /**
-     * List of atom-matching rules for definition of the atoms to edit and 
-     * the relevant attributes.
+     * String defining the task of mutating bonds.
      */
-    private List<AtomEditingRule> rules = new ArrayList<AtomEditingRule>();
-    
-    /**
-     * Unique identifier for rules
-     */
-	protected AtomicInteger ruleID = new AtomicInteger(0);
-
-    /**
-     * List (with string identifier) of smarts queries to identify target atoms.
-     */
-    private Map<String,List<SMARTS>> smarts = new HashMap<String,List<SMARTS>>();
-
-    /**
-     * List (with string identifier) of feature for target bond
-     */
-    private Map<String,Object> editorObjectives = new HashMap<String,Object>();
-    
-    /**
-     * String defining the task of mutating bonds
-     */
-    public static final String EDITATOMSTASKNAME = "mutateAtoms";
+    public static final String EDITATOMSTASKNAME = "editAtoms";
 
     /**
      * Task about mutating atoms
@@ -84,11 +67,44 @@ public class AtomEditor extends AtomContainerInputProcessor
     static {
     	EDITATOMSTASK = Task.make(EDITATOMSTASKNAME);
     }
-    
+
+    /**
+     * String defining the task of mutating bonds.
+     * Redundant, but defined to ensure visibility of the task.
+     */
+    public static final String REMOVEATOMSTASKNAME = "removeAtoms";
+
+    /**
+     * Task about removing atoms
+     */
+    public static final Task REMOVEATOMSTASK;
+    static {
+    	REMOVEATOMSTASK = Task.make(REMOVEATOMSTASKNAME);
+    }
+
+    /**
+     * String defining the task of adding an atom
+     * Redundant, but defined to ensure visibility of the task.
+     */
+    public static final String ADDATOMSTASKNAME = "addAtoms";
+
+    /**
+     * Task about adding an atom
+     */
+    public static final Task ADDATOMSTASK;
+    static {
+    	ADDATOMSTASK = Task.make(ADDATOMSTASKNAME);
+    }
+
 	/**
 	 * Root of name used to identify any instance of this class.
 	 */
 	public static final String BASENAME = "AtomEditRule-";
+
+    /**
+     * Keyword used to define how to add an atom
+     */
+    public static final String KEYADDATOM = "ADDATOM";
    
     /**
      * Keyword used to identify the imposed elemental symbols.
@@ -99,22 +115,30 @@ public class AtomEditor extends AtomContainerInputProcessor
      * Value-less keyword used to identify atoms to remove.
      */
     public static final String KEYREMOVE = "REMOVE";
-    
-	/**
-	 * Keywords that expect values and are used to annotate constraints.
-	 */
-    // WARNING: if you change this list you must update also the documentation
-    // at the resource inputdefinition/AtomEditor.json.
-	public static final List<String> DEFAULTVALUEDKEYS = Arrays.asList(
-			KEYELEMENT);
 
-	/**
-	 * Keywords that do not expect values and are used to annotate constraints.
-	 */
-    // WARNING: if you change this list you must update also the documentation
-    // at the resource inputdefinition/AtomEditor.json.
-	public static final List<String> DEFAULTVALUELESSKEYS = Arrays.asList(
-			KEYREMOVE);
+    /**
+     * List of mutually exclusive attributes.
+     */
+    public static final List<String> MUTUALLYEXCLUSIVEATTRIBUTES = Arrays.asList(
+        KEYELEMENT, KEYADDATOM, KEYREMOVE);
+
+    /**
+     * Keyword used to define the position of the new atom 
+     * from internal coordinates of the reference atoms
+     */
+    public static final String KEYATOMATIC = "INTERNALCOORDS";
+
+    /**
+     * Keyword used to define the position of the new atom at the centroid
+     * of a set of atoms.
+     */
+    public static final String KEYATOMATCENTROID = "CENTROID";
+
+    /**
+     * List of keywords that can be used to define the position of the new atom.
+     */
+    public static final List<String> KEYWORDSFORATOMPOSITION = Arrays.asList(
+        KEYATOMATIC, KEYATOMATCENTROID);
 
 //-----------------------------------------------------------------------------
     
@@ -122,14 +146,19 @@ public class AtomEditor extends AtomContainerInputProcessor
      * Constructor.
      */
     public AtomEditor()
-    {}
+    {
+        ruleRoot = BASENAME;
+        valuedKeywords.add(KEYELEMENT);
+        valuedKeywords.add(KEYADDATOM);
+        valuelessKeywords.add(KEYREMOVE);
+    }
 
 //------------------------------------------------------------------------------
 
     @Override
     public Set<Task> getCapabilities() {
         return Collections.unmodifiableSet(new HashSet<Task>(
-             Arrays.asList(EDITATOMSTASK)));
+             Arrays.asList(EDITATOMSTASK, ADDATOMSTASK, REMOVEATOMSTASK)));
     }
 
 //------------------------------------------------------------------------------
@@ -146,141 +175,21 @@ public class AtomEditor extends AtomContainerInputProcessor
         return new AtomEditor();
     }
     
-//-----------------------------------------------------------------------------
-
-    /**
-     * Initialise the worker according to the parameters set for this worker.
-     */
-
-    @Override
-    public void initialize()
-    {
-    	super.initialize();
-
-        //Get the list of SMARTS to be matched
-        if (params.contains("SMARTS"))
-        {
-        	String all = params.getParameter("SMARTS").getValueAsString();
-        	parseAtomEditingRules(all);
-        	for (AtomEditingRule bmRule : rules)
-        	{
-        		smarts.put(bmRule.getRefName(), bmRule.getSMARTS());
-        		Object objective = bmRule.getObjective();
-        		if (objective!=null)
-        			editorObjectives.put(bmRule.getRefName(), objective);
-        	}
-        }
-    }
-    
-//------------------------------------------------------------------------------
-
-    /**
-     * Parses the formatted text defining {@link AtomEditingRule} and adds
-     * the resulting rules to this instance.
-     * @param text the text (i.e., multiple lines) to be parsed into 
-     * {@link AtomEditingRule}s.
-     */
-
-    protected void parseAtomEditingRules(String text)
-    {
-    	// NB: the REGEX makes this compatible with either new-line character
-        String[] arr = text.split("\\r?\\n|\\r");
-        parseAtomEditingRules(new ArrayList<String>(Arrays.asList(arr)));
-    }
-    
-//------------------------------------------------------------------------------
-
-    /**
-     * Parses the formatted text defining {@link AtomEditingRule} and adds
-     * the resulting rules to this instance.
-     * @param lines the lines of text to be parsed into 
-     * {@link AtomEditingRule}s.
-     */
-
-    protected void parseAtomEditingRules(List<String> lines)
-    {
-        for (String line : lines)
-        {
-            rules.add(new AtomEditingRule(line, ruleID.getAndIncrement()));
-        }
-    }
-    
-//------------------------------------------------------------------------------
-    
-    /**
-     * Class adapting the general functionality of {@link AtomTupleMatchingRule}
-     * to parse SMARTS-based definition of atom editing task
-     */
-    private class AtomEditingRule extends AtomTupleMatchingRule
-    {
-
-    //--------------------------------------------------------------------------
-
-        /**
-         * Constructor for a rule by parsing a formatted string of text. 
-         * Default keywords that are interpreted to parse specific input
-         * instructions are defined by
-         * {@link AtomEditor#DEFAULTVALUEDKEYS} and 
-         * {@link AtomEditor#DEFAULTVALUELESSKEYS}.
-         * @param txt the string to be parsed
-         * @param i a unique integer used to identify the rule. Is used to build
-         * the reference name of the generated rule.
-         */
-
-        public AtomEditingRule(String txt, int i)
-        {
-        	super(txt, BASENAME+i, DEFAULTVALUEDKEYS, DEFAULTVALUELESSKEYS, 
-        			true);
-        }
-        
-    //--------------------------------------------------------------------------
-        
-        /**
-         * @return the objective of the editing task, i.e., the intended result 
-         * on the bonds matched by this rule, or null, if no known objective is 
-         * associated to this rule.
-         */
-        public Object getObjective()
-        {
-        	String elementSymbolObjective = getValueOfAttribute(KEYELEMENT);
-        	if (elementSymbolObjective!=null)
-        	{
-        		return elementSymbolObjective;
-        	}
-        	
-        	if (hasValuelessAttribute(KEYREMOVE))
-        	{
-        		return KEYREMOVE;
-        	}
-        	
-        	return null;
-        }
-
-    //--------------------------------------------------------------------------
-
-    }
-    
-//------------------------------------------------------------------------------
-
-    /**
-     * Performs any of the registered tasks according to how this worker
-     * has been initialised.
-     */
-
-    @Override
-    public void performTask()
-    {
-    	processInput();
-    }
-    
 //------------------------------------------------------------------------------
 
 	@Override
 	public IAtomContainer processOneAtomContainer(IAtomContainer iac, int i) 
 	{
-      	if (task.equals(EDITATOMSTASK))
+        List<AnnotatedAtomTuple> tuples = createTuples(iac, rules, null,
+            AtomTupleGenerator.Mode.TUPLES);
+
+        // Redundancy of task name is meant to ensure visibility of all tasks
+        // in the list AutoCompChem tasks.
+      	if (task.equals(EDITATOMSTASK) 
+            || task.equals(ADDATOMSTASK) 
+            || task.equals(REMOVEATOMSTASK))
       	{
-      		editAtoms(iac, smarts, editorObjectives);
+      		editAtoms(iac, tuples);
       	} else {
       		dealWithTaskMismatch();
         }
@@ -292,59 +201,76 @@ public class AtomEditor extends AtomContainerInputProcessor
     /**
      * Edit atoms in a container.
      * @param iac the container to edit.
-     * @param smarts the SMARTS matching the atoms to edit.
-     * @param editorObjectives map defining what to do or edit in the matches 
-     * atoms.
+     * @param tuples the tuples of atoms that define what and where to edit atoms. 
+     * The attributes of the tuples define the details in this way: 
+     * - if the attribute KEYELEMENT is present, the elemental symbol of the all
+     * atoms in the tuple is changed to the value of the attribute.
+     * - if the attribute KEYREMOVE is present, all the atoms in the tuple are 
+     * removed.
+     * - if the attribute KEYADDATOM is present, a new atom is added at the 
+     * position of the tuple. The value of the attribute is the elemental symbol 
+     * of the new atom.
+     * The three cases are mutually exclusive. An exception is thrown if more 
+     * than one of the three attributes is present.
      */
 
-    public static void editAtoms(IAtomContainer iac, 
-    		Map<String,List<SMARTS>> smarts, 
-    		Map<String,Object> editorObjectives)
+    public static void editAtoms(IAtomContainer iac, List<AnnotatedAtomTuple> tuples)
     {
     	Logger logger = LogManager.getLogger();
     	
-    	Map<String, List<List<List<IAtom>>>> matchesPerRule = 
-    			SMARTSUtils.identifyAtomTuples(iac, smarts);
-    	
     	Set<IAtom> toRemove = new HashSet<IAtom>();
-    	for (String key : matchesPerRule.keySet())
-  		{
-    		if (!editorObjectives.containsKey(key))
+    	for (AnnotatedAtomTuple tuple : tuples)
+    	{
+            int numExclusiveAttributes = 0;
+            for (String attribute : MUTUALLYEXCLUSIVEATTRIBUTES)
+            {
+                if (tuple.hasValuelessAttribute(attribute))
+                {
+                    numExclusiveAttributes++;
+                }
+            }
+            if (numExclusiveAttributes > 1)
+            {
+                throw new IllegalArgumentException("More than one mutually "
+                    + "exclusive attribute is present in tuple '" 
+                    + tuple.toString() + "'. This is not allowed.");
+            }
+
+    		if (tuple.hasValuelessAttribute(KEYREMOVE))
     		{
-    			// Nothing to do for these matched atoms
-    			continue;
-    		}
-  			Object objective = editorObjectives.get(key);
-    		
-    		for (List<List<IAtom>> matchObj : matchesPerRule.get(key))
-    		{
-    			if (objective instanceof String)
-    			{
-        			// NB: assumption that a string objective means 
-        			// either change of elemental symbol,
-        			// or removal of atom
-    				if (objective.toString().toUpperCase().equals(
-    	  					KEYREMOVE.toString().toUpperCase())) {
-    	  				for (List<IAtom> atms : matchObj)
-    	  					for (IAtom atm : atms)
-    	  						toRemove.add(atm);
-    				} else {
-	  				for (List<IAtom> atms : matchObj)
-	  					for (IAtom atm : atms)
-	  					{
-	  						mutateElement(iac, atm, (String) objective);
-	  					}
-    				}
-	  			} else {
-	  				logger.warn("No implementation is available for editing "
-	  						+ "task '" + objective + "'. Ignoring task.");
-	  			}
-    		}
+                for (int atmIdx : tuple.getAtomIDs())
+                {
+                    // NB: we remove al last operation to avoid messing with the atom indices.
+                    toRemove.add(iac.getAtom(atmIdx));
+                }
+    		} else if (tuple.hasValuedAttribute(KEYELEMENT)) 
+            {
+                String newElSymbol = tuple.getValueOfAttribute(KEYELEMENT);
+                for (int atmIdx : tuple.getAtomIDs())
+                {
+                    IAtom atm = iac.getAtom(atmIdx);
+                    String msg = "Mutated atom " + MolecularUtils.getAtomRef(atm, iac)
+                        + " from " + atm.getSymbol() + " to " + newElSymbol;
+                    mutateElement(iac, atm, newElSymbol);
+                    logger.debug(msg);
+                }
+            } else if (tuple.hasValuedAttribute(KEYADDATOM))
+            {
+                addAtom(iac, tuple);
+            } else {
+                throw new IllegalArgumentException("Expecting one of '"
+                    + MUTUALLYEXCLUSIVEATTRIBUTES.toString() 
+                    + "' but found none in tuple '" 
+                    + tuple.toString() + "'. This is not allowed.");
+            }
     	}
     	
   		for (IAtom atm : toRemove)
   		{
   			iac.removeAtom(atm);
+
+            String msg = "Removed atom " + MolecularUtils.getAtomRef(atm, iac);
+            logger.debug(msg);
   		}
     }
     
@@ -383,6 +309,166 @@ public class AtomEditor extends AtomContainerInputProcessor
         }
         
         AtomContainerManipulator.replaceAtomByAtom(iac, originalAtom, newAtm);
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Adds an atom to the given atom container.
+     * @param iac the atom container to add the atom to.
+     * @param tuple the tuple of atoms that define the atom to add.
+     */
+    public static void addAtom(IAtomContainer iac, AnnotatedAtomTuple tuple)
+    {
+        // Get the reference atoms used to define the position of the new atom.
+        IAtom[] referenceAtoms = new IAtom[tuple.getNumberOfIDs()];
+        for (int i=0; i<tuple.getNumberOfIDs(); i++)
+        {
+            referenceAtoms[i] = iac.getAtom(tuple.getAtomIDs().get(i));
+        }
+
+        String valueOfKeyword = tuple.getValueOfAttribute(KEYADDATOM);
+        String[] words = valueOfKeyword.trim().split("\\s+");  
+
+        if (words.length < 2)
+        {
+            throw new IllegalArgumentException("Value of '" + KEYADDATOM 
+                + "' keyword must start with the elemental symbol "
+                + "followed by one among " 
+                + KEYWORDSFORATOMPOSITION.toString()
+                + ". Found '" + valueOfKeyword + "'.");
+        }
+        
+        String newSymbol = words[0];
+
+        Map<IAtom,Object[]> bondedAtoms = new HashMap<IAtom,Object[]>();
+        switch (words[1]) {
+            case KEYATOMATIC:
+                InternalCoord[] internalCoords = new InternalCoord[referenceAtoms.length];
+                if (words.length < 8)
+                {
+                    throw new IllegalArgumentException("Value of '" + KEYATOMATIC 
+                        + "' keyword must be followed by 3 space-separated pairs 'index value'."
+                        + ". Found only " + (words.length - 2) + " words instead of 6.");
+                }
+                int[] indexes = new int[3];
+                double[] values = new double[3];
+                for (int i=2; i<words.length; i+=2)
+                {
+                    if (!NumberUtils.isParsableToInt(words[i]))
+                    {
+                        throw new IllegalArgumentException("Value of '" + KEYATOMATIC 
+                            + "' keyword must be followed by 3 space-separated pairs 'index value'."
+                            + ". Could not parse '" + words[i] + "' as index.");
+                    }
+                    indexes[i/2] = Integer.parseInt(words[i]);
+                    if (!NumberUtils.isParsableToDouble(words[i+1]))
+                    {
+                        throw new IllegalArgumentException("Value of '" + KEYATOMATIC 
+                            + "' keyword must be followed by 3 space-separated pairs 'index value'."
+                            + ". Could not parse '" + words[i+1] + "' as value.");
+                    }
+                    values[i/2] = Double.parseDouble(words[i+1]);
+                }
+                internalCoords[0] = new InternalCoord("distance", values[0], 
+                    new ArrayList<Integer>(Arrays.asList(-1, indexes[0])));
+                internalCoords[1] = new InternalCoord("angle", values[1], 
+                    new ArrayList<Integer>(Arrays.asList(-1, indexes[0], indexes[1])));
+                internalCoords[2] = new InternalCoord("torsion", values[2], 
+                    new ArrayList<Integer>(Arrays.asList(-1, indexes[0], indexes[1], indexes[2])));
+
+                addAtom(iac, referenceAtoms, internalCoords, newSymbol, bondedAtoms);
+                break;
+
+            case KEYATOMATCENTROID:
+                Point3d centroid = MolecularUtils.calculateCentroid(referenceAtoms);
+                addAtom(iac, newSymbol, centroid, bondedAtoms);
+                break;
+            default:
+                throw new IllegalArgumentException("Value of '" + KEYADDATOM 
+                + "' keyword must start with one among " 
+                + KEYWORDSFORATOMPOSITION.toString()
+                + ". Found '" + words[1] + "'.");
+        }
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Adds an atom to the given atom container.
+     * @param iac the atom container to add the atom to.
+     * @param referenceAtoms the reference atoms used to define the position of the new atom.
+     * @param internalCoords the internal coordinate templates used to calculate 
+     * the position of the new atom. The index of the new atom is expected to the
+     * '-1' and be the first position in the list of indexes.
+     * @param newElSymbol the elemental symbol of the new atom.
+     * @param bondedAtoms the map of atoms bonded to the new atom and the 
+     * properties of the new bond to be created, namely {@Link IBond.Order} and 
+     * {@Link IBond.Stereo}.
+     */
+    public static void addAtom(IAtomContainer iac, IAtom[] referenceAtoms, 
+        InternalCoord[] internalCoords, String newElSymbol, 
+        Map<IAtom,Object[]> bondedAtoms)
+    {
+        Point3d newAtomPosition = MolecularUtils.calculateAtomPosition(
+            referenceAtoms, internalCoords);
+        addAtom(iac, newElSymbol, newAtomPosition, bondedAtoms);
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Adds an atom to the given atom container.
+     * @param iac the atom container to add the atom to.
+     * @param newElSymbol the elemental symbol of the new atom.
+     * @param newAtomPosition the position of the new atom.
+     * @param bondedAtoms the map of atoms bonded to the new atom and the 
+     * properties of the new bond to be created, namely {@Link IBond.Order} and 
+     * {@Link IBond.Stereo}.
+     */
+    public static void addAtom(IAtomContainer iac, String newElSymbol, 
+        Point3d newAtomPosition, Map<IAtom,Object[]> bondedAtoms)
+    {
+    	Logger logger = LogManager.getLogger();
+        IAtom newAtm = AtomUtils.makeIAtom(newElSymbol, newAtomPosition);
+        iac.addAtom(newAtm);
+
+        String msg = "Added atom " + MolecularUtils.getAtomRef(newAtm, iac)
+            + " at " + newAtomPosition.toString();
+        logger.debug(msg);
+        
+        for (IAtom bondedAtm : bondedAtoms.keySet())
+        {
+            Object[] bondProperties = bondedAtoms.get(bondedAtm);
+            if (bondProperties.length != 2)
+            {
+                throw new IllegalArgumentException("Bond properties must "
+                    + "be an array of length 2. Found " 
+                    + bondProperties.length + ".");
+            }
+            if (!(bondProperties[0] instanceof IBond.Order))
+            {
+                throw new IllegalArgumentException("Bond property 0 must "
+                    + "be an instance of IBond.Order. Found " 
+                    + bondProperties[0].getClass().getName() + ".");
+            }
+            if (!(bondProperties[1] instanceof IBond.Stereo))
+            {
+                throw new IllegalArgumentException("Bond property 1 must "
+                    + "be an instance of IBond.Stereo. Found " 
+                    + bondProperties[1].getClass().getName() + ".");
+            }
+            IBond newBnd = new Bond(newAtm, bondedAtm, 
+                (IBond.Order) bondProperties[0],
+                (IBond.Stereo) bondProperties[1]);
+            iac.addBond(newBnd);
+
+            String msg2 = "Added bond between " + MolecularUtils.getAtomRef(newAtm, iac)
+                + " and " + MolecularUtils.getAtomRef(bondedAtm, iac)
+                + " with order " + bondProperties[0].toString()
+                + " and stereo " + bondProperties[1].toString();
+            logger.debug(msg2);
+        }
     }
 
 //------------------------------------------------------------------------------

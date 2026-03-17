@@ -1,4 +1,4 @@
-TASK: mutateAtoms
+TASK: editAtoms
 INFILE: ../t66-mol.sdf
 OUTFILE:  t66-mol_mutated.sdf
 $STARTSMARTS: [Pb] ELEMENT: U

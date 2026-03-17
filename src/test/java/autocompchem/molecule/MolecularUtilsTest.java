@@ -39,6 +39,7 @@ import org.openscience.cdk.interfaces.IChemObjectBuilder;
 
 import autocompchem.atom.AtomUtils;
 import autocompchem.geometry.DistanceMatrix;
+import autocompchem.molecule.intcoords.InternalCoord;
 
 /**
  * Unit Test for MolecularUtils
@@ -228,6 +229,197 @@ public class MolecularUtilsTest
     	assertEquals(1.0 / 3.0, centroid.x, tol);
     	assertEquals(1.0, centroid.y, tol);
     	assertEquals(2.0, centroid.z, tol);
+    }
+
+//------------------------------------------------------------------------------
+
+    private static InternalCoord icDist(double value, int refA) {
+        return new InternalCoord("d", value, new ArrayList<>(Arrays.asList(-1, refA)));
+    }
+    private static InternalCoord icAngle(double degrees, int refA, int refB) {
+        return new InternalCoord("a", degrees, new ArrayList<>(Arrays.asList(-1, refA, refB)));
+    }
+    private static InternalCoord icDihedral(double degrees, int refA, int refB, int refC) {
+        return new InternalCoord("t", degrees, new ArrayList<>(Arrays.asList(-1, refA, refB, refC)));
+    }
+
+    @Test
+    public void testCalculateAtomPosition_nullInternalCoordsThrows()
+    {
+        IAtom[] ref = new IAtom[] { new Atom("C", new Point3d(0, 0, 0)) };
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                () -> MolecularUtils.calculateAtomPosition(ref, null));
+        assertTrue(e.getMessage().contains("internal coordinate"));
+    }
+
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testCalculateAtomPosition_emptyInternalCoordsThrows()
+    {
+        IAtom[] ref = new IAtom[] { new Atom("C", new Point3d(0, 0, 0)) };
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                () -> MolecularUtils.calculateAtomPosition(ref, new InternalCoord[0]));
+        assertTrue(e.getMessage().contains("At least one"));
+    }
+
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testCalculateAtomPosition_distanceOnly_fromOrigin()
+    {
+        IAtom[] ref = new IAtom[] { new Atom("C", new Point3d(0, 0, 0)) };
+        InternalCoord[] ics = new InternalCoord[] { icDist(1.0, 0) };
+        Point3d pos = MolecularUtils.calculateAtomPosition(ref, ics);
+        double tol = 1e-10;
+        assertEquals(1.0, pos.x, tol);
+        assertEquals(0.0, pos.y, tol);
+        assertEquals(0.0, pos.z, tol);
+    }
+
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testCalculateAtomPosition_distanceOnly_offsetAnchor()
+    {
+        IAtom[] ref = new IAtom[] { new Atom("C", new Point3d(1.0, 2.0, 3.0)) };
+        InternalCoord[] ics = new InternalCoord[] { icDist(2.0, 0) };
+        Point3d pos = MolecularUtils.calculateAtomPosition(ref, ics);
+        double tol = 1e-10;
+        assertEquals(3.0, pos.x, tol);
+        assertEquals(2.0, pos.y, tol);
+        assertEquals(3.0, pos.z, tol);
+    }
+
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testCalculateAtomPosition_distanceAndAngle_alongBond()
+    {
+        IAtom[] ref = new IAtom[] {
+                new Atom("C", new Point3d(0, 0, 0)),
+                new Atom("C", new Point3d(1, 0, 0))
+        };
+        InternalCoord[] ics = new InternalCoord[] {
+                icDist(1.0, 0),
+                icAngle(0.0, 0, 1)
+        };
+        Point3d pos = MolecularUtils.calculateAtomPosition(ref, ics);
+        double tol = 1e-10;
+        assertEquals(1.0, pos.x, tol);
+        assertEquals(0.0, pos.y, tol);
+        assertEquals(0.0, pos.z, tol);
+    }
+
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testCalculateAtomPosition_distanceAndAngle_90deg()
+    {
+        IAtom[] ref = new IAtom[] {
+                new Atom("C", new Point3d(0, 0, 0)),
+                new Atom("C", new Point3d(1, 0, 0))
+        };
+        InternalCoord[] ics = new InternalCoord[] {
+                icDist(1.0, 0),
+                icAngle(90.0, 0, 1)
+        };
+        Point3d pos = MolecularUtils.calculateAtomPosition(ref, ics);
+        IAtom newAtm = new Atom("H", pos);
+        double dist = MolecularUtils.calculateInteratomicDistance(ref[0], newAtm);
+        double angleDeg = MolecularUtils.calculateBondAngle(newAtm, ref[0], ref[1]);
+        double tol = 1e-8;
+        assertEquals(1.0, dist, tol);
+        assertEquals(90.0, angleDeg, tol);
+    }
+
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testCalculateAtomPosition_distanceAngleDihedral_roundTrip()
+    {
+        IAtom[] ref = new IAtom[] {
+                new Atom("C", new Point3d(0, 0, 0)),
+                new Atom("C", new Point3d(1, 0, 0)),
+                new Atom("C", new Point3d(0.5, 1, 0))
+        };
+        InternalCoord[] ics = new InternalCoord[] {
+                icDist(1.2, 0),
+                icAngle(110.0, 0, 1),
+                icDihedral(30.0, 0, 1, 2)
+        };
+        Point3d pos = MolecularUtils.calculateAtomPosition(ref, ics);
+        IAtom newAtm = new Atom("H", pos);
+        double dist = MolecularUtils.calculateInteratomicDistance(ref[0], newAtm);
+        double angleDeg = MolecularUtils.calculateBondAngle(newAtm, ref[0], ref[1]);
+        double dihedralDeg = MolecularUtils.calculateTorsionAngle(newAtm, ref[0], ref[1], ref[2]);
+        double tol = 1e-6;
+        assertEquals(1.2, dist, tol);
+        assertEquals(110.0, angleDeg, tol);
+        assertEquals(30.0, Math.abs(dihedralDeg), 1.0);
+    }
+
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testCalculateAtomPosition_distanceICMissingIdsThrows()
+    {
+        IAtom[] ref = new IAtom[] { new Atom("C", new Point3d(0, 0, 0)) };
+        InternalCoord distOnly = new InternalCoord("d", 1.0, new ArrayList<>(Arrays.asList(-1)));
+        InternalCoord[] ics = new InternalCoord[] { distOnly };
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                () -> MolecularUtils.calculateAtomPosition(ref, ics));
+        assertTrue(e.getMessage().contains("Distance internal coordinate"));
+    }
+
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testCalculateAtomPosition_referenceIndexOutOfRangeThrows()
+    {
+        IAtom[] ref = new IAtom[] { new Atom("C", new Point3d(0, 0, 0)) };
+        InternalCoord[] ics = new InternalCoord[] { icDist(1.0, 1) };
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                () -> MolecularUtils.calculateAtomPosition(ref, ics));
+        assertTrue(e.getMessage().contains("out of range"));
+    }
+
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testCalculateAtomPosition_coincidentAngleRefsThrows()
+    {
+        IAtom[] ref = new IAtom[] {
+                new Atom("C", new Point3d(0, 0, 0)),
+                new Atom("C", new Point3d(0, 0, 0))
+        };
+        InternalCoord[] ics = new InternalCoord[] {
+                icDist(1.0, 0),
+                icAngle(90.0, 0, 1)
+        };
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                () -> MolecularUtils.calculateAtomPosition(ref, ics));
+        assertTrue(e.getMessage().contains("coincident"));
+    }
+
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testCalculateAtomPosition_collinearDihedralRefsThrows()
+    {
+        IAtom[] ref = new IAtom[] {
+                new Atom("C", new Point3d(0, 0, 0)),
+                new Atom("C", new Point3d(1, 0, 0)),
+                new Atom("C", new Point3d(2, 0, 0))
+        };
+        InternalCoord[] ics = new InternalCoord[] {
+                icDist(1.0, 0),
+                icAngle(90.0, 0, 1),
+                icDihedral(0.0, 0, 1, 2)
+        };
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                () -> MolecularUtils.calculateAtomPosition(ref, ics));
+        assertTrue(e.getMessage().contains("collinear"));
     }
 
 //------------------------------------------------------------------------------

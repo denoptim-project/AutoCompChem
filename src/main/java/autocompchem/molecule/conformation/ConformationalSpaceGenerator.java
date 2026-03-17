@@ -99,19 +99,6 @@ public class ConformationalSpaceGenerator extends AtomTupleGenerator
         }
     }
     
-//-----------------------------------------------------------------------------
-
-    /**
-     * Performs any of the registered tasks according to how this worker
-     * has been initialized.
-     */
-
-    @Override
-    public void performTask()
-    {
-    	processInput();
-    }
-    
 //------------------------------------------------------------------------------
 
 	@Override
@@ -172,7 +159,6 @@ public class ConformationalSpaceGenerator extends AtomTupleGenerator
     		IAtomContainer mol, 
     		List<AtomTupleMatchingRule> rules, ParameterStorage params)
     {
-
         // If needed, generate atom labels
     	List<String> labels = null;
         for (AtomTupleMatchingRule r : rules)

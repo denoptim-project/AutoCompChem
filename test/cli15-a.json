@@ -35,7 +35,7 @@
         },
         {
           "reference": "TASK",
-          "value": "mutateAtoms"
+          "value": "editAtoms"
         },
         {
           "reference": "SMARTS",

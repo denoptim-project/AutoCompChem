@@ -48,6 +48,8 @@ import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
 
 import autocompchem.atom.AtomUtils;
 import autocompchem.geometry.DistanceMatrix;
+import autocompchem.molecule.intcoords.InternalCoord;
+import autocompchem.utils.ThreeDimensionalSpaceUtils;
 
 /**
  * Toolbox for molecular objects
@@ -914,6 +916,157 @@ public class MolecularUtils
         return centroid;
     }
 
+//------------------------------------------------------------------------------
+
+    /**
+     * Calculate the position of a new atom based on the given reference atoms and
+     * internal coordinate templates (Z-matrix style). Supports up to 4 reference
+     * atoms and up to 3 internal coordinates: distance, angle, and dihedral 
+     * (in this order!).
+     * Each internal coordinate's {@link InternalCoord#getIDs()} list defines which
+     * reference atoms are used: the new atom is always index -1 (first in the list);
+     * the following indices refer to referenceAtoms (0-based).
+     * <ul>
+     * <li>Distance: ids = [-1, iA] — distance from new atom to referenceAtoms[iA].</li>
+     * <li>Angle: ids = [-1, iA, iB] — angle at referenceAtoms[iA] between
+     * (new–ref[iA]) and (ref[iB]–ref[iA]), in degrees.</li>
+     * <li>Dihedral: ids = [-1, iA, iB, iC] — dihedral (new, ref[iA], ref[iB], ref[iC]),
+     * in degrees.</li>
+     * </ul>
+     * Reference atoms must be non-collinear when angle is used, and non-coplanar
+     * when dihedral is used.
+     *
+     * @param referenceAtoms the reference atoms used to define the position of
+     * the new atom (up to 4).
+     * @param internalCoords the internal coordinate templates (distance, then
+     * optionally angle, then optionally dihedral). The new atom index is -1 and
+     * is the first in each coordinate's index list.
+     * @return the position of the new atom.
+     */
+    public static Point3d calculateAtomPosition(IAtom[] referenceAtoms,
+        InternalCoord[] internalCoords)
+    {
+        if (internalCoords == null || internalCoords.length < 1)
+        {
+            throw new IllegalArgumentException("At least one internal coordinate "
+                + "(distance) is required.");
+        }
+        Point3d[] positions = new Point3d[referenceAtoms.length];
+        for (int i = 0; i < referenceAtoms.length; i++)
+        {
+            positions[i] = AtomUtils.getCoords3d(referenceAtoms[i]);
+        }
+
+        double d = internalCoords[0].getValue();
+        ArrayList<Integer> idsDist = internalCoords[0].getIDs();
+        if (idsDist.size() < 2)
+        {
+            throw new IllegalArgumentException("Distance internal coordinate must "
+                + "have at least two atom indexes (new atom and reference).");
+        }
+        int iA = idsDist.get(1).intValue();
+        if (iA < 0 || iA >= referenceAtoms.length)
+        {
+            throw new IllegalArgumentException("Distance reference index " + iA
+                + " is out of range for " + referenceAtoms.length + " reference atoms.");
+        }
+        Point3d A = positions[iA];
+
+        double thetaRad = 0.0;
+        int iB = -1;
+        Vector3d e1 = new Vector3d(1.0, 0.0, 0.0);
+        if (internalCoords.length >= 2)
+        {
+            thetaRad = internalCoords[1].getValue() * Math.PI / 180.0;
+            ArrayList<Integer> idsAng = internalCoords[1].getIDs();
+            if (idsAng.size() < 3)
+            {
+                throw new IllegalArgumentException("Angle internal coordinate must "
+                    + "have three atom indexes (new, centre, other).");
+            }
+            iA = idsAng.get(1).intValue();
+            iB = idsAng.get(2).intValue();
+            if (iA < 0 || iA >= referenceAtoms.length || iB < 0
+                || iB >= referenceAtoms.length)
+            {
+                throw new IllegalArgumentException("Angle reference indexes out of range.");
+            }
+            A = positions[iA];
+            Point3d B = positions[iB];
+            e1.x = B.x - A.x;
+            e1.y = B.y - A.y;
+            e1.z = B.z - A.z;
+            double len = e1.length();
+            if (len < 1e-10)
+            {
+                throw new IllegalArgumentException("Reference atoms for angle are "
+                    + "coincident; cannot define direction.");
+            }
+            e1.scale(1.0 / len);
+        }
+
+        Vector3d e2 = new Vector3d();
+        Vector3d e3 = new Vector3d();
+        double phiRad = 0.0;
+        if (internalCoords.length >= 3)
+        {
+            phiRad = internalCoords[2].getValue() * Math.PI / 180.0;
+            ArrayList<Integer> idsDih = internalCoords[2].getIDs();
+            if (idsDih.size() < 4)
+            {
+                throw new IllegalArgumentException("Dihedral internal coordinate must "
+                    + "have four atom indexes (new, iA, iB, iC).");
+            }
+            int iC = idsDih.get(3).intValue();
+            if (iC < 0 || iC >= referenceAtoms.length)
+            {
+                throw new IllegalArgumentException("Dihedral reference index out of range.");
+            }
+            Point3d C = positions[iC];
+            Vector3d ac = new Vector3d(C.x - A.x, C.y - A.y, C.z - A.z);
+            double dot = ac.x * e1.x + ac.y * e1.y + ac.z * e1.z;
+            e2.x = ac.x - dot * e1.x;
+            e2.y = ac.y - dot * e1.y;
+            e2.z = ac.z - dot * e1.z;
+            double len2 = e2.length();
+            if (len2 < 1e-10)
+            {
+                throw new IllegalArgumentException("Reference atoms for dihedral are "
+                    + "collinear; cannot define dihedral plane.");
+            }
+            e2.scale(1.0 / len2);
+            e3.cross(e1, e2);
+        }
+        else if (internalCoords.length >= 2)
+        {
+            e2 = ThreeDimensionalSpaceUtils.getNormalDirection(e1);
+            e3.cross(e1, e2);
+        }
+        else
+        {
+            e2.set(0.0, 1.0, 0.0);
+            e3.cross(e1, e2);
+        }
+
+        double cosTheta = Math.cos(thetaRad);
+        double sinTheta = Math.sin(thetaRad);
+        double cosPhi = Math.cos(phiRad);
+        double sinPhi = Math.sin(phiRad);
+        Vector3d u = new Vector3d(
+            cosPhi * e2.x + sinPhi * e3.x,
+            cosPhi * e2.y + sinPhi * e3.y,
+            cosPhi * e2.z + sinPhi * e3.z);
+        Vector3d offset = new Vector3d(
+            d * (cosTheta * e1.x + sinTheta * u.x),
+            d * (cosTheta * e1.y + sinTheta * u.y),
+            d * (cosTheta * e1.z + sinTheta * u.z));
+        Point3d newAtomPosition = new Point3d(
+            A.x + offset.x,
+            A.y + offset.y,
+            A.z + offset.z);
+        return newAtomPosition;
+    }
+    
 //------------------------------------------------------------------------------
 
 }
