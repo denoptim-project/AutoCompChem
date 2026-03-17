@@ -104,6 +104,7 @@ public class SMARTSUtils
     		sortedKeys.add(key);
     		for (int i=0; i<tupleRule.getValue().size(); i++)
         	{
+                // NB: below we assume the last "_" is followed by an integer
         		String refName = key + "_" + i;
         		smarts.put(refName, tupleRule.getValue().get(i));
         	}
@@ -146,7 +147,9 @@ public class SMARTSUtils
             List<String> smartsRefNamesForTuple = new ArrayList<String>();
             for (String k2 : groupedByTuple.keySet())
             {
-                if (k2.toUpperCase().startsWith(key.toUpperCase()))
+                // NB: here we assume the last "_" is followed by an integer
+                String k2RefName = k2.substring(0, k2.lastIndexOf("_"));
+                if (k2RefName.toUpperCase().equals(key.toUpperCase()))
                 {
                 	smartsRefNamesForTuple.add(k2);
                 }
