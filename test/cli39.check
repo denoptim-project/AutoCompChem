@@ -8,6 +8,15 @@ function not_passed() {
 if [ ! -f cli39.log ] ; then not_passed $LINENO ; fi
 if [ ! -f cli39-edited.sdf ] ; then not_passed $LINENO ; fi
 
+n=0; n=$(grep -c -i "Added bond between.*SINGLE" cli39.log)
+if [ 2 != "$n" ] ; then not_passed $LINENO ; exit 0 ; fi
+
+n=0; n=$(grep -c -i "Added bond between.*DOUBLE" cli39.log)
+if [ 2 != "$n" ] ; then not_passed $LINENO ; exit 0 ; fi
+
+n=0; n=$(grep -c -i "Added bond between.*TRIPLE" cli39.log)
+if [ 2 != "$n" ] ; then not_passed $LINENO ; exit 0 ; fi
+
 # Symmetry makes two distinct tuples match the query, so all atoms are added twice
 # but in some cases in two different positions, due to the centroid being
 # computes over a/symmetric centers

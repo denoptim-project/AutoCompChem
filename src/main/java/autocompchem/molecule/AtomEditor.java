@@ -123,6 +123,12 @@ public class AtomEditor extends AtomTupleGenerator
         KEYELEMENT, KEYADDATOM, KEYREMOVE);
 
     /**
+     * Keyword used to define the connectivity of the new atom. Ineffective
+     * for any other task.
+     */
+    public static final String KEYNEWATOMBONDING = "NEWATOMBONDING";
+
+    /**
      * Keyword used to define the position of the new atom 
      * from internal coordinates of the reference atoms
      */
@@ -150,6 +156,7 @@ public class AtomEditor extends AtomTupleGenerator
         ruleRoot = BASENAME;
         valuedKeywords.add(KEYELEMENT);
         valuedKeywords.add(KEYADDATOM);
+        valuedKeywords.add(KEYNEWATOMBONDING);
         valuelessKeywords.add(KEYREMOVE);
     }
 
@@ -341,7 +348,41 @@ public class AtomEditor extends AtomTupleGenerator
         
         String newSymbol = words[0];
 
-        Map<IAtom,Object[]> bondedAtoms = new HashMap<IAtom,Object[]>();
+        // Define the connectivity of the new atom
+        Map<IAtom,IBond.Order> bondedAtoms = new HashMap<IAtom,IBond.Order>();
+        if (tuple.hasValuedAttribute(KEYNEWATOMBONDING))
+        {
+            String valueForNewBonds = tuple.getValueOfAttribute(KEYNEWATOMBONDING);
+            // expected syntax: <index> <order>, <index> <order>, ...
+            String[] singleBondParts = valueForNewBonds.trim().split(",");  
+            for (String singleBondPart : singleBondParts)
+            {
+                String[] bondPart = singleBondPart.trim().split("\\s+");
+                String errBase = "Value of '" + KEYNEWATOMBONDING 
+                        + "' keyword must be followed by comma-separated bond-specific pair. "
+                        + "Each bond-specific pair must be in the format 'index order'. ";
+                if (bondPart.length != 2)
+                {
+                    throw new IllegalArgumentException(errBase
+                        + "Could not parse '" + singleBondPart + "' as bond part.");
+                }   
+                if (!NumberUtils.isParsableToInt(bondPart[0]))
+                {
+                    throw new IllegalArgumentException(errBase
+                        + "Could not parse '" + bondPart[0] + "' as index.");
+                }
+                int index = Integer.parseInt(bondPart[0]);
+                if (!NumberUtils.isParsableToInt(bondPart[1]))
+                {
+                    throw new IllegalArgumentException(errBase
+                        + "Could not parse '" + bondPart[1] + "' as order.");
+                }
+                IBond.Order order = MolecularUtils.intToBondOrder(Integer.parseInt(bondPart[1]));
+                bondedAtoms.put(referenceAtoms[index], order);
+            }
+        }
+
+        // Add the atom according to the way to define its position
         switch (words[1].toUpperCase()) {
             case KEYATOMATIC:
                 InternalCoord[] internalCoords = new InternalCoord[referenceAtoms.length];
@@ -427,13 +468,12 @@ public class AtomEditor extends AtomTupleGenerator
      * the position of the new atom. The index of the new atom is expected to the
      * '-1' and be the first position in the list of indexes.
      * @param newElSymbol the elemental symbol of the new atom.
-     * @param bondedAtoms the map of atoms bonded to the new atom and the 
-     * properties of the new bond to be created, namely {@Link IBond.Order} and 
-     * {@Link IBond.Stereo}.
+     * @param bondedAtoms the map of atoms bonded to the new atom and 
+     * the order of the new bond to be created.
      */
     public static void addAtom(IAtomContainer iac, IAtom[] referenceAtoms, 
         InternalCoord[] internalCoords, String newElSymbol, 
-        Map<IAtom,Object[]> bondedAtoms)
+        Map<IAtom,IBond.Order> bondedAtoms)
     {
         Point3d newAtomPosition = MolecularUtils.calculateAtomPosition(
             referenceAtoms, internalCoords);
@@ -452,7 +492,7 @@ public class AtomEditor extends AtomTupleGenerator
      * {@Link IBond.Stereo}.
      */
     public static void addAtom(IAtomContainer iac, String newElSymbol, 
-        Point3d newAtomPosition, Map<IAtom,Object[]> bondedAtoms)
+        Point3d newAtomPosition, Map<IAtom,IBond.Order> bondedAtoms)
     {
     	Logger logger = LogManager.getLogger();
         IAtom newAtm = AtomUtils.makeIAtom(newElSymbol, newAtomPosition);
@@ -464,34 +504,13 @@ public class AtomEditor extends AtomTupleGenerator
         
         for (IAtom bondedAtm : bondedAtoms.keySet())
         {
-            Object[] bondProperties = bondedAtoms.get(bondedAtm);
-            if (bondProperties.length != 2)
-            {
-                throw new IllegalArgumentException("Bond properties must "
-                    + "be an array of length 2. Found " 
-                    + bondProperties.length + ".");
-            }
-            if (!(bondProperties[0] instanceof IBond.Order))
-            {
-                throw new IllegalArgumentException("Bond property 0 must "
-                    + "be an instance of IBond.Order. Found " 
-                    + bondProperties[0].getClass().getName() + ".");
-            }
-            if (!(bondProperties[1] instanceof IBond.Stereo))
-            {
-                throw new IllegalArgumentException("Bond property 1 must "
-                    + "be an instance of IBond.Stereo. Found " 
-                    + bondProperties[1].getClass().getName() + ".");
-            }
-            IBond newBnd = new Bond(newAtm, bondedAtm, 
-                (IBond.Order) bondProperties[0],
-                (IBond.Stereo) bondProperties[1]);
+            IBond.Order order = bondedAtoms.get(bondedAtm);
+            IBond newBnd = new Bond(newAtm, bondedAtm, order);
             iac.addBond(newBnd);
 
             String msg2 = "Added bond between " + MolecularUtils.getAtomRef(newAtm, iac)
                 + " and " + MolecularUtils.getAtomRef(bondedAtm, iac)
-                + " with order " + bondProperties[0].toString()
-                + " and stereo " + bondProperties[1].toString();
+                + " with order " + order.toString();
             logger.debug(msg2);
         }
     }
