@@ -2,6 +2,7 @@ package autocompchem.molecule;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /*   
  *   Copyright (C) 2018  Marco Foscato 
@@ -168,6 +169,65 @@ public class MolecularUtilsTest
         assertTrue(Math.abs(dm.get(0, 1) - 3.0) < trsh,"Distance 1-2");
         assertTrue(Math.abs(dm.get(0, 2) - 4.0) < trsh,"Distance 1-2");
         assertTrue(Math.abs(dm.get(1, 2) - 5.0) < trsh,"Distance 1-2");
+    }
+
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testCalculateCentroid_emptyArrayThrows()
+    {
+    	IAtom[] atoms = new IAtom[0];
+    	IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+    			() -> MolecularUtils.calculateCentroid(atoms));
+    	assertTrue(e.getMessage().contains("empty array"));
+    }
+
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testCalculateCentroid_singleAtom()
+    {
+    	IAtom[] atoms = new IAtom[] {
+    			new Atom("C", new Point3d(1.0, 2.0, 3.0))
+    	};
+    	Point3d centroid = MolecularUtils.calculateCentroid(atoms);
+    	double tol = 1e-10;
+    	assertEquals(1.0, centroid.x, tol);
+    	assertEquals(2.0, centroid.y, tol);
+    	assertEquals(3.0, centroid.z, tol);
+    }
+
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testCalculateCentroid_twoAtoms()
+    {
+    	IAtom[] atoms = new IAtom[] {
+    			new Atom("C", new Point3d(0.0, 0.0, 0.0)),
+    			new Atom("C", new Point3d(2.0, 4.0, 6.0))
+    	};
+    	Point3d centroid = MolecularUtils.calculateCentroid(atoms);
+    	double tol = 1e-10;
+    	assertEquals(1.0, centroid.x, tol);
+    	assertEquals(2.0, centroid.y, tol);
+    	assertEquals(3.0, centroid.z, tol);
+    }
+
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testCalculateCentroid_threeAtoms()
+    {
+    	IAtom[] atoms = new IAtom[] {
+    			new Atom("C", new Point3d(1.0, 0.0, 0.0)),
+    			new Atom("C", new Point3d(0.0, 3.0, 0.0)),
+    			new Atom("C", new Point3d(0.0, 0.0, 6.0))
+    	};
+    	Point3d centroid = MolecularUtils.calculateCentroid(atoms);
+    	double tol = 1e-10;
+    	assertEquals(1.0 / 3.0, centroid.x, tol);
+    	assertEquals(1.0, centroid.y, tol);
+    	assertEquals(2.0, centroid.z, tol);
     }
 
 //------------------------------------------------------------------------------

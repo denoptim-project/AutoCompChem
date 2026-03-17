@@ -57,7 +57,6 @@ import autocompchem.geometry.DistanceMatrix;
 
 public class MolecularUtils
 {
-
     //TODO move to constants
     private static String duSymbol = "Du";
     //TODO move to constants
@@ -892,6 +891,29 @@ public class MolecularUtils
 		return iacWithTags;
 	}
 	
+//------------------------------------------------------------------------------
+
+    /**
+     * Calculate the centroid of the given atoms.
+     * @param atoms the atoms to calculate the centroid of.
+     * @return the centroid of the given atoms.
+     */
+    public static Point3d calculateCentroid(IAtom[] atoms)
+    {   
+        if (atoms.length == 0)
+        {
+            throw new IllegalArgumentException("Cannot calculate centroid "
+                +"of an empty array of atoms.");
+        }
+        Point3d centroid = new Point3d();
+        for (IAtom atom : atoms)
+        {
+            centroid.add(AtomUtils.getCoords3d(atom));
+        }
+        centroid.scale(1.0 / atoms.length);
+        return centroid;
+    }
+
 //------------------------------------------------------------------------------
 
 }
