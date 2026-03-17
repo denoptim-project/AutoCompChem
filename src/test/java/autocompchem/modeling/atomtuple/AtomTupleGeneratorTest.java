@@ -374,9 +374,6 @@ public class AtomTupleGeneratorTest
 		iac.addBond(10, 9, IBond.Order.SINGLE);
 		iac.addBond(11, 9, IBond.Order.SINGLE);
 
-		//TODO-gg del
-		IOtools.writeSDFAppend(new File("/tmp/mol.sdf"), iac, false);
-
 		List<AtomTupleMatchingRule> rules = new ArrayList<AtomTupleMatchingRule>();
 
     	AtomTupleMatchingRule ruleCH = new AtomTupleMatchingRule(
@@ -498,6 +495,13 @@ public class AtomTupleGeneratorTest
 			"OOCH_MoreThan");
     	rules.add(ruleOOCHMoreThan);
 
+		AtomTupleMatchingRule ruleOOCHMoreThanAlternative = new AtomTupleMatchingRule(
+			"[#1][#6][#8][#8] " + AtomTupleConstants.KEYGEOMETRYCONDITIONS + ": "
+			+ AtomTupleGeomCondition.GeomConditionType.DIHEDRAL + " 3 2 1 0 "
+			+ AtomTupleGeomCondition.GeomConditionOperator.MORE_THAN + " 90.0" , 
+			"OOCH_MoreThanAlternative");
+    	rules.add(ruleOOCHMoreThanAlternative);
+
 		List<AnnotatedAtomTuple> tuples = AtomTupleGenerator.createTuples(
 			iac, rules, null, Mode.TUPLES);
 
@@ -575,16 +579,6 @@ public class AtomTupleGeneratorTest
 
 		List<AnnotatedAtomTuple> tuplesOOCHall = getTuplesFromRuleName("OOCH_all", tuples);
 		assertEquals(6, tuplesOOCHall.size());
-
-//TODO-gg del
-        for (AnnotatedAtomTuple tuple : tuplesOOCHall)
-        {
-            System.out.println("dihedral for " +tuple.getAtomIDs() + " is " 
-			+ MolecularUtils.calculateTorsionAngle(iac.getAtom(tuple.getAtomIDs().get(0)), 
-													iac.getAtom(tuple.getAtomIDs().get(1)), 
-													iac.getAtom(tuple.getAtomIDs().get(2)), 
-													iac.getAtom(tuple.getAtomIDs().get(3))));
-        }
 		List<AnnotatedAtomTuple> tuplesOOCMin = getTuplesFromRuleName("OOCH_Min", tuples);
 		assertEquals(1, tuplesOOCMin.size());
 		assertEquals(4, tuplesOOCMin.get(0).getAtomIDs().size());
@@ -625,6 +619,16 @@ public class AtomTupleGeneratorTest
 			Arrays.asList(1, 7, 9, 10),
 			Arrays.asList(1, 7, 9, 11)));
 		for (AnnotatedAtomTuple tuple : tuplesOOCHMoreThan)
+		{
+			assertEquals(4, tuple.getAtomIDs().size());
+			assertTrue(expectedAtomIDs.contains(tuple.getAtomIDs()));
+		}
+		List<AnnotatedAtomTuple> tuplesOOCHMoreThanAlternative = getTuplesFromRuleName("OOCH_MoreThanAlternative", tuples);
+		assertEquals(2, tuplesOOCHMoreThanAlternative.size());
+		expectedAtomIDs = new HashSet<List<Integer>>(Arrays.asList(
+			Arrays.asList(10, 9, 7, 1),
+			Arrays.asList(11, 9, 7, 1)));
+		for (AnnotatedAtomTuple tuple : tuplesOOCHMoreThanAlternative)
 		{
 			assertEquals(4, tuple.getAtomIDs().size());
 			assertTrue(expectedAtomIDs.contains(tuple.getAtomIDs()));

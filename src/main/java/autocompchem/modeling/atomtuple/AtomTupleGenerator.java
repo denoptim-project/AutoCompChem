@@ -475,7 +475,7 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
         	String key = r.getRefName();
         	if (!allIDsForEachMR.containsKey(key))
         		continue;
-        	
+
             List<MatchingIdxs> atmIdxsForMR = allIDsForEachMR.get(key);
             if (atmIdxsForMR.size() == 0)
             {
