@@ -44,6 +44,7 @@ public class AtomTupleConstants
     // at the resource inputdefinition/*.json and
 	// inputdefinition/AtomTupleGenerator.json
 	public static final String KEYONLYINTERMOLECULAR = "ONLYINTERMOLECULAR";
+    
 
 	/**
 	 * Key of value-less attribute of {@link AtomTupleMatchingRule} that 
@@ -71,7 +72,16 @@ public class AtomTupleConstants
     // at the resource inputdefinition/*.json and
 	// inputdefinition/AtomTupleGenerator.json
     public static final String KEYSUFFIX= "SUFFIX";
-	
+
+    /**
+     * Keyword for valued attribute of {@link AtomTupleMatchingRule} that 
+     * specifies geometrical conditions that matched tuples must satisfy.
+     */
+    // WARNING: if you change this list you must update also the documentation
+    // at the resource inputdefinition/*.json and
+	// inputdefinition/AtomTupleGenerator.json
+    public static final String KEYGEOMETRYCONDITIONS = "GEOMETRYCONDITIONS";
+
     /**
      * List of default valued keywords recognized in text-like definition of 
      * atom tuple matching rules.
@@ -79,7 +89,7 @@ public class AtomTupleConstants
     // WARNING: if you change this list you must update also the documentation
     // at the resource inputdefinition/*.json and
 	// inputdefinition/AtomTupleGenerator.json
-    public static final String[] DEFAULTVALUEDKEYS = {KEYPREFIX,KEYSUFFIX};
+    public static final String[] DEFAULTVALUEDKEYS = {KEYPREFIX,KEYSUFFIX,KEYGEOMETRYCONDITIONS};
     
     /**
      * List of default value-less keywords recognized in text-like definition of 
@@ -98,6 +108,12 @@ public class AtomTupleConstants
      * to assign basis set from those meant to define constraints.
      */
     public static final String KEYRULENAMEROOT = "RULENAMEROOT";
+
+    /**
+     * Key used to define the name of the {@link AtomTupleMatchingRule} that
+     * generated the tuple and store it as an attribute of the tuple.
+     */
+    public static final String KEYRULENAME = "RULENAME";
     
     /**
      * Keyword used to provide a string defining keywords meant to be 

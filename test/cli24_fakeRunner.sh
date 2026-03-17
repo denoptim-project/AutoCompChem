@@ -5,8 +5,8 @@
 # made dependent on the last index, to simulate a different outcome from different
 # reruns of the workflow.
 # Note that this script assumes the work directory of the caller job is not the usual
-# 'results' folder used for most test runs, but is a subdirectory configures in the
-# definition ofthe job. Hence, we the hard-coded relative pathway starts with ../../
+# 'results' folder used for most test runs, but is a subdirectory configured in the
+# definition of the job. Hence, we the hard-coded relative pathway starts with ../../
 
 echo "Running fake job runner"
 echo "pwd=$(pwd)"

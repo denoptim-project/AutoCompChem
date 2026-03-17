@@ -1,0 +1,36 @@
+#!/bin/bash
+
+function not_passed() {
+  echo "NOT Passed: check condition leading to line '$1' of '$0'"
+  exit -1
+}
+
+if [ ! -f t167.log ] ; then not_passed $LINENO ; fi
+
+n=0;n=$(grep -c -i 'Value of geometry condition ANGLE' t167.log)
+if [ $n != 16 ] ; then not_passed $LINENO ; fi
+
+n=0;n=$(grep -c -i 'Independent geometry conditions removed' t167.log)
+if [ $n != 4 ] ; then not_passed $LINENO ; fi
+
+n=0;n=$(grep -c -i 'Value of geometry condition MIN ANGLE' t167.log)
+if [ $n != 8 ] ; then not_passed $LINENO ; fi
+
+if [ ! -f t167_results.dat ] ; then not_passed $LINENO ; fi
+
+n=0;n=$(grep -c -i '< 90' t167_results.dat)
+if [ $n != 4 ] ; then not_passed $LINENO ; fi
+
+n=0;n=$(grep -c -i '< 120' t167_results.dat)
+if [ $n != 3 ] ; then not_passed $LINENO ; fi
+
+n=0;n=$(grep -c -i ' min' t167_results.dat)
+if [ $n != 2 ] ; then not_passed $LINENO ; fi
+
+if grep -q 'Termination status: 0' t167.log ; then
+  echo Passed
+  exit 0
+else
+  echo NOT Passed 99
+  exit -1
+fi

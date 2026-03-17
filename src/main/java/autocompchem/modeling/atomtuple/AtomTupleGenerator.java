@@ -17,6 +17,9 @@ import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.io.IOtools;
@@ -281,8 +284,13 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
 	        // Now generate the tuple/sets, possibly passing the atom labels data
 	        List<AnnotatedAtomTuple> tuples = createTuples(iac, rules, labels,
 	        		mode);
+
+			// NB: use debug level because this method is called by many others
+			// where the atom tuple is only a tiny detail not the main focus.
+			// IF we want the output, we get it from the OUTFILE.
 	        logger.debug(StringUtils.mergeListToString(tuples, 
-	        			System.getProperty("line.separator")));
+				System.getProperty("line.separator")));
+				
 	        AnnotatedAtomTupleList aatl = new AnnotatedAtomTupleList();
 	        if (tuples.size()>0)
 	        {
@@ -316,9 +324,28 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
 	    }
     	return iac;
     }
-        
+
 //------------------------------------------------------------------------------
-    
+
+    /**
+	 * Parses the formatted text defining {@link AtomTupleGeomCondition}s.
+	 * @param text the text to be parsed into {@link AtomTupleGeomCondition}s.
+	 * @return the list of {@link AtomTupleGeomCondition}s.
+	 */
+    protected static List<AtomTupleGeomCondition> parseAtomTupleGeomConditions(
+		String text)
+    {
+        List<AtomTupleGeomCondition> result = new ArrayList<AtomTupleGeomCondition>();
+        String[] parts = text.trim().split(",");
+        for (String part : parts)
+        {
+            result.add(new AtomTupleGeomCondition(part));
+        }
+        return result;
+    }
+
+//------------------------------------------------------------------------------
+
 	/**
 	 * Runs a child task for generating the atom labels according
 	 * to the given parameters.
@@ -381,6 +408,8 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
     public static List<AnnotatedAtomTuple> createTuples(IAtomContainer mol,
     		List<AtomTupleMatchingRule> rules, List<String> labels, Mode mode)
     {
+		Logger logger = LogManager.getLogger(AtomTupleGenerator.class);
+
 		// If needed, identify continuously connected sets of atoms, i.e., molcules
 		// withing the atom container
 		Map<Integer,List<IAtom>> molecules = null;
@@ -389,8 +418,6 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
 		{
 			molecules = ConnectivityUtils.identifyConnectedFrags(mol);
 		}
-
-    	List<AnnotatedAtomTuple> result = new ArrayList<AnnotatedAtomTuple>();
     	
     	//Here we collect all atom tuples (without annotation) by the name of
     	// the matching AtomTupleMatchingRule (below called MR for brevity)
@@ -442,6 +469,7 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
         }
         
         //Define annotated tuples/sets according to the matched atom
+    	List<AnnotatedAtomTuple> resultingTuples = new ArrayList<AnnotatedAtomTuple>();
         for (AtomTupleMatchingRule r : rules)
         {
         	String key = r.getRefName();
@@ -536,7 +564,8 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
 	                throw new IllegalStateException(
 	                		"Unrecognized mode of action '" + mode + "'.");
             }
-            
+
+			List<AnnotatedAtomTuple> tuplesPerRule = new ArrayList<AnnotatedAtomTuple>();
         	while (iter.hasNext())
         	{
         		List<IAtom> atoms = iter.next();
@@ -610,11 +639,131 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
         						value.toString());
         			}
         		}
-        		
-        		result.add(tuple);
+				tuple.setValueOfAttribute(AtomTupleConstants.KEYRULENAME, key);
+        		tuplesPerRule.add(tuple);
         	}
+
+			// Geometry constraints that apply to a single tuple are applied here, if any
+			int numTuplesFilteredOut = 0;
+			List<AnnotatedAtomTuple> satisfiedTuples = new ArrayList<AnnotatedAtomTuple>();
+			List<AtomTupleGeomCondition> geomConstraints = new ArrayList<AtomTupleGeomCondition>();
+			if (r.getValueOfAttribute(AtomTupleConstants.KEYGEOMETRYCONDITIONS) != null)
+			{
+				// NB: all tuples from the same rule will have the same geometry constraints,
+				// se we take them from the rule instead of taking them from each tuple
+				geomConstraints.addAll(parseAtomTupleGeomConditions(
+					r.getValueOfAttribute(AtomTupleConstants.KEYGEOMETRYCONDITIONS)));
+
+				AtomTupleGeomCondition listWiseCondition = null;
+
+				// Geometry constraints that apply to a single tuple are applied here, if any
+				for (AnnotatedAtomTuple tuple : tuplesPerRule)
+				{
+					boolean allSatisfied = true;
+					for (AtomTupleGeomCondition geomConstraint : geomConstraints)
+					{
+						if (geomConstraint == listWiseCondition)
+						{
+							continue;
+						}
+						if (geomConstraint.isIndependent())
+						{ 
+							if (!geomConstraint.isSatisfied(tuple, mol, logger))
+							{
+								allSatisfied = false;
+								numTuplesFilteredOut++;
+								break;
+							}
+						} else {
+							if (listWiseCondition != null)
+							{
+								throw new IllegalArgumentException(
+									"Cannot apply more than one dependent "
+									+ "geometry condition (found both "
+									+ listWiseCondition.type + " "
+									+ listWiseCondition.operator + " and "
+								    + geomConstraint.type + " "
+								    + geomConstraint.operator + ") "
+									+ "to the same list of tuples.");
+							}
+							listWiseCondition = geomConstraint;
+						}
+					}
+					if (allSatisfied) 
+					{	
+						satisfiedTuples.add(tuple);
+					}
+				}
+				if (numTuplesFilteredOut > 0)
+				{
+					logger.debug("Independent geometry conditions removed " 
+						+ numTuplesFilteredOut + " tuples for rule " + r.getRefName());
+				}
+
+				// Geometry condition that applies to all tuples is applied here, if any
+				if (listWiseCondition != null && satisfiedTuples.size() > 1)
+				{
+					if (listWiseCondition.operator == AtomTupleGeomCondition.GeomConditionOperator.MIN)
+					{
+						double currentMinValue = Double.MAX_VALUE;
+						AnnotatedAtomTuple minValueTuple = null;
+						for (AnnotatedAtomTuple tuple : satisfiedTuples)
+						{
+							double value = listWiseCondition.getValue(tuple, mol);
+
+							logger.debug("Value of geometry condition " 
+							    + listWiseCondition.operator + " " 
+							    + listWiseCondition.type + " " 
+								+ listWiseCondition.atomIndexes + " for tuple " 
+								+ tuple.getAtomIDs() + " is " + value);
+
+							if (value < currentMinValue)
+							{
+								currentMinValue = value;
+								minValueTuple = tuple;
+							}
+						}
+						if (minValueTuple != null)
+						{
+							resultingTuples.add(minValueTuple);
+						}
+					} else if (listWiseCondition.operator == AtomTupleGeomCondition.GeomConditionOperator.MAX)
+					{
+						double currentMaxValue = Double.MIN_VALUE;
+						AnnotatedAtomTuple maxValueTuple = null;
+						for (AnnotatedAtomTuple tuple : satisfiedTuples)
+						{
+							double value = listWiseCondition.getValue(tuple, mol);
+
+							logger.debug("Value of geometry condition " 
+							    + listWiseCondition.operator + " " 
+							    + listWiseCondition.type + " " 
+								+ listWiseCondition.atomIndexes + " for tuple " 
+								+ tuple.getAtomIDs() + " is " + value);
+
+							if (value > currentMaxValue)
+							{
+								currentMaxValue = value;
+								maxValueTuple = tuple;
+							}
+						}
+						if (maxValueTuple != null)
+						{
+							resultingTuples.add(maxValueTuple);
+						}
+					} else {
+						throw new IllegalArgumentException(
+							"Invalid dependent geometry condition operator: " 
+							+ listWiseCondition.operator);
+					}
+				} else {
+					resultingTuples.addAll(satisfiedTuples);
+				}
+			} else {
+				resultingTuples.addAll(tuplesPerRule);
+			}
         }
-        return result;
+        return resultingTuples;
     }
 
     

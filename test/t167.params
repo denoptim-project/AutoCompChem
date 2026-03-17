@@ -1,0 +1,9 @@
+TASK: generateAtomTuples
+# Only with debug-level logging we get the details of the geometric conditions evaluation logged
+verbosity: 5
+INFILE: ../t167-mols.sdf
+SMARTS: $START[#44](=[$([#6]([#1])[#1])])([#17])~[#44] prefix=this is a tuple GEOMETRYCONDITIONS:angle 2 0 3 < 90
+[#6]@~[#7;X3]!@~[#6] GEOMETRYCONDITIONS: angle 0 1 2 < 120
+[#6]@~[#7;X3]!@~[#6] GEOMETRYCONDITIONS: angle 0 1 2 min
+$END
+outfile: t167_results.dat
