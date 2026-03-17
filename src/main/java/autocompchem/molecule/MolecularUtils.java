@@ -1010,7 +1010,8 @@ public class MolecularUtils
         double phiRad = 0.0;
         if (internalCoords.length >= 3)
         {
-            phiRad = internalCoords[2].getValue() * Math.PI / 180.0;
+            // NB: the -1 reflect the levo/destrogiro convention in chemistry.
+            phiRad = internalCoords[2].getValue() * Math.PI / 180.0 * -1.0;
             ArrayList<Integer> idsDih = internalCoords[2].getIDs();
             if (idsDih.size() < 4)
             {

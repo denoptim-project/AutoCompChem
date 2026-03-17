@@ -342,46 +342,71 @@ public class AtomEditor extends AtomTupleGenerator
         String newSymbol = words[0];
 
         Map<IAtom,Object[]> bondedAtoms = new HashMap<IAtom,Object[]>();
-        switch (words[1]) {
+        switch (words[1].toUpperCase()) {
             case KEYATOMATIC:
                 InternalCoord[] internalCoords = new InternalCoord[referenceAtoms.length];
-                if (words.length < 8)
+                if (words.length != 4 && words.length != 6 && words.length != 8)
                 {
                     throw new IllegalArgumentException("Value of '" + KEYATOMATIC 
-                        + "' keyword must be followed by 3 space-separated pairs 'index value'."
+                        + "' keyword must be followed by up to 3 pairs of index and value'."
                         + ". Found only " + (words.length - 2) + " words instead of 6.");
                 }
-                int[] indexes = new int[3];
-                double[] values = new double[3];
-                for (int i=2; i<words.length; i+=2)
+                int numPairs = (words.length - 2) / 2;
+                int[] indexes = new int[numPairs];
+                double[] values = new double[numPairs];
+                for (int iPair=0; iPair<numPairs; iPair++)
                 {
+                    int i = 2 + iPair * 2;
                     if (!NumberUtils.isParsableToInt(words[i]))
                     {
                         throw new IllegalArgumentException("Value of '" + KEYATOMATIC 
-                            + "' keyword must be followed by 3 space-separated pairs 'index value'."
+                            + "' keyword must be followed by space-separated pairs 'index value'."
                             + ". Could not parse '" + words[i] + "' as index.");
                     }
-                    indexes[i/2] = Integer.parseInt(words[i]);
+                    indexes[iPair] = Integer.parseInt(words[i]);
                     if (!NumberUtils.isParsableToDouble(words[i+1]))
                     {
                         throw new IllegalArgumentException("Value of '" + KEYATOMATIC 
-                            + "' keyword must be followed by 3 space-separated pairs 'index value'."
+                            + "' keyword must be followed by space-separated pairs 'index value'."
                             + ". Could not parse '" + words[i+1] + "' as value.");
                     }
-                    values[i/2] = Double.parseDouble(words[i+1]);
+                    values[iPair] = Double.parseDouble(words[i+1]);
                 }
                 internalCoords[0] = new InternalCoord("distance", values[0], 
                     new ArrayList<Integer>(Arrays.asList(-1, indexes[0])));
-                internalCoords[1] = new InternalCoord("angle", values[1], 
-                    new ArrayList<Integer>(Arrays.asList(-1, indexes[0], indexes[1])));
-                internalCoords[2] = new InternalCoord("torsion", values[2], 
-                    new ArrayList<Integer>(Arrays.asList(-1, indexes[0], indexes[1], indexes[2])));
+                if (numPairs > 1)
+                {
+                    internalCoords[1] = new InternalCoord("angle", values[1], 
+                        new ArrayList<Integer>(Arrays.asList(-1, indexes[0], indexes[1])));
+                    if (numPairs > 2)
+                    {
+                        internalCoords[2] = new InternalCoord("torsion", values[2], 
+                            new ArrayList<Integer>(Arrays.asList(-1, indexes[0], indexes[1], indexes[2])));
+                    }
+                }
 
                 addAtom(iac, referenceAtoms, internalCoords, newSymbol, bondedAtoms);
                 break;
 
             case KEYATOMATCENTROID:
-                Point3d centroid = MolecularUtils.calculateCentroid(referenceAtoms);
+                IAtom[] centroidAtoms = new IAtom[4];
+                if (words.length > 2)
+                {
+                    centroidAtoms = new IAtom[words.length - 2];
+                    for (int i=2; i<words.length; i++)
+                    {
+                        if (!NumberUtils.isParsableToInt(words[i]))
+                        {
+                            throw new IllegalArgumentException("Value of '" + KEYATOMATCENTROID 
+                                + "' keyword must be followed by a space-separated list of atom indexes."
+                                + ". Could not parse '" + words[i] + "' as index.");
+                        }
+                        centroidAtoms[i-2] = referenceAtoms[Integer.parseInt(words[i])];
+                    }
+                } else {
+                    centroidAtoms = referenceAtoms;
+                }
+                Point3d centroid = MolecularUtils.calculateCentroid(centroidAtoms);
                 addAtom(iac, newSymbol, centroid, bondedAtoms);
                 break;
             default:

@@ -1,0 +1,25 @@
+{
+  "jobType": "ACCJob",
+  "params": [
+    {
+      "reference": "TASK",
+      "value": "editAtoms"
+    },
+    {
+      "reference": "SMARTS",
+      "value": "[#6][#7][#6][#8] addAtom H centroid\n[#6][#7][#6][#8] addAtom Cl centroid 0 1\n[#6][#7][#6][#8] addAtom He centroid 1 2\n[#6][#7][#6][#8] addAtom B centroid 3 2 1\n[#7] [#8] addAtom W internalCoords 0 2.0 1 180.0\n[#7][#6][#8] addAtom Rh internalCoords 1 2.5 0 60.0 2 90"
+    },
+    {
+      "reference": "VERBOSITY",
+      "value": "5"
+    },
+    {
+      "reference": "INFILE",
+      "value": "../cli39-mol.sdf"
+    },
+    {
+      "reference": "outFile",
+      "value": "cli39-edited.sdf"
+    }
+  ]
+}
