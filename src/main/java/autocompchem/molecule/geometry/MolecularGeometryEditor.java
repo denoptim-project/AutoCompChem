@@ -47,12 +47,12 @@ import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileUtils;
 import autocompchem.geometry.DistanceMatrix;
 import autocompchem.io.IOtools;
+import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
 import autocompchem.molecule.AtomContainerInputProcessor;
 import autocompchem.molecule.BondEditor;
 import autocompchem.molecule.MolecularMeter;
 import autocompchem.molecule.MolecularReorderer;
 import autocompchem.molecule.MolecularUtils;
-import autocompchem.molecule.connectivity.BondEditingRule;
 import autocompchem.molecule.dummyobjects.DummyObjectsHandler;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrixAtom;
@@ -1281,7 +1281,6 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
 		} catch (ClassNotFoundException e) {
 			throw new IllegalStateException(e);
 		}
-        ZMatrixHandler zmh = (ZMatrixHandler) w;
         ZMatrix zmatMol = null;
 
 		w.performTask();
@@ -1329,11 +1328,11 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
 			+ "stretch multiple bonds at once.");
 		}
 		IBond bondToStretch = bondsToStretch.get("bondToStretch").get(0);
+		int indexOfAtm0 = reorderedIAC.indexOf(bondToStretch.getBegin());
+		int indexOfAtm1 = reorderedIAC.indexOf(bondToStretch.getEnd());
 
 		// Identify the internal coordinate corresponding to the bond to stretch
-		ZMatrixAtom atomToMove = zmatMol.findBondDistance(
-			reorderedIAC.indexOf(bondToStretch.getBegin()), 
-			reorderedIAC.indexOf(bondToStretch.getEnd()));
+		ZMatrixAtom atomToMove = zmatMol.findBondDistance(indexOfAtm0, indexOfAtm1);
 		if (atomToMove == null)
 		{
 			throw new IllegalStateException("No internal coordinate "
@@ -1362,7 +1361,7 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
 
 			IAtomContainer outMol = null;
 			try {
-				outMol = zmh.convertZMatrixToIAC(zmatMol, reorderedIAC);
+				outMol = ZMatrixHandler.convertZMatrixToIAC(zmatMol, reorderedIAC);
 			} catch (Throwable e) {
 				throw new RuntimeException("Exception while "
 					+ "converting ZMatrix to IAC. Cause of the exception: "
@@ -1384,8 +1383,9 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
 				}
 
 				// Remove the bond that was stretched
-				BondEditor.editBonds(clonedResult, Map.of("bondToStretch", 
-					new BondEditingRule(new SMARTS[] {smartsBondToStretch}, null, null, true, 0)));
+				AnnotatedAtomTuple tuple = new AnnotatedAtomTuple(
+					new int[] {indexOfAtm0, indexOfAtm1}, null, Set.of(BondEditor.KEYREMOVE), null, null, 0);
+				BondEditor.editBonds(clonedResult, List.of(tuple));
 
 				// Measure all interfragment distances
 				Map<String,List<Double>> distances = MolecularMeter.measureAllQuantities(

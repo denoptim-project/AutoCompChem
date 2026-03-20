@@ -77,12 +77,12 @@ public class AtomTupleMatchingRule
     /**
      * The rule's SMARTS query
      */
-    private ArrayList<SMARTS> smartsQry;
+    private List<SMARTS> smartsQry;
     
     /**
      * The rules atom IDs query
      */
-    private ArrayList<Integer> idsQry;
+    private List<Integer> idsQry;
 
 //------------------------------------------------------------------------------
 
@@ -97,6 +97,30 @@ public class AtomTupleMatchingRule
     	this.refName = name;
     	this.type = RuleType.SMARTS;
     	this.smartsQry = new ArrayList<SMARTS>(Arrays.asList(smarts));
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Constructor for a SMARTS-based rule with attributes.
+     * @param name the reference name of this rule.
+     * @param smarts the list of SMARTS for matching atoms.
+     * @param valuedKeywords list of keywords expected to have a value.
+     * @param booleanKeywords list of keywords expected to have no value, 
+     * i.e., their presence is sufficient to convey meaning.
+     * @param excludeDefaultKeys use <code>true</code> to exclude the default
+     * keywords that are defined in
+     * {@link AtomTupleConstants#DEFAULTVALUEDKEYS} and 
+     * {@link AtomTupleConstants#DEFAULTVALUELESSKEYS}. 
+     */
+    public AtomTupleMatchingRule(String name, SMARTS[] smarts,
+        Map<String,String> valuedAttributes, Set<String> valuelessAttributes)
+    {
+    	this.refName = name;
+    	this.type = RuleType.SMARTS;
+    	this.smartsQry = new ArrayList<SMARTS>(Arrays.asList(smarts));
+    	this.valuedAttributes = valuedAttributes != null ? valuedAttributes : new HashMap<String,String>();
+    	this.valuelessAttributes = valuelessAttributes != null ? valuelessAttributes : new HashSet<String>();
     }
     
 //------------------------------------------------------------------------------
@@ -116,6 +140,25 @@ public class AtomTupleMatchingRule
     		this.idsQry.add(ids[i]);
     }
 
+//------------------------------------------------------------------------------
+    /**
+     * Constructor for an ID-based rule with attributes.
+     * @param name the reference name of this rule.
+     * @param ids the atom indexes (0-based).
+     * @param valuedAttributes map of attributes with their (String) value.
+     * @param valuelessAttributes set of attributes with no value.
+     */
+    public AtomTupleMatchingRule(String name, int[] ids,
+        Map<String,String> valuedAttributes, Set<String> valuelessAttributes)
+    {
+    	this.refName = name;
+    	this.type = RuleType.ID;
+    	this.idsQry = new ArrayList<Integer>();
+    	for (int i=0; i< ids.length; i++)
+    		this.idsQry.add(ids[i]);
+    	this.valuedAttributes = valuedAttributes != null ? valuedAttributes : new HashMap<String,String>();
+    	this.valuelessAttributes = valuelessAttributes != null ? valuelessAttributes : new HashSet<String>();
+    }
 //------------------------------------------------------------------------------
 
     /**
@@ -340,7 +383,7 @@ public class AtomTupleMatchingRule
      * if this rule does not use SMARTS.
      */
     
-    public ArrayList<SMARTS> getSMARTS()
+    public List<SMARTS> getSMARTS()
     {
     	return smartsQry;
     }
@@ -353,7 +396,7 @@ public class AtomTupleMatchingRule
      * if this rule does not uses indexes.
      */
     
-    public ArrayList<Integer> getAtomIDs()
+    public List<Integer> getAtomIDs()
     {
     	return idsQry;
     }

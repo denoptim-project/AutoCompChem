@@ -1,6 +1,5 @@
 package autocompchem.molecule;
 
-
 /*   
  *   Copyright (C) 2024  Marco Foscato 
  *
@@ -18,16 +17,11 @@ package autocompchem.molecule;
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,11 +30,10 @@ import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 
-import autocompchem.molecule.connectivity.BondEditingRule;
+import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
+import autocompchem.modeling.atomtuple.AtomTupleGenerator;
+import autocompchem.modeling.atomtuple.AtomTupleMatchingRule;
 import autocompchem.run.Job;
-import autocompchem.smarts.MatchingIdxs;
-import autocompchem.smarts.SMARTS;
-import autocompchem.smarts.SMARTSUtils;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 
@@ -50,23 +43,11 @@ import autocompchem.worker.Worker;
  * @author Marco Foscato
  */
 
-
-public class BondEditor extends AtomContainerInputProcessor
+public class BondEditor extends AtomTupleGenerator
 {
-    
     /**
-     * Unique identifier for bond-matching rules
-     */
-	protected AtomicInteger ruleID = new AtomicInteger(0);
-
-    /**
-     * List (with string identifier) of rules defining hoe to edit bonds.
-     */
-    private Map<String,BondEditingRule> bondEditingrules = 
-    		new HashMap<String,BondEditingRule>();
-    
-    /**
-     * String defining the task of editing bonds
+     * String defining the task of editing bonds.
+	 * Does include adding and removing.
      */
     public static final String EDITBONDSTASKNAME = "editBonds";
 
@@ -78,6 +59,54 @@ public class BondEditor extends AtomContainerInputProcessor
     	EDITBONDSTASK = Task.make(EDITBONDSTASKNAME);
     }
 
+	/**
+     * String defining the task of removing bonds.
+     * Redundant, but defined to ensure visibility of the task.
+     */
+	public static final String REMOVEBONDSTASKNAME = "removeBonds";
+
+	/**
+	 * Task about removing atoms
+	 */
+	public static final Task REMOVEBONDSTASK;
+	static {
+		REMOVEBONDSTASK = Task.make(REMOVEBONDSTASKNAME);
+	}
+
+	/**
+	 * String defining the task of adding bonds
+	 * Redundant, but defined to ensure visibility of the task.
+	 */
+	public static final String ADDBONDSTASKNAME = "addBonds";
+
+	/**
+	 * Task about adding an atom
+	 */
+	public static final Task ADDBONDSTASK;
+	static {
+		ADDBONDSTASK = Task.make(ADDBONDSTASKNAME);
+	}
+
+	/**
+	 * Root of name used to identify any instance of this class.
+	 */
+	public static final String BASENAME = "BondEditRule-";
+
+    /**
+     * Keyword used in the {@link AtomTupleMatchingRule} to identify the imposed bond order value.
+	 */
+	public static final String KEYORDER = "ORDER";
+	
+    /**
+     * Keyword used in the {@link AtomTupleMatchingRule} to identify bonds to remove.
+	 */
+	public static final String KEYREMOVE = "REMOVE"; 
+
+	/**
+     * List of mutually exclusive attributes.
+     */
+	public static final List<String> MUTUALLYEXCLUSIVEATTRIBUTES = Arrays.asList(
+		KEYORDER, KEYREMOVE);
 
 //-----------------------------------------------------------------------------
     
@@ -85,14 +114,18 @@ public class BondEditor extends AtomContainerInputProcessor
      * Constructor.
      */
     public BondEditor()
-    {}
+    {
+        ruleRoot = BASENAME;
+        valuedKeywords.add(KEYORDER);
+        valuelessKeywords.add(KEYREMOVE);
+	}
 
 //------------------------------------------------------------------------------
 
     @Override
     public Set<Task> getCapabilities() {
         return Collections.unmodifiableSet(new HashSet<Task>(
-             Arrays.asList(EDITBONDSTASK)));
+             Arrays.asList(EDITBONDSTASK, ADDBONDSTASK, REMOVEBONDSTASK)));
     }
 
 //------------------------------------------------------------------------------
@@ -109,88 +142,17 @@ public class BondEditor extends AtomContainerInputProcessor
         return new BondEditor();
     }
     
-//-----------------------------------------------------------------------------
-
-    /**
-     * Initialise the worker according to the parameters set for this worker.
-     */
-
-    @Override
-    public void initialize()
-    {
-    	super.initialize();
-
-        //Get the list of SMARTS to be matched
-        if (params.contains("SMARTS"))
-        {
-        	String all = params.getParameter("SMARTS").getValueAsString();
-        	parseRules(all);
-        }
-        
-        //Get the list of bonds by atom Index
-        if (params.contains("ATOMIDS"))
-        {
-        	String all = params.getParameter("ATOMIDS").getValueAsString();
-        	parseRules(all);
-        }
-    }
-    
-//------------------------------------------------------------------------------
-
-    /**
-     * Parses the formatted text defining {@link BondEditingRuled} and adds
-     * the resulting rules to this instance.
-     * @param text the text (i.e., multiple lines) to be parsed into 
-     * {@link BondEditingRuled}s.
-     */
-
-    protected void parseRules(String text)
-    {
-    	// NB: the REGEX makes this compatible with either new-line character
-        String[] arr = text.split("\\r?\\n|\\r");
-        parseRules(new ArrayList<String>(Arrays.asList(arr)));
-    }
-    
-//------------------------------------------------------------------------------
-
-    /**
-     * Parses the formatted text defining {@link BondEditingRuled} and adds
-     * the resulting rules to this instance.
-     * @param lines the lines of text to be parsed into 
-     * {@link BondEditingRuled}s.
-     */
-
-    protected void parseRules(List<String> lines)
-    {
-        for (String line : lines)
-        {
-        	BondEditingRule bmRule = new BondEditingRule(line, 
-        			ruleID.getAndIncrement());
-        	bondEditingrules.put(bmRule.getRefName(), bmRule);
-        }
-    }
-    
-//------------------------------------------------------------------------------
-
-    /**
-     * Performs any of the registered tasks according to how this worker
-     * has been initialised.
-     */
-
-    @Override
-    public void performTask()
-    {
-    	processInput();
-    }
-    
 //------------------------------------------------------------------------------
 
 	@Override
 	public IAtomContainer processOneAtomContainer(IAtomContainer iac, int i) 
-	{
-      	if (task.equals(EDITBONDSTASK))
+	{		
+        // Redundancy of task name is meant to ensure visibility of all tasks
+        // in the list AutoCompChem tasks.
+      	if (task.equals(EDITBONDSTASK) || task.equals(ADDBONDSTASK) 
+			|| task.equals(REMOVEBONDSTASK))
       	{
-      		editBonds(iac, bondEditingrules);
+      		editBonds(rules, iac);
       	} else {
       		dealWithTaskMismatch();
         }
@@ -199,155 +161,114 @@ public class BondEditor extends AtomContainerInputProcessor
 
 //------------------------------------------------------------------------------
 
+	/**
+	 * Edit bonds in a container.
+	 * @param iac the container to edit.
+	 * @param rules the rules applied to the container to create the tuples of 
+	 * atoms that define the bonds to edit.
+	 * The attributes of the tuples define the behavior in this way: 
+	 * - if the attribute {@link #KEYORDER} is present, the bonds defined by the
+	 * atoms in the tuple are created or edited to impose the bond order 
+	 * specified by the attribute value (i.e., {@link IBond.Order}).
+	 * - if the attribute {@link #KEYREMOVE} is present, bonds defined by the 
+	 * atoms in the tuple are removed.
+	 * The three cases are mutually exclusive. An exception is thrown if more 
+	 * than one of the three attributes is present. 
+	 */
+
+	public static void editBonds(List<AtomTupleMatchingRule> rules, IAtomContainer iac)
+	{
+
+        List<AnnotatedAtomTuple> tuples = createTuples(iac, rules, null,
+            AtomTupleGenerator.Mode.TUPLES);
+
+		editBonds(iac, tuples);
+	}
+
+//------------------------------------------------------------------------------
+
     /**
      * Edit bonds in a container.
      * @param iac the container to edit.
-     * @param bondEditingrules the list of rules defining how to edit bonds.
+     * @param tuples the tuple of atoms that define what and where to edit bonds. 
+     * The attributes of the tuples define the details in this way: 
+     * - if the attribute {@link #KEYORDER} is present, the bonds defined by the
+     * atoms in the tuple are created or edited to impose the bond order 
+	 * specified by the attribute value (i.e., {@link IBond.Order}).
+     * - if the attribute {@link #KEYREMOVE} is present, bonds defined by the 
+	 * atoms in the tuple are removed.
+	 * The three cases are mutually exclusive. An exception is thrown if more 
+     * than one of the three attributes is present. 
      */
 
-    public static void editBonds(IAtomContainer iac, 
-    		Map<String,BondEditingRule> bondEditingrules)
+    public static void editBonds(IAtomContainer iac, List<AnnotatedAtomTuple> tuples)
     {
     	Logger logger = LogManager.getLogger();
     	
-    	// Atom indexed may result both from explicit atom IDs or from SMARTS
-    	Map<String, List<MatchingIdxs>> atmIDMatchesPerRule = 
-    			new HashMap<String, List<MatchingIdxs>>();
-    	
-    	// SMARTS may be for atoms that are disconnected or for bonds
-    	Map<String,List<SMARTS>> atomPairSmarts = 
-    			new HashMap<String,List<SMARTS>>();
-    	Map<String,SMARTS> bondSmarts = new HashMap<String,SMARTS>();
-    	for (Entry<String,BondEditingRule> e : bondEditingrules.entrySet())
+    	for (AnnotatedAtomTuple tuple : tuples)
     	{
-    		String bmRuleName = e.getKey();
-    		BondEditingRule bmRule = e.getValue();
-    		List<SMARTS> smarts = bmRule.getSMARTS();
-    		if (smarts!=null)
-    		{
-    			// This is  a SMARTS-based rule
-	    		if (smarts.size()>1)
-	    			atomPairSmarts.put(bmRuleName, smarts);
-	    		else
-	    			bondSmarts.put(bmRuleName, smarts.get(0));
-    		} else {
-    			// This is a rule based on atom indexes
-    			List<MatchingIdxs> pair = new ArrayList<MatchingIdxs>();
-    			for (Integer id : bmRule.getAtomIDs())
-    			{
-    				// each atom as a single substructure
-        			MatchingIdxs ids = new MatchingIdxs();
-    				ids.add(Arrays.asList(id));
-    				pair.add(ids);
-    			}
-    			atmIDMatchesPerRule.put(bmRuleName, pair);
-    		}
+			// Check preconditions for validity of tuple and its attributes
+            int numExclusiveAttributes = 0;
+            for (String attribute : MUTUALLYEXCLUSIVEATTRIBUTES)
+            {
+                if (tuple.hasValuelessAttribute(attribute))
+                {
+                    numExclusiveAttributes++;
+                }
+            }
+            if (numExclusiveAttributes > 1)
+            {
+                throw new IllegalArgumentException("More than one mutually "
+                    + "exclusive attribute is present in tuple '" 
+                    + tuple.toString() + "'. This is not allowed.");
+            }
+			if (tuple.getNumberOfIDs() != 2)
+			{
+				throw new IllegalArgumentException("Tuple '" + tuple.toString() 
+					+ "' defines " + tuple.getNumberOfIDs() + " instead of 2 atoms. "
+					+ "This is not yet supported. If you have reasons to request "
+					+ "this, please contact the developers of AutoCompChem.");
+			}
+
+			// Process the tuple
+			IAtom atm0 = iac.getAtom(tuple.getAtomIDs().get(0));
+			IAtom atm1 = iac.getAtom(tuple.getAtomIDs().get(1));
+			IBond bond = iac.getBond(atm0, atm1);
+			String bondRef = MolecularUtils.getAtomRef(atm0, iac)
+			+ " ~ " + MolecularUtils.getAtomRef(atm1, iac);
+			if (bond == null && tuple.hasValuedAttribute(KEYORDER))
+			{
+				// Create the defautl bond, possibly edited afterwards
+				IBond.Order bo = IBond.Order.SINGLE;
+				bond = new Bond(atm0, atm1, bo);
+				iac.addBond(bond);
+			}
+
+			// Process the bond,, if any existed or has been created, but we might still
+			// have a null bond in case the tuple did not require creation and did not 
+			// match an existing bond, but it did match a tuple of atoms.
+			if (bond != null )
+			{
+				if (tuple.hasValuelessAttribute(KEYREMOVE))
+				{
+					iac.removeBond(bond);
+					String msg = "Removed bond " + bondRef;
+					logger.debug(msg);
+				} else if (tuple.hasValuedAttribute(KEYORDER)) 
+				{
+					String value = tuple.getValueOfAttribute(KEYORDER).toUpperCase();
+					IBond.Order order = IBond.Order.valueOf(value.toUpperCase());
+					bond.setOrder(order);
+					String msg = "Set bond order of " + bondRef + " to " + order;
+					logger.debug(msg);
+				} else {
+					throw new IllegalArgumentException("Expecting one of '"
+						+ MUTUALLYEXCLUSIVEATTRIBUTES.toString() 
+						+ "' but found none in tuple '" 
+						+ tuple.toString() + "'. This is not allowed.");
+				}
+			}
     	}
-    			
-    	// Get atom IDs from SMARTS
-    	if (atomPairSmarts.size()>0)
-    	{
-    		atmIDMatchesPerRule.putAll(
-	    			SMARTSUtils.identifyAtomIdxTuples(iac, atomPairSmarts));
-    	}
-    	
-    	// Get existing bonds batched by SMARTS
-    	Map<String,List<IBond>> targetBonds = new HashMap<String,List<IBond>>();
-    	if (bondSmarts.size()>0)
-    	{
-	    	targetBonds = SMARTSUtils.identifyBondsBySMARTS(iac, bondSmarts);
-    	}
-    	
-    	// Add any bond that should be added
-    	for (String bmRuleName : atmIDMatchesPerRule.keySet())
-  		{
-    		IBond.Order bo = IBond.Order.SINGLE;
-    		if (bondEditingrules.containsKey(bmRuleName) 
-    				&& bondEditingrules.get(bmRuleName).getObjective() 
-    				instanceof IBond.Order)
-    		{
-    			bo = (IBond.Order) bondEditingrules.get(bmRuleName).getObjective();
-    		}
-    		List<MatchingIdxs> matchesThisRule = atmIDMatchesPerRule.get(bmRuleName);
-    		if (matchesThisRule.size() != 2)
-    		{
-    			logger.warn("Match of bond editing rule '" + bmRuleName 
-    					+ "' is not a pair (is " + matchesThisRule.size()
-    					+ "-tuple: " + matchesThisRule + "). Skipped.");
-    			continue;
-    		}
-    		for (List<Integer> idxGroupA : matchesThisRule.get(0))
-    		{
-    			int idxA = idxGroupA.get(0);
-    			if (idxA<0 || idxA>(iac.getAtomCount()-1))
-    			{
-    				logger.warn("WARNING: Ignoring atom index out of range (" 
-    						+ idxA+ ")");
-    				continue;
-    			}
-    			IAtom atmA = iac.getAtom(idxA);
-    			for (List<Integer> idxGroupB : matchesThisRule.get(1))
-	    		{
-	    			int idxB = idxGroupB.get(0);
-    				if (idxA==idxB)
-    					continue;
-        			if (idxB<0 || idxB>(iac.getAtomCount()-1))
-        			{
-        				logger.warn("WARNING: Ignoring atom index out of range "
-        						+ "(" + idxB+ ")");
-        				continue;
-        			}
-	    			IAtom atmB = iac.getAtom(idxB);
-	    			if (!iac.getConnectedAtomsList(atmA).contains(atmB))
-	    			{
-	    				// if the bond does not exist we make it
-	    				IBond bnd = new Bond(atmA, atmB, bo);
-	    				iac.addBond(bnd);
-	    			} else {
-	    				// if it exist we add it to the list of bonds to process
-	    				if (targetBonds.containsKey(bmRuleName))
-	    				{
-	    					targetBonds.get(bmRuleName).add(iac.getBond(atmA, atmB));
-	    				} else {
-	    					List<IBond> bnds = Arrays.asList(iac.getBond(atmA, atmB));
-	    					targetBonds.put(bmRuleName, bnds);
-	    				}
-	    			}
-	    		}
-    		}
-  		}
-    	
-		List<IBond> toRemove = new ArrayList<IBond>();
-  		for (String key : targetBonds.keySet())
-  		{
-  			if (!bondEditingrules.containsKey(key))
-  				continue;
-  			Object objective = bondEditingrules.get(key).getObjective();
-  			if (objective instanceof IBond.Order) {
-  				for (IBond bnd : targetBonds.get(key))
-  				{
-  					bnd.setOrder((IBond.Order) objective);
-  				}
-  			} else if (objective instanceof IBond.Stereo) {
-  				for (IBond bnd : targetBonds.get(key))
-  				{
-  					bnd.setStereo((IBond.Stereo) objective);
-  				}
-  			} else if (
-  					(objective.toString().toUpperCase().equals("REMOVE")) 
-  					||
-  					(objective.toString().toUpperCase().equals("DELETE"))){
-  				toRemove.addAll(targetBonds.get(key));
-  			} else {
-  				logger.warn("No implementation is available for editing "
-  						+ "bond feature to '" + objective + "'.");
-  			}
-  		}
-  		
-  		for (IBond bnd : toRemove)
-  		{
-  			iac.removeBond(bnd);
-  		}
     }
 
 //------------------------------------------------------------------------------

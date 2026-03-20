@@ -41,6 +41,7 @@ import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 import autocompchem.atom.AtomUtils;
 import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
 import autocompchem.modeling.atomtuple.AtomTupleGenerator;
+import autocompchem.modeling.atomtuple.AtomTupleMatchingRule;
 import autocompchem.molecule.intcoords.InternalCoord;
 import autocompchem.run.Job;
 import autocompchem.utils.NumberUtils;
@@ -56,7 +57,8 @@ import autocompchem.worker.Worker;
 public class AtomEditor extends AtomTupleGenerator
 {
     /**
-     * String defining the task of mutating bonds.
+     * String defining the task of mutating atoms.
+     * Does include adding and removing.
      */
     public static final String EDITATOMSTASKNAME = "editAtoms";
 
@@ -69,7 +71,7 @@ public class AtomEditor extends AtomTupleGenerator
     }
 
     /**
-     * String defining the task of mutating bonds.
+     * String defining the task of removing atoms.
      * Redundant, but defined to ensure visibility of the task.
      */
     public static final String REMOVEATOMSTASKNAME = "removeAtoms";
@@ -102,17 +104,17 @@ public class AtomEditor extends AtomTupleGenerator
 	public static final String BASENAME = "AtomEditRule-";
 
     /**
-     * Keyword used to define how to add an atom
+     * Keyword used in the {@link AtomTupleMAtchingRule} to define how to add an atom
      */
     public static final String KEYADDATOM = "ADDATOM";
    
     /**
-     * Keyword used to identify the imposed elemental symbols.
+     * Keyword used in the {@link AtomTupleMAtchingRule} to identify the imposed elemental symbols.
      */
     public static final String KEYELEMENT = "ELEMENT";
    
     /**
-     * Value-less keyword used to identify atoms to remove.
+     * Value-less keyword used  in the {@link AtomTupleMAtchingRule} to identify atoms to remove.
      */
     public static final String KEYREMOVE = "REMOVE";
 
@@ -123,19 +125,19 @@ public class AtomEditor extends AtomTupleGenerator
         KEYELEMENT, KEYADDATOM, KEYREMOVE);
 
     /**
-     * Keyword used to define the connectivity of the new atom. Ineffective
+     * Keyword used in the {@link AtomTupleMAtchingRule} to define the connectivity of the new atom. Ineffective
      * for any other task.
      */
     public static final String KEYNEWATOMBONDING = "NEWATOMBONDING";
 
     /**
-     * Keyword used to define the position of the new atom 
+     * Keyword used in the {@link AtomTupleMAtchingRule} to define the position of the new atom 
      * from internal coordinates of the reference atoms
      */
     public static final String KEYATOMATIC = "INTERNALCOORDS";
 
     /**
-     * Keyword used to define the position of the new atom at the centroid
+     * Keyword used in the {@link AtomTupleMAtchingRule} to define the position of the new atom at the centroid
      * of a set of atoms.
      */
     public static final String KEYATOMATCENTROID = "CENTROID";
@@ -187,20 +189,32 @@ public class AtomEditor extends AtomTupleGenerator
 	@Override
 	public IAtomContainer processOneAtomContainer(IAtomContainer iac, int i) 
 	{
-        List<AnnotatedAtomTuple> tuples = createTuples(iac, rules, null,
-            AtomTupleGenerator.Mode.TUPLES);
-
         // Redundancy of task name is meant to ensure visibility of all tasks
         // in the list AutoCompChem tasks.
       	if (task.equals(EDITATOMSTASK) 
             || task.equals(ADDATOMSTASK) 
             || task.equals(REMOVEATOMSTASK))
       	{
-      		editAtoms(iac, tuples);
+      		editAtoms(rules, iac);
       	} else {
       		dealWithTaskMismatch();
         }
       	return iac;
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Edit atoms in a container.
+     * @param rules the rules applied to the container to create the tuples of 
+     * atoms that define the atoms to edit.
+     * @param iac the container to edit.
+     */
+    public static void editAtoms(List<AtomTupleMatchingRule> rules, IAtomContainer iac)
+    {
+        List<AnnotatedAtomTuple> tuples = createTuples(iac, rules, null,
+            AtomTupleGenerator.Mode.TUPLES);
+        editAtoms(iac, tuples);
     }
 
 //------------------------------------------------------------------------------

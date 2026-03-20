@@ -4,8 +4,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.openscience.cdk.Atom;
@@ -14,7 +16,7 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
 
-import autocompchem.molecule.connectivity.BondEditingRule;
+import autocompchem.modeling.atomtuple.AtomTupleMatchingRule;
 import autocompchem.smarts.SMARTS;
 
 /**
@@ -63,35 +65,17 @@ public class BondEditorTest
 	public void testEditBonds() throws Exception
 	{
     	IAtomContainer mol = getTestMol();
+
+		List<AtomTupleMatchingRule> rules = new ArrayList<AtomTupleMatchingRule>();
+		rules.add(new AtomTupleMatchingRule("R0", new SMARTS[] {new SMARTS("C#C")}, 
+			null, Set.of(BondEditor.KEYREMOVE)));
+		rules.add(new AtomTupleMatchingRule("R2", new SMARTS[] {new SMARTS("[Ru]~[#8]")}, 
+			Map.of(BondEditor.KEYORDER, IBond.Order.SINGLE.toString()), null));
+		rules.add(new AtomTupleMatchingRule("R3", new SMARTS[] {new SMARTS("[#8]"), new SMARTS("[$(C-C#C)]")}, 
+		    // Do it like this to test the case-sensitivity of the attribute value.
+			Map.of(BondEditor.KEYORDER, "quaDruPle"), null));
     	
-    	Map<String,BondEditingRule> bondEditingrules = 
-    			new HashMap<String,BondEditingRule>();
-    	bondEditingrules.put("R0", new BondEditingRule(
-			 new SMARTS[] {new SMARTS("C#C")},
-			 null,
-			 null,
-			 true,
-			 0));
-    	bondEditingrules.put("R1", new BondEditingRule(
-   			 new SMARTS[] {new SMARTS("C-C")},
-   			 null,
-   			 IBond.Stereo.UP_INVERTED,
-   			 false,
-   			 1));
-    	bondEditingrules.put("R2", new BondEditingRule(
-  			 new SMARTS[] {new SMARTS("[Ru]~[#8]")},
-  			 IBond.Order.SINGLE,
-  			 null,
-  			 false,
-  			 2));
-    	bondEditingrules.put("R3", new BondEditingRule(
- 			 new SMARTS[] {new SMARTS("[#8]"), new SMARTS("[$(C-C#C)]")},
- 			 IBond.Order.QUADRUPLE,
- 			 null,
- 			 false,
- 			 2));
-    	
-    	BondEditor.editBonds(mol, bondEditingrules);
+    	BondEditor.editBonds(rules, mol);
     	
     	assertEquals(6, mol.getBondCount());
     	assertEquals(1, mol.getConnectedBondsList(mol.getAtom(1)).size());
@@ -106,35 +90,20 @@ public class BondEditorTest
     	assertEquals(IBond.Order.QUADRUPLE, 
     			mol.getBond(mol.getAtom(3), mol.getAtom(6)).getOrder());
     	
-    	
+				
     	mol = getTestMol();
-    	bondEditingrules = new HashMap<String,BondEditingRule>();
-    	bondEditingrules.put("R0", new BondEditingRule(
-			 new int[] {1, 2},
-			 null,
-			 null,
-			 true,
-			 0));
-    	bondEditingrules.put("R1", new BondEditingRule(
-   			 new int[] {2, 3},
-   			 null,
-   			 IBond.Stereo.UP_INVERTED,
-   			 false,
-   			 1));
-    	bondEditingrules.put("R2", new BondEditingRule(
-  			 new int[] {6, 5},
-  			 IBond.Order.SINGLE,
-  			 null,
-  			 false,
-  			 2));
-    	bondEditingrules.put("R3", new BondEditingRule(
- 			 new int[] {3, 6},
- 			 IBond.Order.SINGLE,
- 			 null,
- 			 false,
- 			 2));
-    	
-    	BondEditor.editBonds(mol, bondEditingrules);
+
+		rules.clear();
+		rules.add(new AtomTupleMatchingRule("R0", new int[] {1, 2}, 
+			null, Set.of(BondEditor.KEYREMOVE)));
+		rules.add(new AtomTupleMatchingRule("R2", new int[] {6, 5}, 
+			Map.of(BondEditor.KEYORDER, IBond.Order.SINGLE.toString()), null));
+		rules.add(new AtomTupleMatchingRule("R3", new int[] {3, 6}, 
+			Map.of(BondEditor.KEYORDER, IBond.Order.QUADRUPLE.toString()), null));
+
+		BondEditor.editBonds(rules, mol);
+
+		assertEquals(5, mol.getBondCount());
     	
     	assertEquals(5, mol.getBondCount());
     	assertEquals(1, mol.getConnectedBondsList(mol.getAtom(1)).size());
@@ -145,7 +114,6 @@ public class BondEditorTest
     			mol.getAtom(3)));
     	assertEquals(IBond.Order.SINGLE, 
     			mol.getBond(mol.getAtom(6), mol.getAtom(5)).getOrder());
-    	 
 	}
 
 //------------------------------------------------------------------------------

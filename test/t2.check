@@ -11,8 +11,11 @@ if [ ! -f "t2-mol_mutated.sdf" ] ; then not_passed $LINENO ; fi
 n=0; n=$(grep -c "\$\$\$\$" t2-mol_mutated.sdf)
 if [ 3 != "$n" ];then not_passed $LINENO ; fi
 
-if ! grep -q "^ 63 64  0" t2-mol_mutated.sdf ; then not_passed $LINENO ; fi
-if ! grep -q "^ 51 52  1  1  0  0  0" t2-mol_mutated.sdf ; then not_passed $LINENO ; fi
+if ! grep -q "^ 63 66  0 .* V2000" t2-mol_mutated.sdf ; then not_passed $LINENO ; fi
+if ! grep -q "^ 10 11  2  " t2-mol_mutated.sdf ; then not_passed $LINENO ; fi
+if ! grep -q "^ 12 11  2  " t2-mol_mutated.sdf ; then not_passed $LINENO ; fi
+if ! grep -q "^ 10  4  3  " t2-mol_mutated.sdf ; then not_passed $LINENO ; fi
+if ! grep -q "^ 12  4  3  " t2-mol_mutated.sdf ; then not_passed $LINENO ; fi
 if ! grep -q "^ 43 51  2  0  0  0  0" t2-mol_mutated.sdf ; then not_passed $LINENO ; fi
 
 n=0; n=$(grep -c "^ 12  9  2" t2-mol_mutated.sdf)

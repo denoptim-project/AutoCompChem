@@ -523,17 +523,33 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
 	                	iter = atmsForMR.iterator();
 	                } else {
 	                    List<List<IAtom>> atmsForMR = new ArrayList<List<IAtom>>();
+						boolean indexOutOfBounds = false;
 	    	            for (MatchingIdxs mIdxs : atmIdxsForMR)
 	    	            {
 	    	            	List<IAtom> atoms = new ArrayList<IAtom>();
 	    	            	for (List<Integer> lst : mIdxs)
 	    	            	{
-	    	            		for (Integer idx : lst)
-	    	            			atoms.add(mol.getAtom(idx));
+								for (Integer idx : lst)
+	    	            		{
+									if (idx >= mol.getAtomCount()) {
+										logger.warn("Index " + idx + " is out of bounds "
+										    + "for atom container with " 
+											+ mol.getAtomCount() + " atoms. "
+											+ "Ignoring rule " + r);
+										indexOutOfBounds = true;
+										break;
+									} else {
+										atoms.add(mol.getAtom(idx));
+									}
+								}
 	    	            	}
 	    	            	atmsForMR.add(atoms);
 	    	            }
-	    	            iter = new ListOfListsCombinations<IAtom>(atmsForMR);
+	    	            if (!indexOutOfBounds) {
+	    	                iter = new ListOfListsCombinations<IAtom>(atmsForMR);
+	    	            } else {
+	    	                iter = null;
+	    	            }
 	                }
 	            	break;
 	            }
@@ -543,20 +559,33 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
 	            	// We will iterate over a single item, hence the wrapper
 	            	List<List<IAtom>> wrapper = new ArrayList<List<IAtom>>();
 	            	List<IAtom> allMatchedAtoms = new ArrayList<IAtom>();
+					boolean indexOutOfBounds = false;
     	            for (MatchingIdxs mIdxs : atmIdxsForMR)
     	            {
     	            	for (List<Integer> lst : mIdxs)
     	            	{
     	            		for (Integer idx : lst)
     	            		{
+								if (idx >= mol.getAtomCount()) {
+									logger.warn("Index " + idx + " is out of bounds "
+									    + "for atom container with " 
+										+ mol.getAtomCount() + " atoms. "
+										+ "Ignoring rule " + r);
+									indexOutOfBounds = true;
+									break;
+								}
     	            			IAtom atm = mol.getAtom(idx);
     	            			if (!allMatchedAtoms.contains(atm))
     	            				allMatchedAtoms.add(atm);
     	            		}
     	            	}
     	            }
-	            	wrapper.add(allMatchedAtoms);
-    	            iter = wrapper.iterator();
+					if (indexOutOfBounds) {
+						iter = null;
+					} else {
+						wrapper.add(allMatchedAtoms);
+						iter = wrapper.iterator();
+					}
     	            break;
 	            }
 	            
@@ -564,6 +593,11 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
 	                throw new IllegalStateException(
 	                		"Unrecognized mode of action '" + mode + "'.");
             }
+
+			if (iter == null) {
+				logger.warn("No iterator for rule " + r.getRefName() + " in mode " + mode);
+				continue;
+			}
 
 			List<AnnotatedAtomTuple> tuplesPerRule = new ArrayList<AnnotatedAtomTuple>();
         	while (iter.hasNext())
