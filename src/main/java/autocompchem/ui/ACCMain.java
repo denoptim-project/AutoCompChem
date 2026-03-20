@@ -65,7 +65,13 @@ public class ACCMain
      *  the help message.
      */
     private static final Object CLIHELPSHORT = "-H";
-    
+
+
+    /**
+     * The command line argument that triggers the printing of the version number.
+     */
+    private static final Object CLIVERSION = "--VERSION";
+
     /*
      * The logger of this class
      */
@@ -82,9 +88,6 @@ public class ACCMain
     public static void main(String[] args)
     {   
         try {
-            // Logging in message
-            printInit();
-            
             initializeRegistry();
             
             // Detect kind of run (command line arguments or parameter file)
@@ -93,6 +96,8 @@ public class ACCMain
             if (args.length < 1)
             {
                 //TODO eventually here we will launch the gui.
+
+                printInit();
                 printUsage();
                 Terminator.withMsgAndStatus("ERROR! No input or command line "
                     + "argument given. " + NL
@@ -108,10 +113,18 @@ public class ACCMain
                 if (CLIHELP.equals(pathName.toUpperCase()) 
                         || CLIHELPSHORT.equals(pathName.toUpperCase()))
                 {
+                    printInit();
                     printUsage();
                     Terminator.withMsgAndStatus("Normal termination", 0);
                 }
+
+                if (CLIVERSION.equals(pathName.toUpperCase()))
+                {
+                    printVersion();
+                    Terminator.withStatusOnly(0);
+                }
                 
+                printInit();
                 try {
                     job = JobFactory.buildFromFile(new File(pathName));
                 } catch (Throwable t) {
@@ -124,6 +137,7 @@ public class ACCMain
             }
             else
             {
+                printInit();
                 try {
                     job = parseCLIArgs(args);
                 } catch (IOException e) {
@@ -476,6 +490,16 @@ public class ACCMain
 //------------------------------------------------------------------------------
     
     /**
+     * Write the version number to stdout.
+     */
+    private static void printVersion()
+    {
+        System.out.println("AutoCompChem version: " + version);
+    }
+
+//------------------------------------------------------------------------------
+    
+    /**
      * Write the manual/usage information to stdout.
      */
     
@@ -539,7 +563,17 @@ public class ACCMain
          * The logger of this class
          */
         private static Logger logger = LogManager.getLogger(
-                "autocompchem.ui.ACCMain.Terminator");
+                "autocompchem.ui.ACCMain.Terminator");    
+//------------------------------------------------------------------------------
+
+        /**
+         * Terminate execution without logging, but with a specify exit status.
+         * @param exitStatus exit status
+         */
+        public static void withStatusOnly(int exitStatus)
+        {
+            System.exit(exitStatus);
+        }
 
     //------------------------------------------------------------------------------
 
@@ -580,7 +614,7 @@ public class ACCMain
             } else {
                 logger.info(msg);
             }
-            System.exit(exitStatus);
+            withStatusOnly(exitStatus);
         }
 
     //------------------------------------------------------------------------------
