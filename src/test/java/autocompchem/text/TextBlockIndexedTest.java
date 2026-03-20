@@ -28,7 +28,6 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import autocompchem.datacollections.ParameterConstants;
 import autocompchem.utils.StringUtils;
 
 
@@ -55,13 +54,18 @@ public class TextBlockIndexedTest
     public void testReplaceAll() throws Exception
     {
     	TextBlockIndexed tb = new TextBlockIndexed();
-    	tb.appendText("My line _" + ParameterConstants.STRINGFROMCLI
-    			+ "_ and the rest");
+      String replaceKey = "__REPLACE_KEY__";
+    	tb.appendText("My line _" + replaceKey + "_ and the rest" + replaceKey);
+      tb.appendText("Other " + replaceKey);
         
-    	tb.replaceAll(ParameterConstants.STRINGFROMCLI,"NEWSTR");
+    	tb.replaceAll(replaceKey,"NEWSTR");
     	
     	assertTrue(tb.getText().get(0).matches(".*NEWSTR.*"),
     			"Replacement occurred");
+          assertTrue(tb.getText().get(1).matches(".*NEWSTR.*"),
+              "Replacement occurred");
+      assertEquals(StringUtils.countMatches(StringUtils.mergeListToString(
+        tb.getText(), " "), "NEWSTR"), 3, "Number of replaced strings");
     }
     
 //------------------------------------------------------------------------------
@@ -69,28 +73,29 @@ public class TextBlockIndexedTest
     @Test
     public void testReplaceAllInNested() throws Exception
     {
+      String replaceKey = "__REPLACE_KEY__";
         String NESTEDBLOCKS = "#beginning" + NL
                 + "OPB1" + NL
-                 + "inside block 1 _" + ParameterConstants.STRINGFROMCLI 
+                 + "inside block 1 _" + replaceKey 
                  + "_ _ _ " 
-                 + ParameterConstants.STRINGFROMCLI + NL
+                 + replaceKey + NL
                  + "OPB2" + NL
-                  + "inside nested block 2 " + ParameterConstants.STRINGFROMCLI 
+                  + "inside nested block 2 " + replaceKey 
                   + NL
                  + "CLB2" + NL
                  + "after nested block 2" + NL
                  + "OPB2" + NL
-                  + "inside nested block 2b " + ParameterConstants.STRINGFROMCLI 
+                  + "inside nested block 2b " + replaceKey 
                   + NL
                    + "OPB3" + NL
-                   + "inside nested block 3 " + ParameterConstants.STRINGFROMCLI 
+                   + "inside nested block 3 " + replaceKey 
                    + NL
                  + "CLB2" + NL
                    + "after 2b but still in 3" + NL
                    + "CLB3" + NL
                  + "after nested block 3" + NL
                 + "CLB1" + NL
-                + "outside 1 " + ParameterConstants.STRINGFROMCLI + NL
+                + "outside 1 " + replaceKey + NL
                 + "#end ";
         BufferedReader br = new BufferedReader(new StringReader(NESTEDBLOCKS));
         List<TextBlockIndexed> blocks = TextAnalyzer.extractTextBlocks(br,
@@ -99,7 +104,7 @@ public class TextBlockIndexedTest
         final String NEWSTR = "MyNewString";
         for (TextBlockIndexed tb : blocks)
         {
-        	tb.replaceAll(ParameterConstants.STRINGFROMCLI, NEWSTR);
+        	tb.replaceAll(replaceKey, NEWSTR);
         }
         
         BufferedReader brTb = new BufferedReader(

@@ -21,6 +21,11 @@ package autocompchem.ui;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.AbstractMap.SimpleImmutableEntry;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -58,19 +63,25 @@ public class ACCMain
     /**
      * The command line argument that triggers the printing of the help message.
      */
-    private static final Object CLIHELP = "--HELP";
+    public static final String CLIHELP = "--HELP";
 
     /**
      * The short form of the command line argument that triggers the printing of
      *  the help message.
      */
-    private static final Object CLIHELPSHORT = "-H";
-
+    public static final String CLIHELPSHORT = "-H";
 
     /**
      * The command line argument that triggers the printing of the version number.
+     * No short version as "-v" is used for verbosity.
      */
-    private static final Object CLIVERSION = "--VERSION";
+    public static final String CLIVERSION = "--VERSION";
+
+    /**
+     * The command line argument that triggers the replacement of placeholders
+     * in the parameters file or JSON file.
+     */
+    public static final String CLIREPLACE = "--replace";
 
     /*
      * The logger of this class
@@ -110,7 +121,7 @@ public class ACCMain
             {
                 String pathName = args[0];
                 
-                if (CLIHELP.equals(pathName.toUpperCase()) 
+                if (CLIHELP.equalsIgnoreCase(pathName) 
                         || CLIHELPSHORT.equals(pathName.toUpperCase()))
                 {
                     printInit();
@@ -118,7 +129,7 @@ public class ACCMain
                     Terminator.withMsgAndStatus("Normal termination", 0);
                 }
 
-                if (CLIVERSION.equals(pathName.toUpperCase()))
+                if (CLIVERSION.equalsIgnoreCase(pathName))
                 {
                     printVersion();
                     Terminator.withStatusOnly(0);
@@ -148,8 +159,8 @@ public class ACCMain
                 boolean requiresHelp = false;
                 for (int i=0; i<args.length; i++)
                 {
-                    if (CLIHELP.equals(args[i].toUpperCase()) 
-                            || CLIHELPSHORT.equals(args[i].toUpperCase()))
+                    if (CLIHELP.equalsIgnoreCase(args[i]) 
+                            || CLIHELPSHORT.equalsIgnoreCase(args[i]))
                     {
                         requiresHelp = true;
                         break;
@@ -235,7 +246,7 @@ public class ACCMain
         File paramsFile = null;
         boolean foundJob = false;
         File jobFile = null;
-        String cliString = "";
+        Map<String, String> cliReplacements = null;
 
         // WARNING: ASSUMPTION ON SHORT OPTIONS
         // The only short options (i.e., using one "-") are h, t, p, j, v.
@@ -293,13 +304,47 @@ public class ACCMain
                 		LogUtils.verbosityToLevel(Integer.parseInt(verbosity)));
             }
             
-            if (arg.equalsIgnoreCase("--"+ParameterConstants.STRINGFROMCLI))
-            {    
+            if (arg.equalsIgnoreCase(CLIREPLACE))
+            {
                 if (iarg+1 >= args.length)
                 {
-                	cliArgMissingValue(arg, "<value>");
+                    cliArgMissingValue(arg, "<old>:<new> [...]");
                 }
-                cliString = args[iarg+1];
+                if (isAnOption(args[iarg+1]))
+                {
+                    cliArgMissingValue(arg, "<old>:<new> [...]");
+                }
+
+                cliReplacements = new HashMap<>();
+                while (iarg+1 < args.length && !isAnOption(args[iarg+1]))
+                {
+                    String nextArg = args[iarg+1];
+
+                    // We consider this possibility because we might test things with strings that contain spaces.
+                    String[] words = nextArg.trim().split("\\s+");
+
+                    // Usially, this loop will run only once.
+                    for (String word : words)
+                    {
+                        int c = word.indexOf(':');
+                        if (c < 0)
+                        {
+                            Terminator.withMsgAndStatus("ERROR! Option " + arg
+                                    + " expects each value to be 'old:new' when "
+                                    + "you give more than one, or a single "
+                                    + "replacement with no ':'. Got: '" + word
+                                    + "'.", -1);
+                        }
+                        if (c == 0)
+                        {
+                            Terminator.withMsgAndStatus("ERROR! Option " + arg
+                                    + " has a mapping with an empty 'old' part: '"
+                                    + word + "'.", -1);
+                        }
+                        cliReplacements.put(word.substring(0, c), word.substring(c + 1));
+                    }
+                    iarg++;
+                }
             }
         }
         
@@ -331,20 +376,23 @@ public class ACCMain
             //NB: this will kill me with an error if the file is not found
             // or not readable.
             FileUtils.foundAndPermissions(paramsFile, true, false, false);
-            job = JobFactory.buildFromFile(paramsFile,cliString);
+            job = JobFactory.buildFromFile(paramsFile, cliReplacements);
         } else if (foundJob)
         {
             //NB: this will kill me with an error if the file is not found
             // or not readable.
             FileUtils.foundAndPermissions(jobFile, true, false, false);
-            job = JobFactory.buildFromFile(jobFile,cliString);
+            job = JobFactory.buildFromFile(jobFile, cliReplacements);
         }
         
         //Read-in all CLI arguments in parameter storage unit
             
         //NB: the following block of code makes it so that we can only run
         // single step jobs when submitting via CLI interface using CLI 
-        // arguments/options and -t/--task option
+        // arguments/options and -t/--task option, which makes sense because
+        // we want to be able to use the cli args to set parameters for either
+        // a job that is defined only by cli args,  of for a job that is defined
+        // by the -j option.
         
         for (int iarg=0; iarg<args.length; iarg++)
         {
@@ -355,6 +403,18 @@ public class ACCMain
                     || arg.equalsIgnoreCase("--task"))
             {
                 iarg++;
+                continue;
+            }
+
+            // Skip --STRINGFROMCLI and all old:new tokens up to the next option
+            if (arg.equalsIgnoreCase(CLIREPLACE))
+            {
+                int j = iarg + 1;
+                while (j < args.length && !isAnOption(args[j]))
+                {
+                    j++;
+                }
+                iarg = j - 1;
                 continue;
             }
                 
@@ -452,11 +512,11 @@ public class ACCMain
         		return true;
         	} else {
         		String upStr = str.toUpperCase();
-        		if (CLIHELPSHORT.equals(upStr) 
-        				|| "-P".equals(upStr)
-        				|| "-T".equals(upStr)
-        				|| "-J".equals(upStr)
-        				|| "-V".equals(upStr))
+        		if (CLIHELPSHORT.equalsIgnoreCase(upStr) 
+        				|| "-P".equalsIgnoreCase(upStr)
+        				|| "-T".equalsIgnoreCase(upStr)
+        				|| "-J".equalsIgnoreCase(upStr)
+        				|| "-V".equalsIgnoreCase(upStr))
         			return true;
         	}
     	}

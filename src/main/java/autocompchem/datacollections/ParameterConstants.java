@@ -139,13 +139,6 @@ public class ParameterConstants
 	public static final String SITUATION = "SITUATION";
 
 	/**
-	 * Placeholder for a string defined via command line argument. This
-	 * placeholder string is replaced with the string given in CLI upon
-	 * importing parameters from a file.
-	 */
-	public static final String STRINGFROMCLI = "STRINGFROMCLI";
-
-	/**
 	 * Keyword of parameter defining tolerance towards info channels that are
 	 * defined by not readable.
 	 */

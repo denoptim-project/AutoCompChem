@@ -98,7 +98,8 @@ public class ACCMainTest
         
         final String RTN = "FromCLI";
         final String EXT = "_suffix.ext";
-        
+        final String replaceKey = "__REPLACE_KEY__";
+
         String tmpPathName = tempDir.getAbsolutePath() 
         		+ System.getProperty("file.separator") + "acc.params";
         StringBuilder sb = new StringBuilder();
@@ -116,12 +117,12 @@ public class ACCMainTest
         		+"value from file"+NL);
         sb.append("P2"
         		+ParameterConstants.SEPARATOR
-        		+ParameterConstants.STRINGFROMCLI+EXT);
+        		+replaceKey+EXT);
         IOtools.writeTXTAppend(new File(tmpPathName),sb.toString(),false);
         
         String[] args = {"-p3","\"param","from","command","line\"",
         		"-P1","value_from_CLI","-p", tmpPathName,
-        		"--"+ParameterConstants.STRINGFROMCLI, RTN};
+        		ACCMain.CLIREPLACE, replaceKey + ":" + RTN};
     	
     	Job job = null;
 		try {
@@ -151,6 +152,44 @@ public class ACCMainTest
     	assertEquals("param from command line",job.getParameter(
     			"P3").getValueAsString(),
     			"Parameter in command line");
+    }
+
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testCLIArgsStringFromCliMultipleOldNewMappings() throws Exception
+    {
+        assertTrue(this.tempDir.isDirectory(), "Should be a directory ");
+
+		String replaceKey = "__REPLACE_KEY__";
+		String replaceValue = "A";
+
+        String tmpPathName = tempDir.getAbsolutePath()
+                + System.getProperty("file.separator") + "accMulti.params";
+        StringBuilder sb = new StringBuilder();
+        sb.append(ParameterConstants.RUNNABLEAPPIDKEY
+                + ParameterConstants.SEPARATOR
+                + SoftwareId.ACC + NL);
+        sb.append(WorkerConstants.PARTASK
+                + ParameterConstants.SEPARATOR
+                + DummyWorker.DUMMYTASKTASK.casedID + NL);
+        sb.append("P2"
+                + ParameterConstants.SEPARATOR
+                + replaceKey + "_tail" + NL);
+        sb.append("P5"
+                + ParameterConstants.SEPARATOR
+                + "pre_" + "MYTAG" + "_post" + NL);
+        IOtools.writeTXTAppend(new File(tmpPathName), sb.toString(), false);
+
+        String[] args = {"-p", tmpPathName,
+                ACCMain.CLIREPLACE,
+                replaceKey + ":" + replaceValue + " " + "MYTAG:B"};
+
+        Job job = ACCMain.parseCLIArgs(args);
+        assertEquals(replaceValue+"_tail", job.getParameter("P2").getValueAsString(),
+                "First old:new mapping");
+        assertEquals("pre_B_post", job.getParameter("P5").getValueAsString(),
+                "Second old:new mapping");
     }
     
 //------------------------------------------------------------------------------

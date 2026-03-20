@@ -105,6 +105,11 @@ To use a parameters' file, call AutoCompChem and give it the pathname to the par
 ```
 autocompchem -p <path_to_parameters_file>
 ```
+The content of a parameter file may also contain any number of placeholder strings that can be replaced upon calling AutoCompChem:
+```
+autocompchem -p <path_to_parameters_file> --replace <old_String>:<new_string> <other_placeholder>:<new_value>
+```
+where `<old_String>` and `<other_placeholder>` are two placeholder strings that will be replaces respectivly with `<new_string>` and `<new_value>`. 
 
 ##### Example
 The parameters file [examples/single_job.params](examples/single_job.params) defines a simple task meant to change the identity of any Cl atom into Br in a given SDF file:
@@ -151,11 +156,22 @@ To use a job details file, call AutoCompChem and give it the pathname to the job
 ```
 autocompchem -j <path_to_job_details_file>
 ```
-
 The job details file [examples/single_job.json](examples/single_job.json) defines the same job performed in the previous example, i.e., a job meant to change the identity of any Cl atom into Br in a given SDF file.
 Many other examples are available under the [test folder](test). However, note that the JSON format can be used to define many kinds on objects, including jobs that are not meant to be performed by AutoCompChem, e.g., any molecular modeling job. Therefore, not all ´.json´ files in the test folder define ACCJobs.
 
 JSON job details files can be conveniently generated from parameter's file (and vice versa) by the `convertJobDefinition` task.
+
+Notably, the parameters of the outermost job defined in the JSON file can be alterd by providing the correspodning CLI argument. Therefore, to re-run a job with a different input file we can use the wollowing:
+
+```
+autocompchem -j <path_to_job_details_file> --infile <path_to_new_input_file>
+```
+This possibility applies *only to the parameters of the outermost job in the JSON file*, settings of any nested job cannot be overwritten by the corresponding CLI arguments. However, a string replacement mechanism allows to directly replace strings in any part of the JSON or parameter's file from CLI upon reading such files:
+```
+autocompchem -j <path_to_job_details_file> --replace <old_String>:<new_string> <other_placeholder>:<new_value>
+```
+where `<old_String>` and `<other_placeholder>` are two placeholder strings that will be replaces respectivly with `<new_string>` and `<new_value>`. 
+
 
 ### Multiple Jobs
 AutoCompChem can also perform multiple tasks, hence *jobs*, whether in a sequence (i.e., a workflow), or in parallel (i.e., a batch). Either way, the list of jobs to perform, whether steps of a workflow or independent jobs to be performed in parallel, are defined within a job that acts as a container. Such container may itself be contained in a parent job resulting in a recursive structure.

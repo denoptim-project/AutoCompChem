@@ -24,6 +24,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -46,71 +49,6 @@ public class JobFactoryTest
 
     @TempDir 
     File tempDir;
-    
-//-----------------------------------------------------------------------------
-    
-    //@Test
-    public void testCreateJob() throws Exception
-    {
-    	Job job = JobFactory.createJob(new SoftwareId("something"));
-    	assertTrue("something".equals(job.getAppID().toString()), 
-    			"Creation of Undefined job");
-    	
-    	job = JobFactory.createJob(SoftwareId.SHELL);
-    	assertTrue(SoftwareId.SHELL.equals(job.getAppID()), 
-    			"Creation of SHELL job");
-
-    	job = JobFactory.createJob(SoftwareId.ACC);
-    	assertTrue(SoftwareId.ACC.equals(job.getAppID()), 
-    			"Creation of ACC job");
-    	
-    	job = new Job();
-    	assertTrue(SoftwareId.UNDEFINED.equals(job.getAppID()), 
-    			"Creation of Undefined job");
-    }
-    
-//-----------------------------------------------------------------------------
-    
-    /*
-     * The difference between this test and the testJobCreationFromJDFile is 
-     * that here we have only the parameters and no JOBSTART/JOBEND strings.
-     * So, the entire text is to be understood as a single text block that
-     * pertains a single job.
-     */
-    
-    //@Test
-    public void testJobCreatsSimpleFromParamsFile() throws Exception
-    {
-        assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
-
-        File paramFile = new File(tempDir.getAbsolutePath() + SEP + "acc.par");
-
-        Job job = null;
-        try 
-        {
-            FileWriter writer = new FileWriter(paramFile);
-
-            writer.write(WorkerConstants.PARTASK + ParameterConstants.SEPARATOR
-            		+ DummyWorker.DUMMYTASKTASK.casedID + NL);
-            writer.write("key1" + ParameterConstants.SEPARATOR 
-            		+ "value1" + NL);
-            writer.write("key2" + ParameterConstants.SEPARATOR 
-            		+ "value2a value2b" + NL);
-            writer.close();
-
-            job = JobFactory.buildFromFile(paramFile);
-        }
-        catch (Throwable t)
-        {
-            t.printStackTrace();
-            assertFalse(true, "Exception. Unable to work with tmp files.");
-        }  
-
-        assertNotNull(job,"Job is null");
-        assertEquals(0, job.getNumberOfSteps(), "Number of sub steps");
-        assertEquals(SoftwareId.ACC, job.getAppID(),
-        		"App for master job");
-    }
     
 //-----------------------------------------------------------------------------
     
@@ -434,6 +372,129 @@ public class JobFactoryTest
             t.printStackTrace();
             assertFalse(true, "Unable to work with tmp files.");
         }
+    }
+
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testBuildFromJSONFile_appliesMultipleReplacementsInOrder()
+            throws IOException
+    {
+        assertTrue(this.tempDir.isDirectory(), "Should be a directory ");
+
+        File jdFile = new File(tempDir.getAbsolutePath() + SEP + "repl.json");
+        try (FileWriter w = new FileWriter(jdFile))
+        {
+            w.write("{"
+                    + "\"jobType\": \"ACCJob\","
+                    + "\"params\": ["
+                    + "{\"reference\": \"" + WorkerConstants.PARTASK + "\", "
+                    + "\"value\": \"" + DummyWorker.DUMMYTASKTASK.casedID + "\"},"
+                    + "{\"reference\": \"P1\", \"value\": \"<<<A>>>/file.txt\"},"
+                    + "{\"reference\": \"P2\", \"value\": \"<<<B>>>\"}"
+                    + "]"
+                    + "}");
+        }
+
+        Map<String, String> repl = new LinkedHashMap<>();
+        repl.put("<<<A>>>", "/data/run");
+        repl.put("<<<B>>>", "done");
+
+        Job job = JobFactory.buildFromJSONFile(jdFile, repl);
+
+        assertNotNull(job);
+        assertEquals("/data/run/file.txt",
+                job.getParameter("P1").getValueAsString(),
+                "Both placeholders in one value are replaced");
+        assertEquals("done", job.getParameter("P2").getValueAsString());
+    }
+
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testBuildFromJSONFile_replacementsAreSequential()
+            throws IOException
+    {
+        assertTrue(this.tempDir.isDirectory(), "Should be a directory ");
+
+        File jdFile = new File(tempDir.getAbsolutePath() + SEP + "order.json");
+        try (FileWriter w = new FileWriter(jdFile))
+        {
+            w.write("{"
+                    + "\"jobType\": \"ACCJob\","
+                    + "\"params\": ["
+                    + "{\"reference\": \"" + WorkerConstants.PARTASK + "\", "
+                    + "\"value\": \"" + DummyWorker.DUMMYTASKTASK.casedID + "\"},"
+                    + "{\"reference\": \"CHAIN\", \"value\": \"__WHOLE__\"}"
+                    + "]"
+                    + "}");
+        }
+
+        Map<String, String> repl = new LinkedHashMap<>();
+        repl.put("__WHOLE__", "__PART__");
+        repl.put("__PART__", "__FINAL__");
+
+        Job job = JobFactory.buildFromJSONFile(jdFile, repl);
+
+        assertEquals("__FINAL__", job.getParameter("CHAIN").getValueAsString(),
+                "Second replacement must see text produced by the first");
+    }
+
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testBuildFromParametersFile_appliesMultipleReplacements()
+            throws IOException
+    {
+        assertTrue(this.tempDir.isDirectory(), "Should be a directory ");
+
+        File paramFile = new File(tempDir.getAbsolutePath() + SEP + "repl.par");
+        try (FileWriter writer = new FileWriter(paramFile))
+        {
+            writer.write(WorkerConstants.PARTASK + ParameterConstants.SEPARATOR
+                    + DummyWorker.DUMMYTASKTASK.casedID + NL);
+            writer.write("INPATH" + ParameterConstants.SEPARATOR
+                    + "<<<ROOT>>>/input.dat" + NL);
+            writer.write("STEM" + ParameterConstants.SEPARATOR + "<<<TAG>>>" + NL);
+        }
+
+        Map<String, String> repl = new LinkedHashMap<>();
+        repl.put("<<<ROOT>>>", "/tmp/wd");
+        repl.put("<<<TAG>>>", "mol42");
+
+        Job job = JobFactory.buildFromParametersFile(paramFile, repl);
+
+        assertNotNull(job);
+        assertEquals("/tmp/wd/input.dat",
+                job.getParameter("INPATH").getValueAsString());
+        assertEquals("mol42", job.getParameter("STEM").getValueAsString());
+    }
+
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testBuildFromParametersFile_replacementTreatsOldAsLiteralSubstring()
+            throws IOException
+    {
+        assertTrue(this.tempDir.isDirectory(), "Should be a directory ");
+
+        File paramFile = new File(tempDir.getAbsolutePath() + SEP + "regex.par");
+        try (FileWriter writer = new FileWriter(paramFile))
+        {
+            writer.write(WorkerConstants.PARTASK + ParameterConstants.SEPARATOR
+                    + DummyWorker.DUMMYTASKTASK.casedID + NL);
+            writer.write("NOTE" + ParameterConstants.SEPARATOR
+                    + "see (a+b) for details" + NL);
+        }
+
+        Map<String, String> repl = new LinkedHashMap<>();
+        repl.put("a+b", "PLUS");
+
+        Job job = JobFactory.buildFromParametersFile(paramFile, repl);
+
+        assertEquals("see (PLUS) for details",
+                job.getParameter("NOTE").getValueAsString(),
+                "Old string must be literal, not a regex (a+b is not 'one or more a')");
     }
 
 //------------------------------------------------------------------------------

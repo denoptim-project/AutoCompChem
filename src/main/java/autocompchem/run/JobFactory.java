@@ -2,11 +2,21 @@ package autocompchem.run;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.StringReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.AbstractMap.SimpleImmutableEntry;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonSyntaxException;
 
 import org.apache.logging.log4j.core.config.Configurator;
 
@@ -15,6 +25,7 @@ import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.ACCFileType;
 import autocompchem.utils.NumberUtils;
 import autocompchem.files.FileAnalyzer;
+import autocompchem.io.ACCJson;
 import autocompchem.io.IOtools;
 import autocompchem.log.LogUtils;
 import autocompchem.text.TextBlockIndexed;
@@ -96,70 +107,84 @@ public final class JobFactory
 	
 	public static Job buildFromFile(File file) throws IOException
 	{
-		return buildFromFile(file, null);
+        Map<String, String> cliReplacements = new HashMap<>();
+		return buildFromFile(file, cliReplacements);
 	}
-	
+
 //------------------------------------------------------------------------------
-	
-    /**
-     * Build a {@link Job} from from an existing file.
-     * @param file the file from which to read the definition of the job.
-     * @param imposedStr a string that has to be used to replace 
-     * {@value ParameterConstants#STRINGFROMCLI} in the definition 
-     * of the job. This is a way to customize a general-purpose job definition 
-     * making it specific for the given string.
-     * @return the resulting job.
-     * @throws IOException if the file is not suitable for creating a Job.
-     */
-	
-	public static Job buildFromFile(File file, String imposedStr) throws IOException
+
+	/**
+	 * Build a {@link Job} from an existing file, applying optional string
+	 * replacements in file order before the job is parsed.
+	 *
+	 * @param file the file from which to read the definition of the job
+     * @param cliReplacements the key-value mapping for replacing the 
+     * string placeholders in the JSON file.
+	 * @return the resulting job
+	 * @throws IOException if the file is not suitable for creating a Job
+	 */
+	public static Job buildFromFile(File file,
+			Map<String, String> cliReplacements) throws IOException
 	{
-    	Job job = null;
-    	
-    	ACCFileType type = FileAnalyzer.detectFileType(file);
-    	switch (type)
-    	{
-    	case JSON:
-    		job = buildFromJSONFile(file, imposedStr);
-    		break;
-    		
-    	case PAR:
-    	case TXT:
-    		job = buildFromParametersFile(file, imposedStr);
-    		break;
-    		
+		Job job = null;
+
+		ACCFileType type = FileAnalyzer.detectFileType(file);
+		switch (type)
+		{
+		case JSON:
+			job = buildFromJSONFile(file, cliReplacements);
+			break;
+
+		case PAR:
+		case TXT:
+			job = buildFromParametersFile(file, cliReplacements);
+			break;
+
 		default:
 			throw new IllegalArgumentException("Format of file '" + file + "' does "
 					+ "not allow to create a Job. Please make sure the file is "
 					+ "either a JSON file or TXT parameters file adhering to "
 					+ "ACC format.");
-    	}
-    	return job;
+		}
+		return job;
 	}
-	
+
 //------------------------------------------------------------------------------
 
     /**
      * Build a {@link Job} from from an existing definition stored in a JSON
-     * file. It also
-     * allows you to given string that will replace the placeholder (i.e.,
-     * {@value ParameterConstants.STRINGFROMCLI}).
+     * file. It also allows to given string that will replace placeholders in
+     * the JSON file.
      * @param file the file from which to read the definition of the job.
-     * @param imposedStr  a string that has to be used to replace 
-     * {@value ParameterConstants#STRINGFROMCLI} in the definition 
-     * of the job. This is a way to customize a general-purpose job definition 
-     * making it specific for the given string.
+     * @param cliReplacements the key-value mapping for replacing the 
+     * string placeholders in the JSON file.
      * @return the resulting job.
      * @throws IOException is the file is not readable somehow.
      */
-
-    public static Job buildFromJSONFile(File file, String imposedStr) throws IOException
+    public static Job buildFromJSONFile(File file, Map<String, String> cliReplacements) throws IOException
     {
     	Object obj = null;
-    	if (imposedStr!=null)
+    	if (cliReplacements != null && !cliReplacements.isEmpty())
     	{
-    		obj = IOtools.readJsonFile(file, Job.class, 
-    				ParameterConstants.STRINGFROMCLI, imposedStr);
+    		String json = Files.readString(file.toPath(), StandardCharsets.UTF_8);
+    		for (String key : cliReplacements.keySet())
+    		{
+    			json = json.replace(key, cliReplacements.get(key));
+    		}
+    		try
+    		{
+    			obj = ACCJson.getReader().fromJson(new StringReader(json), Job.class);
+    		}
+    		catch (JsonSyntaxException jse)
+    		{
+    			throw new IOException("JSON file '" + file
+    					+ "' has illegal syntax: " + jse.getMessage(), jse);
+    		}
+    		catch (JsonIOException jio)
+    		{
+    			throw new IOException("Error reading JSON from '" + file + "': "
+    					+ jio.getMessage(), jio);
+    		}
     	} else {
     		obj = IOtools.readJsonFile(file, Job.class);
     	}
@@ -179,19 +204,15 @@ public final class JobFactory
     /**
      * Build a {@link Job} from from an existing definition stored in a 
      * text file adhering to the format of ACC's parameter's file. It also
-     * allows you to given string that will replace the placeholder (i.e.,
-     * {@value ParameterConstants.STRINGFROMCLI}).
+     * allows to given string that will replace placeholders in the text file.
      * @param file the file from which to read the definition of the job.
-     * @param imposedStr  a string that has to be used to replace 
-     * {@value ParameterConstants#STRINGFROMCLI} in the definition 
-     * of the job. This is a way to customize a general-purpose job definition 
-     * making it specific for the given string.
-     * @return the resulting job
-     * @throws IOException if the file is not readable
+     * @param cliReplacements the key-value mapping for replacing the 
+     * string placeholders in the text file.
+     * @return the resulting job.
+     * @throws IOException if the file is not suitable for creating a Job.
      */
-
-    public static Job buildFromParametersFile(File file, String imposedStr) 
-		throws IOException
+    public static Job buildFromParametersFile(File file,
+    		Map<String, String> cliReplacements) throws IOException
     {
         List<TextBlockIndexed> blocks = FileAnalyzer.extractTextBlocks(
         		file,
@@ -200,11 +221,11 @@ public final class JobFactory
                 false,  //don't take only first
                 false); //don't include delimiters
 		
-        if (imposedStr != null && !imposedStr.isBlank())
+        if (cliReplacements != null && !cliReplacements.isEmpty())
         {
 	        for (TextBlockIndexed tb : blocks)
 	        {
-	        	tb.replaceAll(ParameterConstants.STRINGFROMCLI,imposedStr);
+	        	applyCliReplacements(tb, cliReplacements);
 	        }
         }
         
@@ -216,13 +237,26 @@ public final class JobFactory
         	lines.add(ParameterConstants.RUNNABLEAPPIDKEY 
         			+ ParameterConstants.SEPARATOR + SoftwareId.ACC);
         	TextBlockIndexed tb = new TextBlockIndexed(lines, 0, 0, 0);
-        	if (imposedStr != null && !imposedStr.isBlank())
-        		tb.replaceAll(ParameterConstants.STRINGFROMCLI,imposedStr);
+        	if (cliReplacements != null && !cliReplacements.isEmpty())
+        		applyCliReplacements(tb, cliReplacements);
         	blocks.add(tb);
         }
         
         return createJob(blocks);
     }
+
+//------------------------------------------------------------------------------
+
+	private static void applyCliReplacements(TextBlockIndexed tb,
+			Map<String, String> cliReplacements)
+	{
+		for (String key : cliReplacements.keySet())
+		{
+			String regex = Pattern.quote(key);
+			String replacement = Matcher.quoteReplacement(cliReplacements.get(key));
+			tb.replaceAll(regex, replacement);
+		}
+	}
     
 //-----------------------------------------------------------------------------
     
