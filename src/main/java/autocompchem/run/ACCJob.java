@@ -1,5 +1,7 @@
 package autocompchem.run;
 
+import java.util.Arrays;
+
 /*
  *   Copyright (C) 2016  Marco Foscato
  *
@@ -18,6 +20,7 @@ package autocompchem.run;
  */
 
 import autocompchem.datacollections.ParameterStorage;
+import autocompchem.utils.StringUtils;
 import autocompchem.utils.TimeUtils;
 import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerConstants;
@@ -80,6 +83,18 @@ public class ACCJob extends Job
     	// Check for any ACC task...
     	if (!hasParameter(WorkerConstants.PARTASK))
     	{
+            if (steps.size() == 0)
+            {
+                hasException = true;
+                thrownExc = new Error("ACCJob defined with no task "
+                    + "and no steps. This is an empty job with parameters "
+                    + StringUtils.mergeListToString(
+                        Arrays.asList(params.getRefNamesSet()), ", ")
+                    + "Empty jobs are likely the result of a wrong input. "
+                    + "Please check the input and try again.");
+                stopJob();
+                return; // should not be reached, but satisfies linter
+            }
     		// ...if none, then this job is just a container for other jobs
     		logger.info("Running job container " + this.toString());
     		return;
