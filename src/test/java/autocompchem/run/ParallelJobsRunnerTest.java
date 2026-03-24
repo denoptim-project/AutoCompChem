@@ -264,7 +264,7 @@ public class ParallelJobsRunnerTest
         icDB.addChannel(new FileAsSource(roothName+0, InfoChannelType.LOGFEED));
         
         // Make the job that will monitor the ongoing job and trigger an action
-        Job monitoringJob = new MonitoringJob(jobToEvaluate, main, sitsDB, icDB, 
+        Job monitoringJob = new MonitoringJob(jobToEvaluate, sitsDB, icDB, 
         		750, 500);
         main.addStep(monitoringJob);
         
@@ -345,7 +345,7 @@ public class ParallelJobsRunnerTest
         main.setParameter(JobsRunner.WALLTIMEPARAM, 10);
         
         // Make the job that will monitor the ongoing job and trigger an action
-        Job monitoringJob = new MonitoringJob(productionJob, main, sitsDB, icDB, 
+        Job monitoringJob = new MonitoringJob(productionJob, sitsDB, icDB, 
         		750, 500);
         
         main.addStep(productionJob);
@@ -431,7 +431,7 @@ public class ParallelJobsRunnerTest
         main.setParameter(JobsRunner.WALLTIMEPARAM, 10);
         
         // Make the job that will monitor the ongoing job and trigger an action
-        Job monitoringJob = new MonitoringJob(productionJob, main, sitsDB, icDB, 
+        Job monitoringJob = new MonitoringJob(productionJob, sitsDB, icDB, 
         		750, 500);
         
         main.addStep(productionJob);
@@ -517,7 +517,7 @@ public class ParallelJobsRunnerTest
         main.setParameter(JobsRunner.WALLTIMEPARAM, 10);
         
         // Make the job that will monitor the ongoing job and trigger an action
-        Job monitoringJob = new MonitoringJob(productionJob, main, sitsDB, icDB, 
+        Job monitoringJob = new MonitoringJob(productionJob, sitsDB, icDB, 
         		0, period);
         monitoringJob.setParameter(ParameterConstants.TOLERATEMISSINGIC, "true");
         

@@ -100,8 +100,7 @@ public class JobEvaluatorTest
     	step2.setParameter(PARAMNAME, PARAMVALUE);
     	workflowToEvaluate.addStep(step2);
     	
-    	Job evalJob = new EvaluationJob(workflowToEvaluate.getStep(0), 
-    			workflowToEvaluate, sitsDB, icDB);
+    	Job evalJob = new EvaluationJob(workflowToEvaluate.getStep(0), sitsDB, icDB);
 
     	JobEvaluator w = (JobEvaluator) WorkerFactory.createWorker(evalJob);
     	w.performTask();
@@ -156,8 +155,7 @@ public class JobEvaluatorTest
     	step2.setParameter(PARAMNAME, PARAMVALUE);
     	batchToEvaluate.addStep(step2);
     	
-    	Job evalJob = new EvaluationJob(batchToEvaluate.getStep(1), 
-    			batchToEvaluate, sitsDB, icDB);
+    	Job evalJob = new EvaluationJob(batchToEvaluate.getStep(1), sitsDB, icDB);
 
         File newJobDef = new File(
         		tempDir.getAbsolutePath() + SEP + "newJobDef.json");
@@ -195,7 +193,7 @@ public class JobEvaluatorTest
         		InfoChannelType.OUTPUTFILE));
         
     	Job jobToEvaluate = new Job();
-    	Job evalJob = new EvaluationJob(jobToEvaluate, jobToEvaluate, sitsDB, icDB);
+    	Job evalJob = new EvaluationJob(jobToEvaluate, sitsDB, icDB);
     	evalJob.setParameter(ParameterConstants.TOLERATEMISSINGIC, "true");
     	
     	JobEvaluator w = (JobEvaluator) WorkerFactory.createWorker(evalJob);

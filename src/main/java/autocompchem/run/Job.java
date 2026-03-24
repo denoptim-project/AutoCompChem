@@ -998,8 +998,9 @@ public class Job implements Runnable
 //------------------------------------------------------------------------------
 
     /**
-     * Method that runs this job and its sub-jobs. This is the only method
-     * that can label this job as 'completed'.
+     * Method that runs this job and its sub-jobs. Then marks it as 'completed' 
+     * by calling the 
+     * {@link #finalizeStatusAndNotifications(boolean)} method.
      * Also, this method is only implemented in the super-class, and 
      * Sub-classed cannot overwrite it. Instead, sub-classes can overwrite 
      * {@link runThisJobSubClassSpecific()}, which is called by {@link run()}.

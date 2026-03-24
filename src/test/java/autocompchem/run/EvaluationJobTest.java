@@ -57,8 +57,7 @@ public class EvaluationJobTest
         InfoChannelBase icDB = new InfoChannelBase();
         icDB.addChannel(new FileAsSource());
     	Job jobToEvaluate = new Job();
-    	Job evalJob = new EvaluationJob(jobToEvaluate, jobToEvaluate, 
-    			sitsDB, icDB);
+    	Job evalJob = new EvaluationJob(jobToEvaluate, sitsDB, icDB);
     	
     	Worker w = WorkerFactory.createWorker(evalJob);
     	

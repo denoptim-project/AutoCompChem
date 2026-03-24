@@ -29,6 +29,7 @@ import autocompchem.datacollections.ParameterStorage;
 import autocompchem.run.jobediting.Action;
 import autocompchem.run.jobediting.ActionApplier;
 import autocompchem.utils.NumberUtils;
+import autocompchem.utils.StringUtils;
 import autocompchem.wiro.InputWriter;
 import autocompchem.wiro.WIROConstants;
 import autocompchem.worker.Task;
@@ -101,6 +102,16 @@ public class JobAssistant extends Worker
      * The maximum number of restarts of the assisted workflow.
      */
     private int maxRestart = 10;
+
+	/**
+	 * Keyword requesting a monitored run of the assisted job.
+	 */
+    public static final String PARMONITORING = "MONITORING";
+
+    /**
+     * Flag indicating if the run of the assisted job should be monitored.
+     */
+    private boolean monitoring = false;
     
     
 //-----------------------------------------------------------------------------
@@ -159,6 +170,18 @@ public class JobAssistant extends Worker
 			String value = params.getParameter(PARMAXRESTART).getValueAsString();
 			maxRestart = NumberUtils.parseValueOrExpressionToInt(value);
 		}
+
+		if (hasParameter(MonitoringJob.PERIODPAR) || hasParameter(MonitoringJob.PERIODUNITS)
+		    || hasParameter(MonitoringJob.DELAYPAR) || hasParameter(MonitoringJob.DELAYUNITS))
+		{
+			monitoring = true;
+		}
+
+		if (hasParameter(PARMONITORING))
+		{
+			String value = params.getParameter(PARMONITORING).getValueAsString();
+			monitoring = StringUtils.parseBoolean(value, true);
+		}
 	}
 
 //------------------------------------------------------------------------------
@@ -206,25 +229,33 @@ public class JobAssistant extends Worker
 		inputPreparationJob.setParameters(parsToMakeInput);
 		assistedWorkflow.addStep(inputPreparationJob);
 		
-		// Next, the actual run of the assisted job
-		Job monitoredRun = new ACCJob();
-		//TODO-MF: add monitoring job
-		//monitoredRun.addStep(monitoringJob);
-		monitoredRun.addStep(runJob);
-		assistedWorkflow.addStep(monitoredRun);
-		
-		// Finally, the evaluation job
+		// Prepare parameters for evaluation/monitoring
 		ParameterStorage parsToEvaluationJob = params.copy();
 		parsToEvaluationJob.setParameter(WorkerConstants.PARTASK,
 				JobEvaluator.EVALUATEJOBTASK.casedID);
-		//TODO: the parameters defined on the constructor are overwritten by setParameters
+
+		// Next, the actual run of the assisted job
+		if (monitoring)
+		{
+			Job monitoredRun = JobFactory.createJob(SoftwareId.ACC, 2);
+			monitoredRun.addStep(runJob);
+
+			Job monitoringJob = new MonitoringJob(assistedJob);
+			monitoringJob.setParameters(parsToEvaluationJob);
+			monitoredRun.addStep(monitoringJob);
+
+			assistedWorkflow.addStep(monitoredRun);
+		} else {
+			assistedWorkflow.addStep(runJob);
+		}
+		
+		// Finally, the evaluation job
 		EvaluationJob evalJob = new EvaluationJob(assistedJob);
 		evalJob.setParameters(parsToEvaluationJob);
 		assistedWorkflow.addStep(evalJob);
 
 		// This is to link the assisted workflow to the workflow of the job
-		// that called this worker, thus allowing fetching of data across
-		// the 
+		// that called this worker, thus allowing fetching of data 
 		myJob.addStep(assistedWorkflow);
 		
 		// Run the assisted workflow, possibly including restarts

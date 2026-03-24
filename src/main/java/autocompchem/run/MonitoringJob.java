@@ -39,6 +39,7 @@ public class MonitoringJob extends EvaluationJob
 	
 	/**
 	 * Key of parameter defining the units of the initial delay. 
+	 * Default: SECONDS.
 	 */
 	public static final String DELAYUNITS = "INITIALDELAY-TIMEUNITS";
 	
@@ -49,6 +50,7 @@ public class MonitoringJob extends EvaluationJob
 	
 	/**
 	 * Key of parameter defining the units of the period. 
+	 * Default: SECONDS.
 	 */
 	public static final String PERIODUNITS = "PERIOD-TIMEUNITS";
 	
@@ -63,17 +65,27 @@ public class MonitoringJob extends EvaluationJob
     {
     	super();
 	}
- 
+	
+//------------------------------------------------------------------------------
+
+    /**
+     * Constructor that specifies only what to evaluate. All the rest is expected
+	 * to be set afterwards.
+     * @param jobToEvaluate the job to be evaluated (single step isolated job, 
+     * or a single step in a workflow, of a job belonging to a batch of jobs).
+     */
+
+    public MonitoringJob(Job jobToEvaluate)
+    {
+        super(jobToEvaluate);
+    }
+
 //------------------------------------------------------------------------------
 
     /**
      * Constructor.
      * @param jobToEvaluate the job to be evaluated (single step isolated job, 
      * or a single step in a workflow, of a job belonging to a batch of jobs).
-     * @param containerOfJobToEvaluate the workflow or batch that contains the
-     * step to be evaluate. This can be the same of the 
-     * <code>jobToEvaluate</code>, meaning that such job is not a part of a 
-     * workflow or batch.
      * @param sitsDB the collection of {@link Situation}s that this 
      * {@link EvaluationJob} is made aware of.
      * @param icDB the collection of means give to this {@link EvaluationJob}
@@ -84,11 +96,11 @@ public class MonitoringJob extends EvaluationJob
      * and the next one.
      */
 
-    public MonitoringJob(Job jobToEvaluate, Job containerOfJobToEvaluate, 
+    public MonitoringJob(Job jobToEvaluate, 
     		SituationBase sitsDB, InfoChannelBase icDB, 
     		long delay, long period)
     {
-        super(jobToEvaluate, containerOfJobToEvaluate, sitsDB, icDB);
+        super(jobToEvaluate, sitsDB, icDB);
         this.delay = delay;
         this.period = period;
     }
@@ -151,13 +163,15 @@ public class MonitoringJob extends EvaluationJob
 				delay = time.convert(delay, TimeUnit.valueOf(units));
 			} else {
 				throw new IllegalArgumentException("String '" + units 
-						+ "' is not a known time unit. Chech parameter '" 
+						+ "' is not a known time unit. Check parameter '" 
 						+ DELAYUNITS + "'. Use one of "
 						+ acceptableUnits);
 			}
     	} else {
     		if (params.contains(DELAYPAR))
     		{
+				// default units fro input is seconds, but is milliseconds in the
+				// code using the value.
     			delay = delay*1000;
     		}
     	}
@@ -188,6 +202,8 @@ public class MonitoringJob extends EvaluationJob
     	} else {
     		if (params.contains(PERIODPAR))
     		{
+				// default units for input is seconds, but is milliseconds in the
+				// code using the value.
     			period = period*1000; 
     		}
     	}

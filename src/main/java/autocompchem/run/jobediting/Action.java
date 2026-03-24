@@ -126,6 +126,11 @@ public class Action implements Cloneable
          * Any job that is parallel to the job that has been evaluated.
          */
         PARALLELJOB, 
+
+        /**
+         * The job that is being run within a {@link JobAssistant} workflow.
+         */
+        ASSISTEDJOB
     };
     
     //--------------------------------------------------------------------------

@@ -18,6 +18,12 @@
     "doc": "the maximum number of attempts to restart the assisted job or part of it. If the given string is parsable to an integer, then it is used as the value. Otherwise, the string is interpreted as an expression defining the value (e.g., '${5}', '${2+3}', or '${floor(3.7)}' would be evaluated to integer values)."
   },
   {
+    "key": "MONITORING",
+    "casedKey": "monitoring",
+    "type": "<boolean>",
+    "doc": "Set the value to True/False to request/prevent monitoring of the assisted job, i.e., evaluation of outcome while the evaluation job is running, in addition to evaluation at job completion. The frequency and delay of the monitoring are configured by parameters listed in a dedicated section below. Such parameters implicitly request monitoring, but the 'monitoring' parameter can be set to False to prevent monitoring even when configurations of delay and frequency are provided. Otherwise, when no delay/frequency configuration is given, setting 'monitoring' to True activates monitoring with default delay and frequency."
+  },
+  {
     "embeddedWorker": "autocompchem.molecule.AtomContainerInputProcessor",
     "tag": "the importing of chemical objects (e.g., molecular geometries), if any"
   },
@@ -31,7 +37,7 @@
   },
   {
     "embeddedWorker": "autocompchem.run.JobEvaluator",
-    "tag": "the evaluation of the outcome from the assisted job",
+    "tag": "the evaluation and monitoring of the outcome from the assisted job",
     "ignorableItems": [
       "jobDefinition"
     ]

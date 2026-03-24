@@ -620,6 +620,17 @@ public class ParallelJobsRunner extends JobsRunner
 							break;
 						}
     				}
+				} else if (action.getObject().equals(ActionObject.ASSISTEDJOB))
+				{
+					logger.warn("KILLING ALL sub-jobs upon "
+								+ "job's request to re-run assisted workflow.");
+					// The restart is managed by JobAssistant, so we do nothing more
+					// than stopping the current workflow.
+					synchronized (lock)
+					{
+						cancellAllRunningThreadsAndShutDown();
+						lock.notify();
+					}
 				} else {
 					throw new IllegalArgumentException("Case of "
 							+ action.getType() + " action on " 

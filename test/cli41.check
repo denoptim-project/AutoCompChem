@@ -1,0 +1,41 @@
+#!/bin/bash
+
+function not_passed() {
+  echo "NOT Passed: check condition leading to line '$1' of '$0'"
+  exit -1
+}
+
+if [ ! -f cli41.log ] ; then not_passed $LINENO ; fi
+if [ ! -d cli41_wdir ] ; then not_passed $LINENO ; fi
+if [ ! -f cli41_wdir/cli41.out ] ; then not_passed $LINENO ; fi
+if [ ! -f cli41_wdir/cli41.xcontrol ] ; then not_passed $LINENO ; fi
+if [ ! -f cli41_wdir/cli41.xyz ] ; then not_passed $LINENO ; fi
+if [ ! -d "cli41_wdir/Job_#0.0_1" ] ; then not_passed $LINENO ; fi
+if [ ! -f "cli41_wdir/Job_#0.0_1/cli41.out" ] ; then not_passed $LINENO ; fi
+if [ ! -d "cli41_wdir/Job_#0.0_1/Job_#0.0_0" ] ; then not_passed $LINENO ; fi
+if [ ! -f "cli41_wdir/Job_#0.0_1/Job_#0.0_0/cli41.out" ] ; then not_passed $LINENO ; fi
+
+# The fake runner simulated the error twice, and for each time the situation is detected 
+# both by the monitoring job and by the final evaluating job.
+n=0; n=$(grep -c -i "JobEvaluator: Situation perceived = FAKE_ERROR-1.0" cli41.log)
+if [ 4 != "$n" ] ; then not_passed $LINENO ; exit 0 ; fi
+
+n=0; n=$(grep -c -i "Assisted execution of a nested workflow" cli41.log)
+if [ 3 != "$n" ] ; then not_passed $LINENO ; exit 0 ; fi
+
+# Verify that the fake runned was indeed interrupted twice
+if ! grep -q -i "ERROR msg triggering reaction of monitoring job" "cli41_wdir/Job_#0.0_1/Job_#0.0_0/cli41.out" ; then not_passed $LINENO ; exit 0 ; fi
+if ! grep -q -i "Fake running job iteration" "cli41_wdir/Job_#0.0_1/Job_#0.0_0/cli41.out" ; then not_passed $LINENO ; exit 0 ; fi
+if grep -q -i "End of simulated situation-triggering run" "cli41_wdir/Job_#0.0_1/Job_#0.0_0/cli41.out" ; then not_passed $LINENO ; exit 0 ; fi
+
+if ! grep -q -i "ERROR msg triggering reaction of monitoring job" "cli41_wdir/Job_#0.0_1/cli41.out" ; then not_passed $LINENO ; exit 0 ; fi
+if ! grep -q -i "Fake running job iteration" "cli41_wdir/Job_#0.0_1/cli41.out" ; then not_passed $LINENO ; exit 0 ; fi
+if grep -q -i "End of simulated situation-triggering run" "cli41_wdir/Job_#0.0_1/cli41.out" ; then not_passed $LINENO ; exit 0 ; fi
+
+if ! grep -q -i "No faking of situation-triggering" cli41_wdir/cli41.out ; then not_passed $LINENO ; exit 0 ; fi
+if ! grep -q -i "End of normal behavior" cli41_wdir/cli41.out ; then not_passed $LINENO ; exit 0 ; fi
+
+n=0; n=$(grep -c -i "Termination status: 0" cli41.log)
+if [ 1 == "$n" ] ; then echo Passed ; exit 0 ; fi
+not_passed $LINENO
+exit -1

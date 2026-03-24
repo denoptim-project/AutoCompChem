@@ -183,7 +183,7 @@ public class SerialJobsRunnerTest
         main.addStep(productionJob2);
         
         // Make the job that will evaluate the 2nd subjob job and trigger an action
-        Job evalJob = new EvaluationJob(productionJob2, main, sitsDB, icDB);
+        Job evalJob = new EvaluationJob(productionJob2, sitsDB, icDB);
         // LEave this commente out to trigger the use of the user directory of the production jobs
         //evalJob.setUserDir(tempDir);
         main.addStep(evalJob);

@@ -56,7 +56,7 @@ public class EvaluationJob extends ACCJob
 
     public EvaluationJob(Job jobToEvaluate)
     {
-        this(jobToEvaluate, null, null, null);
+        this(jobToEvaluate, null, null);
     }
     
 //------------------------------------------------------------------------------
@@ -65,17 +65,13 @@ public class EvaluationJob extends ACCJob
      * Constructor.
      * @param jobToEvaluate the job to be evaluated (single step isolated job, 
      * or a single step in a workflow, of a job belonging to a batch of jobs).
-     * @param containerOfJobToEvaluate the workflow or batch that contains the
-     * step to be evaluate. This can be the same of the 
-     * <code>jobToEvaluate</code>, meaning that such job is not a part of a 
-     * workflow or batch.
      * @param sitsDB the collection of {@link Situation}s that this 
      * {@link EvaluationJob} is made aware of.
      * @param icDB the collection of means give to this {@link EvaluationJob}
      * to perceive the {@link Situation}s.
      */
 
-    public EvaluationJob(Job jobToEvaluate, Job containerOfJobToEvaluate, 
+    public EvaluationJob(Job jobToEvaluate, 
     		SituationBase sitsDB, InfoChannelBase icDB)
     {
         this();
