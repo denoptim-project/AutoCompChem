@@ -271,13 +271,9 @@ public class ParallelJobsRunner extends JobsRunner
     	submittedMonitorJobs.clear();
     	shutDownExecutionService();
     }
-    
+
 //------------------------------------------------------------------------------
-    
-    /**
-     * 
-     * @param jobtoKill
-     */
+	
     private void cancelOneRunningThread(Job jobtoKill)
     {
     	if (!(submittedJobs.keySet().contains(jobtoKill) || 
@@ -487,10 +483,34 @@ public class ParallelJobsRunner extends JobsRunner
 	            } else {
 	            	String msg = "Checking completion of parallel "
             				+ "jobs:" + NL;
+					int numNonMonitorCompletedJobs = 0;
 	            	for (Job j : submittedJobs.keySet())
-	            		msg = msg + j + " " +j.isCompleted() + NL;
+	            	{
+						msg = msg + j + " " +j.isCompleted() + NL;
+						if (j.isCompleted())
+						{
+							numNonMonitorCompletedJobs++;
+						}
+					}
+					if (numNonMonitorCompletedJobs == submittedJobs.size())
+					{
+						// Only monitoring jobs are running, but they have no
+						// jobs to monitor, so we can stop all monitoring jobs
+						for (MonitoringJob j : submittedMonitorJobs.keySet())
+						{
+							// MonitoringJobs are never "done" so we kill them
+							// without triggering interruption exception.
+							Future<?> monJobToKillFuture = submittedMonitorJobs.get(j);
+							monJobToKillFuture.cancel(true);
+            			    j.stopJob();
+						}
+						submittedMonitorJobs.clear();
+						break;
+					}
 	            	for (Job j : submittedMonitorJobs.keySet())
-	            		msg = msg + j + " " +j.isCompleted() + NL;
+	            	{
+						msg = msg + j + " " +j.isCompleted() + NL;
+					}
 	            	logger.debug(msg);
 	            }
 	
@@ -514,9 +534,7 @@ public class ParallelJobsRunner extends JobsRunner
 	        		} else {
 	        			lock.wait();
 	        		}
-	            }
-	            catch (InterruptedException ie)
-	            {
+	            } catch (InterruptedException ie) {
 	                ie.printStackTrace();
 	            }
         	}
