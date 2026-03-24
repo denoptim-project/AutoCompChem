@@ -33,6 +33,7 @@ import autocompchem.run.SoftwareId;
 import autocompchem.wiro.acc.ACCOutputReader;
 import autocompchem.wiro.chem.ChemSoftInputWriter;
 import autocompchem.wiro.chem.ChemSoftOutputReader;
+import autocompchem.wiro.chem.crest.CRESTOutputReader;
 import autocompchem.wiro.chem.gaussian.GaussianOutputReader;
 import autocompchem.wiro.chem.nwchem.NWChemOutputReader;
 import autocompchem.wiro.chem.orca.OrcaOutputReader;
@@ -87,6 +88,7 @@ public final class ReaderWriterFactory
 		this.registerOutputReader(new OrcaOutputReader());
 		this.registerOutputReader(new OrcaOutputReader());
 		this.registerOutputReader(new XTBOutputReader());
+		this.registerOutputReader(new CRESTOutputReader());
 		this.registerOutputReader(new SpartanOutputReader());
 	}
 

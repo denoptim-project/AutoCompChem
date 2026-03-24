@@ -1,0 +1,13 @@
+[
+  {
+    "embeddedWorker": "autocompchem.wiro.chem.AgnosticCompChemOutputReader",
+    "tag": "the analysis of the software's output",
+    "ignorableItems": [
+      "saveLastGeometry",
+      "saveLastGeometryOfEachStep",
+      "saveVibModes",
+      "getFreeEnergy",
+      "detectKindOfCriticalPoint"
+    ]
+  }
+]

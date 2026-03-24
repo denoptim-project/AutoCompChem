@@ -1,0 +1,145 @@
+{
+  "jobType": "ACCJob",
+  "params": [
+    {
+      "reference": "TASK",
+      "value": "assistJob"
+    },
+    {
+      "reference": "workDir",
+      "value": "cli40_crest"
+    },
+    {
+      "reference": "copyToWorkDir",
+      "value": "../cli40.sdf"
+    },
+    {
+      "reference": "SOFTWAREID",
+      "value": "CREST"
+    },
+    {
+      "reference": "inFile",
+      "value": "cli40.sdf"
+    },
+    {
+      "reference": "coordFile",
+      "value": "cli40.xyz"
+    },
+    {
+      "reference": "noJsonOutput",
+      "value": "false"
+    },
+    {
+      "reference": "assistedJob",
+      "type": "JOB",
+      "value":
+      {
+        "jobType": "CompChemJob",
+        "directives": [
+          {
+            "name": "constrain",
+            "keywords": [
+              {
+                "reference": "force constant",
+                "value": 0.5
+              },
+              {
+                "reference": "reference",
+                "value": "cli40.xyz"
+              }
+            ],
+            "dirData": [
+              {
+                "accTaskParams": [
+                  {
+                    "reference": "TASK",
+                    "value": "getAtomListString"
+                  },
+                  {
+                    "reference": "SMARTS",
+                    "value": "[$([#44]),$([*]~[#44]),$([#1][#6]~[#44]),$([#7;X3]~[#6;X3]~[#44])] prefix: atoms: getAtomLabels"
+                  },
+                  {
+                    "reference": "labelType",
+                    "value": "IndexOnly"
+                  },
+                  {
+                    "reference": "zeroBased",
+                    "value": false
+                  }
+                ],
+                "reference": "frozen atoms"
+              }
+            ]
+          },
+          {
+            "name": "metadyn",
+            "dirData": [
+              {
+                "accTaskParams": [
+                  {
+                    "reference": "TASK",
+                    "value": "getAtomListString"
+                  },
+                  {
+                    "reference": "SMARTS",
+                    "value": "[!$([#44]);!$([*]~[#44]);!$([#1][#6]~[#44]);!$([#7;X3]~[#6;X3]~[#44])] prefix: atoms: getAtomLabels"
+                  },
+                  {
+                    "reference": "labelType",
+                    "value": "IndexOnly"
+                  },
+                  {
+                    "reference": "zeroBased",
+                    "value": false
+                  }
+                ],
+                "reference": "moving atoms"
+              }
+            ]
+          },
+          {
+            "name": "ffnb",
+            "dirData": [
+              {
+                "accTaskParams": [
+                  {
+                    "reference": "TASK",
+                    "value": "makeNearestNeighborMap"
+                  }
+                ],
+                "reference": "nearest neaighbor map generation"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "reference": "runJob",
+      "type": "JOB",
+      "value":
+      {
+        "jobType": "ShellJob",
+        "params": [
+          {
+            "reference": "CMD",
+            "value": "bash ../../cli40_fakeRunner.sh"
+          },
+          {
+            "reference": "workDir",
+            "value": "cli40_crest"
+          }
+        ]
+      }
+    },
+    {
+      "reference": "maxRestart",
+      "value": "5"
+    },
+    {
+      "reference": "VERBOSITY",
+      "value": "4"
+    }
+  ]
+}

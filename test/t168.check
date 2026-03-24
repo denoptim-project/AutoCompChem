@@ -1,0 +1,22 @@
+#!/bin/bash
+
+function not_passed() {
+  echo "NOT Passed: check condition leading to line '$1' of '$0'"
+  exit -1
+}
+
+if [ ! -f t168.log ] ; then not_passed $LINENO ; fi
+
+n=0;n=$(grep -c -i '\$\$\$\$' t168_confs.sdf)
+if [ $n != 13 ] ; then not_passed $LINENO ; fi
+
+n=0;n=$(grep -c -i '^ 86 91  0  .* V2000' t168_confs.sdf)
+if [ $n != 13 ] ; then not_passed $LINENO ; fi
+
+if grep -q 'Termination status: 0' t168.log ; then
+  echo Passed
+  exit 0
+else
+  echo NOT Passed 99
+  exit -1
+fi

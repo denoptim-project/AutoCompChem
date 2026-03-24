@@ -1,0 +1,36 @@
+#!/bin/bash
+
+function not_passed() {
+  echo "NOT Passed: check condition leading to line '$1' of '$0'"
+  exit -1
+}
+
+if [ ! -f cli40.log ] ; then not_passed $LINENO ; fi
+if [ ! -d cli40_crest ] ; then not_passed $LINENO ; fi
+if [ ! -f cli40_crest/cli40.out ] ; then not_passed $LINENO ; fi
+if [ ! -f cli40_crest/cli40.xcontrol ] ; then not_passed $LINENO ; fi
+if [ ! -f cli40_crest/cli40.xyz ] ; then not_passed $LINENO ; fi
+if [ ! -d "cli40_crest/Job_#0.0_1" ] ; then not_passed $LINENO ; fi
+if [ ! -f "cli40_crest/Job_#0.0_1/cli40.out" ] ; then not_passed $LINENO ; fi
+if [ ! -d "cli40_crest/Job_#0.0_1/Job_#0.0_0" ] ; then not_passed $LINENO ; fi
+if [ ! -f "cli40_crest/Job_#0.0_1/Job_#0.0_0/cli40.out" ] ; then not_passed $LINENO ; fi
+if [ ! -f "cli40_crest/Job_#0.0_1/Job_#0.0_0/crest_ensemble.xyz" ] ; then not_passed $LINENO ; fi
+if [ ! -d "cli40_crest/Job_#0.0_1/Job_#0.0_0/MDFILES" ] ; then not_passed $LINENO ; fi
+if [ ! -f "cli40_crest/Job_#0.0_1/Job_#0.0_0/MDFILES/WARNING" ] ; then not_passed $LINENO ; fi
+if [ ! -d "cli40_crest/Job_#0.0_1/Job_#0.0_0/calculation.level.9" ] ; then not_passed $LINENO ; fi
+
+if ! grep -q -i "\$constrain" cli40_crest/cli40.xcontrol ; then not_passed $LINENO ; exit 0 ; fi
+if ! grep -q -i "\$metadyn" cli40_crest/cli40.xcontrol ; then not_passed $LINENO ; exit 0 ; fi
+if ! grep -q -i "\$ffnb" cli40_crest/cli40.xcontrol ; then not_passed $LINENO ; exit 0 ; fi
+
+if ! grep -q -i "JobEvaluator: Situation perceived = crest-err1.0_memory_corruption" cli40.log ; then not_passed $LINENO ; exit 0 ; fi
+
+if ! grep -q -i "JobEvaluator: No known situation perceived." cli40.log ; then not_passed $LINENO ; exit 0 ; fi
+
+n=0; n=$(grep -c -i "Assisted execution of a nested workflow" cli40.log)
+if [ 3 != "$n" ] ; then not_passed $LINENO ; exit 0 ; fi
+
+n=0; n=$(grep -c -i "Termination status: 0" cli40.log)
+if [ 1 == "$n" ] ; then echo Passed ; exit 0 ; fi
+not_passed $LINENO
+exit -1

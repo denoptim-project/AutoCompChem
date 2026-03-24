@@ -62,6 +62,8 @@ import autocompchem.wiro.InputWriter;
 import autocompchem.wiro.OutputReader;
 import autocompchem.wiro.acc.ACCInputWriter;
 import autocompchem.wiro.acc.ACCOutputReader;
+import autocompchem.wiro.chem.crest.CRESTInputWriter;
+import autocompchem.wiro.chem.crest.CRESTOutputReader;
 import autocompchem.wiro.chem.gaussian.GaussianInputWriter;
 import autocompchem.wiro.chem.gaussian.GaussianOutputReader;
 import autocompchem.wiro.chem.gaussian.legacy.GaussianJobDetailsConverter;
@@ -141,6 +143,8 @@ public final class WorkerFactory
         registerType(new OrcaOutputReader());
         registerType(new XTBInputWriter());
         registerType(new XTBOutputReader());
+        registerType(new CRESTInputWriter());
+        registerType(new CRESTOutputReader());
         registerType(new SpartanInputWriter());
         registerType(new SpartanOutputReader());
         registerType(new VibModuleOutputReader());
@@ -156,6 +160,9 @@ public final class WorkerFactory
         registerType(new JobAssistant());
         registerType(new JobLooper());
         registerType(new JobOutputHandler());
+
+        // NB: input writers and output readers might need to be registered
+        // also in ReaderWriterFactory
 	}
 
 //-----------------------------------------------------------------------------

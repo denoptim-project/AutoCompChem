@@ -1,0 +1,38 @@
+{
+  "type": "ERROR",
+  "refName": "crest-err1.0_memory_corruption",
+  "description": "The program has corrupted the internal data structure that managed heap space (tcache: thread locale cache). No recovery possible, do we just rerun.",
+  "context": [
+    {
+      "circumstance": "MatchText",
+      "channel": "LOGFEED",
+      "pattern": "malloc\\(\\): unaligned tcache chunk detected"
+    },
+    {
+      "circumstance": "MatchText",
+      "channel": "LOGFEED",
+      "pattern": "Command terminated by signal"
+    }
+  ],
+  "reaction": {
+    "type": "REDO",
+    "object": "FocusAndFollowingJobs",
+    "jobEditTasks": [],
+    "jobArchivingRules": [
+      {
+        "type": "move",
+        "pattern": "*"
+      },
+      {
+        "type": "copy",
+        "pattern": "*.sdf"
+      },
+      {
+        "type": "copy",
+        "pattern": "*.xyz"
+      }
+    ],
+    "prerefinementSteps": [],
+    "inheritedSettings": []
+  }
+}

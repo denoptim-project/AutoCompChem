@@ -420,7 +420,7 @@ public class XTBOutputReader extends ChemSoftOutputReader
         	}
         }
         
-        //TOTO read vib modes from g98.out (a.k.a. the fake output)
+        //TODO read vib modes from g98.out (a.k.a. the fake output)
         /*
 	    stepData.putNamedData(new NamedData(
 				ChemSoftConstants.JOBDATAVIBMODES,nms));

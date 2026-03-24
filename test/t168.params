@@ -1,0 +1,7 @@
+#
+# Parameters for Automated Computational Chemistry
+#
+TASK: AnalyseOutput
+JOBOUTPUTFILE: ../t168_data/t168.out
+saveallgeometries: SDF t168_confs.sdf
+templateconnectivity: ../t168.sdf
