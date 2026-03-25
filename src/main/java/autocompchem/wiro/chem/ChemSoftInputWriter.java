@@ -289,8 +289,17 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
             {
         		logger.debug("Taking input geometries from CompChemJob " + sourceOfGeoms.getId());
                 inMols = new ArrayList<IAtomContainer>();
-                ((AtomContainerSet) sourceOfGeoms.getParameter(ChemSoftConstants.PARGEOM)
-                		.getValue()).atomContainers().forEach(i -> inMols.add(i));
+                Object geomParamValue = sourceOfGeoms.getParameter(ChemSoftConstants.PARGEOM).getValue();
+                if (geomParamValue instanceof AtomContainerSet)
+                {
+                    ((AtomContainerSet) geomParamValue).atomContainers().forEach(i -> inMols.add(i));
+                } else if (geomParamValue instanceof IAtomContainer) {
+                    inMols.add((IAtomContainer) geomParamValue);
+                } else {
+                    throw new IllegalArgumentException("Parameter '" + ChemSoftConstants.PARGEOM 
+                        + "' is expected to be an AtomContainerSet or IAtomContainer, "
+                        + "but is " + geomParamValue.getClass().getName());
+                }
             }
         }
 

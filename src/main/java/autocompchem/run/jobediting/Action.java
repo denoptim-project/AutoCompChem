@@ -158,6 +158,11 @@ public class Action implements Cloneable
      * Tasks to perform on action's object jobs
      */
     List<IJobEditingTask> jobEditTasks = new ArrayList<IJobEditingTask>();
+
+    /**
+     * Tasks to perform on input data of the action's object job.
+     */
+    List<IJobEditingTask> inputEditingTasks = new ArrayList<IJobEditingTask>();
     
     /**
      * List of job steps to pre-pend (i.e., append before) to the action's 
@@ -338,7 +343,14 @@ public class Action implements Cloneable
         for (int i = 0; i < jobSpecificAction.jobEditTasks.size(); i++)
         {
             jobSpecificAction.jobEditTasks.set(i,
-                    resolveJobEditingTaskFetch(job, jobSpecificAction.jobEditTasks.get(i)));
+                    resolveJobEditingTaskFetch(job, 
+                        jobSpecificAction.jobEditTasks.get(i)));
+        }
+        for (int i = 0; i < jobSpecificAction.inputEditingTasks.size(); i++)
+        {
+            jobSpecificAction.inputEditingTasks.set(i,
+                    resolveJobEditingTaskFetch(job, 
+                        jobSpecificAction.inputEditingTasks.get(i)));
         }
         for (Job prerefinementStep : jobSpecificAction.prerefinementSteps)
         {
@@ -356,6 +368,7 @@ public class Action implements Cloneable
     private static IJobEditingTask resolveJobEditingTaskFetch(Job anchorJob,
             IJobEditingTask task)
     {
+        //TODO-gg cover other types!
         if (task instanceof SetJobParameter)
         {
             SetJobParameter sjp = (SetJobParameter) task;
@@ -395,7 +408,6 @@ public class Action implements Cloneable
         }
     }
    
-
 //------------------------------------------------------------------------------
 
     @Override
@@ -420,9 +432,17 @@ public class Action implements Cloneable
         
         if (this.jobEditTasks.size()!=other.jobEditTasks.size())
             return false;
-        
+
+        if (this.inputEditingTasks.size()!=other.inputEditingTasks.size())
+            return false;
+
         for (int i=0; i<this.jobEditTasks.size(); i++)
             if (!this.jobEditTasks.get(i).equals(other.jobEditTasks.get(i)))
+                return false;
+        
+        for (int i=0; i<this.inputEditingTasks.size(); i++)
+            if (!this.inputEditingTasks.get(i).equals(
+                    other.inputEditingTasks.get(i)))
                 return false;
         
         if (this.jobArchivingRules.size()!=other.jobArchivingRules.size())
@@ -457,8 +477,8 @@ public class Action implements Cloneable
     @Override
     public int hashCode()
     {
-    	return Objects.hash(type, object, jobEditTasks, jobArchivingRules,
-    			inheritedSettings, prerefinementSteps);
+    	return Objects.hash(type, object, jobEditTasks, inputEditingTasks, 
+            jobArchivingRules, inheritedSettings, prerefinementSteps);
     }
     
 //------------------------------------------------------------------------------

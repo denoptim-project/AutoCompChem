@@ -38,6 +38,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
+import org.openscience.cdk.AtomContainerSet;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonDeserializationContext;
@@ -706,7 +707,22 @@ public class Job implements Runnable
      */
     public File getNewFile(String pathname)
     {
-    	// If we have a custom user directory different from system user.dir,
+    	return getNewFile(pathname, customUserDir);
+    }
+
+//------------------------------------------------------------------------------
+    
+    /**
+     * Wrapper for the {@link File} constructor that accounts for the possibility
+     * of considering an effective work directory different than user.dir.
+     * @param pathname an intended pathname, may be relative or absolute.
+     * @param customUserDir the effective work directory to use.
+     * @return the file object with the pathname adjusted to the current 
+     * configuration of the work directory of this Job.
+     */
+    public static File getNewFile(String pathname, File customUserDir)
+    {
+        // If we have a custom user directory different from system user.dir,
     	// adjust the pathname accordingly
     	if (customUserDir != null && 
     		!customUserDir.getAbsolutePath().equals(System.getProperty("user.dir")))
@@ -1537,13 +1553,47 @@ public class Job implements Runnable
 	    		        }
 	    		    }
 	    		}
-	    	} else if (value instanceof List 
-	    			&& NumberUtils.isParsableToInt(nestedContentID)) 
+	    	} else if (value instanceof List) 
 	    	{
-	    		List<?> list = (List<?>) value;
-	    		nestedValue = list.get(Integer.parseInt(nestedContentID));
+                List<?> list = (List<?>) value;
+                if (NumberUtils.isParsableToInt(nestedContentID))
+	    		{
+	    		    nestedValue = list.get(Integer.parseInt(nestedContentID));
+                } else {
+                    if ("LAST".equals(nestedContentID.toUpperCase())) {
+                        nestedValue = list.get(list.size() - 1);
+                    } else if ("FIRST".equals(nestedContentID.toUpperCase())) {
+                        nestedValue = list.get(0);
+                    } else {
+                        logger.warn("WARNING: unexpected fetching request  pointing "
+                            + "list item '" + nestedContentID + "'. Returning null.");
+                        nestedValue = null;
+                    }
+                }
+            } else if (value instanceof AtomContainerSet) 
+            {
+                AtomContainerSet acs = (AtomContainerSet) value;
+                if (NumberUtils.isParsableToInt(nestedContentID))
+                {
+                    nestedValue = acs.getAtomContainer(Integer.parseInt(nestedContentID));
+                } else {
+                    if ("LAST".equals(nestedContentID.toUpperCase())) {
+                        nestedValue = acs.getAtomContainer(acs.getAtomContainerCount() - 1);
+                    } else if ("FIRST".equals(nestedContentID.toUpperCase())) {
+                        nestedValue = acs.getAtomContainer(0);
+                    } else {
+                        logger.warn("WARNING: unexpected fetching request  pointing "
+                            + "atom container '" + nestedContentID + "'. Returning null.");
+                        nestedValue = null;
+                    }
+                }
 	    	} else {
-	    		// NB: there might be other types of containers to consider!
+	    		logger.warn("WARNING: unexpected data type '" 
+                    + value.getClass().getSimpleName() 
+                    + "' for data fetching request '"
+                    + StringUtils.mergeListToString(Arrays.asList(pathIntoExposedData),
+                            ".", true) + "'. Returning null.");
+                return null;
 	    	}
         	value = nestedValue;
     	}

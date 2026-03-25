@@ -61,7 +61,7 @@ public class DeleteJobParameter implements IJobEditingTask
 	{
 		if (job.hasParameter(paramName))
 		{
-			job.getParameters().removeData(paramName);
+			job.getParameters().removeData(paramName.toUpperCase());
 		}
 	}
 	

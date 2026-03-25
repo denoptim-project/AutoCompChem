@@ -275,7 +275,7 @@ public class JobAssistant extends Worker
             {
         	    Job reactiontriggeringJob = evalJob.getReactionTriggeringJob();
 
-				// The "cure" is the recipe to heal the job
+				// Get the recipe to heal the job
 				Action cure = evalJob.getRequestedAction();
 
 				// Alter the settings of the assisted job according to the "cure" requested by the evaluation job
@@ -283,8 +283,8 @@ public class JobAssistant extends Worker
         	    inputPreparationJob.setParameter(WIROConstants.PARJOBDETAILSOBJ, 
         			   editedAssistedJob);
 				
-				// Alter the input of the job should the "cure" request an alteration of the input
-
+				// Alter the input preparation job should the cure require it
+				ActionApplier.performActionOnInputPreparationJob(cure, inputPreparationJob);
             } else {
         	    break;
             }

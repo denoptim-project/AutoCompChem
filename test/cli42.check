@@ -1,0 +1,41 @@
+#!/bin/bash
+
+function not_passed() {
+  echo "NOT Passed: check condition leading to line '$1' of '$0'"
+  exit -1
+}
+
+if [ ! -f cli42.log ] ; then not_passed $LINENO ; fi
+if [ ! -d cli42_wdir ] ; then not_passed $LINENO ; fi
+if [ ! -f cli42_wdir/xtb.out ] ; then not_passed $LINENO ; fi
+if [ ! -f cli42_wdir/cli42.xcontrol ] ; then not_passed $LINENO ; fi
+if [ ! -f cli42_wdir/cli42.xyz ] ; then not_passed $LINENO ; fi
+if [ ! -d "cli42_wdir/Job_#0.0_0" ] ; then not_passed $LINENO ; fi
+if [ ! -f "cli42_wdir/Job_#0.0_0/xtb.out" ] ; then not_passed $LINENO ; fi
+if [ ! -f "cli42_wdir/Job_#0.0_0/cli42.xcontrol" ] ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c -i "JobEvaluator: Situation perceived = draft_xtb-e1.1_GeomOptNotConverged_highGradBugFix" cli42.log)
+if [ 1 != "$n" ] ; then not_passed $LINENO ; exit 0 ; fi
+
+n=0; n=$(grep -c -i "Assisted execution of a nested workflow" cli42.log)
+if [ 2 != "$n" ] ; then not_passed $LINENO ; exit 0 ; fi
+
+if ! grep -q -i "Geometry optimization did not converge" "cli42_wdir/Job_#0.0_0/xtb.out" ; then not_passed $LINENO ; exit 0 ; fi
+
+if ! grep -q -i "normal termination of xtb" "cli42_wdir/xtb.out" ; then not_passed $LINENO ; exit 0 ; fi
+
+# The xcontrol is generated using the inFile to set the constraints 
+# to the same value in both runs. Otherwise, if we would use the last 
+# geometry from the first run, the value of the constraints would be different.
+n=0; n=$(diff "cli42_wdir/cli42.xcontrol" "cli42_wdir/Job_#0.0_0/cli42.xcontrol" | wc -l | awk '{print $1}')
+if [ 0 != "$n" ] ; then not_passed $LINENO ; exit 0 ; fi
+
+# The XYZ is the "coordFile" which must reflect the reading of the last geometry
+# from the first run, so it should be different between the two runs,
+n=0; n=$(diff "cli42_wdir/cli42.xyz" "cli42_wdir/Job_#0.0_0/cli42.xyz" | wc -l | awk '{print $1}')
+if [ 10 -gt "$n" ] ; then not_passed $LINENO ; exit 0 ; fi
+
+n=0; n=$(grep -c -i "Termination status: 0" cli42.log)
+if [ 1 == "$n" ] ; then echo Passed ; exit 0 ; fi
+not_passed $LINENO
+exit -1

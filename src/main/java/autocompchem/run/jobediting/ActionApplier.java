@@ -162,6 +162,25 @@ public class ActionApplier
     		job.resetRunStatus();
     	}
     }
+
+//------------------------------------------------------------------------------
+
+	/**
+	 * Performs the {@link Action} that alters the input preparation job.
+	 * @param action The action to be performed. Mind that this could be a "cure"
+	 * action that alters the input preparation job to prepare the input for a 
+	 * job that will be run after the input preparation job.
+	 * @param inputPreparationJob The job configured to prepare the input for 
+	 * the job that will be run after the input preparation job.
+	 */
+    public static void performActionOnInputPreparationJob(Action action, 
+		Job inputPreparationJob)
+    {
+        for (IJobEditingTask jet : action.inputEditingTasks)
+        {
+            jet.applyChange(inputPreparationJob);
+        }
+	}
     
 //------------------------------------------------------------------------------
     

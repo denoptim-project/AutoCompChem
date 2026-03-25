@@ -546,7 +546,7 @@ public class JobEvaluator extends Worker
 				// The generalities of the cure are defined in the situation...
 				Action reaction = s.getReaction().clone();
 				// ...but the specifics needsto be adjusted to the data produced by the evaluation
-				reaction.adjustToJobData(myJob);
+				reaction = reaction.adjustToJobData(jobBeingEvaluated);
 				
 				// NB: this triggers notification of a request of action on the
 				// observer (if any observer is present)
@@ -592,9 +592,10 @@ public class JobEvaluator extends Worker
 	 */
 	private void analyzeLogFileOfSerialJob(Perceptron p, FileAsSource log)
 	{
-		ParameterStorage analysisParams = new ParameterStorage();
+		ParameterStorage analysisParams = params.clone();
 		analysisParams.setParameter(WorkerConstants.PARTASK, Task.make(
 				"analyseOutput").casedID);
+		
 		
 		// The info channel has been already made context-specific, so
 		// the pathname does not need to account for potential change of user.dir
@@ -656,16 +657,22 @@ public class JobEvaluator extends Worker
 		exposeOutputData(new NamedData(NUMSTEPSKEY,
 				outputParser.getStepsFound()));
 		
-		if (jobBeingEvaluated!=null 
-				&& jobBeingEvaluated.hasParameter(ChemSoftConstants.PARGEOM))
+		if (jobBeingEvaluated!=null)
 		{
-			exposeOutputData(jobBeingEvaluated.getParameter(
-					ChemSoftConstants.PARGEOM));
+			if (jobBeingEvaluated.hasParameter(ChemSoftConstants.PARGEOM))
+			{
+				exposeOutputData(jobBeingEvaluated.getParameter(
+						ChemSoftConstants.PARGEOM));
+			}
+			jobBeingEvaluated.exposedOutput.putNamedData(exposedByAnalzer.getNamedData(
+				WIROConstants.JOBOUTPUTDATA));
 		}
 		
 		//TODO we should put any of the data exposed by the outputParser
 		// into info channels, so that it can be used by perception.
-		// This may need to add a data feed-like type of info channel
+		// This may need to add a data feed-like type of info channel.
+		// The data is stored in the jobBeingEvaluated.exposedOutput, 
+		// so we should link the IC to the exposed output.
 		
 		@SuppressWarnings("unchecked")
 		Map<TxtQuery,List<String>> matchesByTQ = (Map<TxtQuery,List<String>>)

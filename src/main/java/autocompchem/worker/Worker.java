@@ -42,6 +42,7 @@ import autocompchem.io.ACCJson;
 import autocompchem.log.LogUtils;
 import autocompchem.run.IOutputExposer;
 import autocompchem.run.Job;
+import autocompchem.run.JobConstants;
 import autocompchem.utils.NumberUtils;
 
 
@@ -344,9 +345,9 @@ public abstract class Worker implements IOutputExposer
     
     /**
      * Wrapper for the {@link File} constructor that accounts for the possibility
-     * of considering an effective work directory different than user.dir.
-     * The decision on whether the user.dir has been overwritten is taken by
-     * the {@link Job} this worker is tasked to to, if any.
+     * of considering an effective work directory different than user.dir
+     * even when no {@link Job} is associated with this worker, but a
+     * work directory has been configured in the input parameters.
      * @param pathname an intended pathname, may be relative or absolute.
      * @return the file object with the pathname adjusted to the current 
      * configuration of the work directory of this Job.
@@ -357,6 +358,12 @@ public abstract class Worker implements IOutputExposer
     	{
     		return myJob.getNewFile(pathname);
     	}
+        if (params!=null && params.contains(JobConstants.PARWORKDIR))
+        {
+            File workDir = new File(params.getParameter(
+                JobConstants.PARWORKDIR).getValueAsString());
+            return Job.getNewFile(pathname, workDir);
+        }
     	return new File(pathname);
     }
     
