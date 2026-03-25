@@ -2034,7 +2034,7 @@ public class Job implements Runnable
                 // Get the template message and replace COMMANDCALL with the actual commandCall
                 String template = keysToSkip.get(key);
                 String warningMessage = template.replace("COMMANDCALL", commandCall);
-                logger.warn(warningMessage);
+                logger.debug(warningMessage);
                 continue;
             }
             
