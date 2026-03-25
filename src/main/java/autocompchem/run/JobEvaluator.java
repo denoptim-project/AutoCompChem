@@ -543,7 +543,10 @@ public class JobEvaluator extends Worker
 			
 			if (s.hasReaction())
 			{
-				Action reaction = s.getReaction();
+				// The generalities of the cure are defined in the situation...
+				Action reaction = s.getReaction().clone();
+				// ...but the specifics needsto be adjusted to the data produced by the evaluation
+				reaction.adjustToJobData(myJob);
 				
 				// NB: this triggers notification of a request of action on the
 				// observer (if any observer is present)

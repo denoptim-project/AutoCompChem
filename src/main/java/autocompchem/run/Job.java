@@ -64,6 +64,8 @@ import autocompchem.utils.StringUtils;
 import autocompchem.wiro.chem.CompChemJob;
 import autocompchem.wiro.chem.Directive;
 import autocompchem.wiro.chem.DirectiveData;
+import autocompchem.wiro.chem.IDirectiveComponent;
+import autocompchem.wiro.chem.Keyword;
 import autocompchem.worker.WorkerConstants;
 
 
@@ -1975,9 +1977,36 @@ public class Job implements Runnable
     public static void fetchValuesFromJobsTree(Job job, 
     		NamedDataCollector dataToUpdate, String commandCall)
     {
-    	// Define keys to skip at all nesting levels with their warning message templates
-    	// The template should contain "COMMANDCALL" as a placeholder that will be replaced
-    	// with the actual commandCall value at runtime
+    	processNamedDataCollectorRecursively(job, dataToUpdate, commandCall,
+    			newKeysToSkipForFetchJobData());
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Resolves placeholders for the given {@code commandCall} (e.g.
+     * {@link #GETACCJOBSDATA} or {@link #GETACCJOBSRESULTS}) in any task
+     * parameters reachable from the directive component, including nested
+     * directives, keywords, and directive data blocks.
+     * @param job the job used as anchor for job-tree pointers (e.g. {@code #0})
+     * @param component the root directive component to process in place
+     * @param commandCall the fetch command to resolve
+     */
+    public static void fetchValuesFromJobsTreeForDirectiveComponent(Job job,
+    		IDirectiveComponent component, String commandCall)
+    {
+    	if (component == null)
+    	{
+    		return;
+    	}
+    	fetchValuesFromIDirectiveComponentTree(job, component, commandCall,
+    			newKeysToSkipForFetchJobData());
+    }
+    
+//------------------------------------------------------------------------------
+
+    private static Map<String, String> newKeysToSkipForFetchJobData()
+    {
     	Map<String, String> keysToSkip = new HashMap<String, String>();
     	keysToSkip.put(JobLooper.PARLOOPEDJOB, 
     			"WARNING: entries of COMMANDCALL in values of parameter '" 
@@ -1989,9 +2018,42 @@ public class Job implements Runnable
     			+ JobAssistant.PARASSISTEDJOB + "' are not altered. "
     			+ "ACCJobs data are fetched only in the actual instances created "
                 + "from this job template.");
-    	
-    	// Recursively process the NamedDataCollector structure
-    	processNamedDataCollectorRecursively(job, dataToUpdate, commandCall, keysToSkip);
+    	return keysToSkip;
+    }
+    
+//------------------------------------------------------------------------------
+
+    private static void fetchValuesFromIDirectiveComponentTree(Job job,
+    		IDirectiveComponent component, String commandCall,
+    		Map<String, String> keysToSkip)
+    {
+    	if (component instanceof Directive)
+    	{
+    		Directive d = (Directive) component;
+    		processNamedDataCollectorRecursively(job, d.getTaskParams(), commandCall,
+    				keysToSkip);
+    		for (Directive sub : d.getAllSubDirectives())
+    		{
+    			fetchValuesFromIDirectiveComponentTree(job, sub, commandCall, keysToSkip);
+    		}
+    		for (Keyword kw : d.getAllKeywords())
+    		{
+    			fetchValuesFromIDirectiveComponentTree(job, kw, commandCall, keysToSkip);
+    		}
+    		for (DirectiveData dd : d.getAllDirectiveDataBlocks())
+    		{
+    			fetchValuesFromIDirectiveComponentTree(job, dd, commandCall, keysToSkip);
+    		}
+    	}
+    	else if (component instanceof DirectiveData)
+    	{
+    		DirectiveData dd = (DirectiveData) component;
+    		processNamedDataRecursively(job, dd, null, commandCall, keysToSkip,
+    				LogManager.getLogger(Job.class), ACCJson.getWriter(),
+    				ACCJson.getReader());
+    		processNamedDataCollectorRecursively(job, dd.getTaskParams(), commandCall,
+    				keysToSkip);
+    	}
     }
 
 //------------------------------------------------------------------------------
@@ -2027,105 +2089,121 @@ public class Job implements Runnable
         for (String key : keys)
         {
             NamedData data = collector.getAllNamedData().get(key);
-            
-            // Skip this NamedData if its key is in the skip map
-            if (keysToSkip.containsKey(key))
+            NamedData updatedData = processNamedDataRecursively(job, data, key,
+                    commandCall, keysToSkip, logger, jsonWriter, jsonReader);
+            if (updatedData != data)
             {
-                // Get the template message and replace COMMANDCALL with the actual commandCall
-                String template = keysToSkip.get(key);
-                String warningMessage = template.replace("COMMANDCALL", commandCall);
-                logger.debug(warningMessage);
-                continue;
-            }
-            
-            Object dataValue = data.getValue();
-            
-            // Check if the value is a nested NamedDataCollector (e.g., ParameterStorage)
-            if (dataValue instanceof NamedDataCollector)
-            {
-                // Recursively process the nested collector
-                processNamedDataCollectorRecursively(job, (NamedDataCollector) dataValue, 
-                        commandCall, keysToSkip);
-                continue;
-            }
-
-            // CompChemJob do not run themselfs in ACC so we their runtime is not available
-            // for fetching data. Thus, we need to process the directives of the CompChemJob.
-            if (dataValue instanceof CompChemJob)
-            {
-                Iterator<Directive> directiveIterator = ((CompChemJob) dataValue).directiveIterator();
-                while (directiveIterator.hasNext())
-                {
-                    Directive d = directiveIterator.next();
-                    processNamedDataCollectorRecursively(job, d.getTaskParams(), 
-                            commandCall, keysToSkip);
-                    for (DirectiveData dd : d.getAllDirectiveDataBlocks())
-                        {
-                            processNamedDataCollectorRecursively(job, dd.getTaskParams(), 
-                                    commandCall, keysToSkip);
-                        }
-                }
-                continue;
-            }
-            
-            // For non-collector values, check if they're JSON-able
-            if (!NamedData.jsonable.contains(data.getType()))
-            {
-                logger.debug("WARNING: the parameter '" + key + "'" 
-                    + " of type '" + data.getType() + "'" 
-                    + " is not JSON-able. Only JSON-able content can be "
-                    + "fetched. Contact the authors if you feel this data "
-                    + "type should become fetch-able.");
-                continue;
-            }
-            
-            // Check if the JSON representation contains the command call
-            String jsonStr = jsonWriter.toJson(data);
-            if (!jsonStr.toUpperCase().contains(commandCall.toUpperCase()))
-            {
-                continue;
-            }
-            
-            // See if the part to replace corresponds to the entire content of the data value
-            boolean replaceEntireValue = false;
-            if (dataValue instanceof String)
-            {
-                replaceEntireValue = StringUtils.hasSyntaxOfCommandCallWithParenthesesContent(
-                    (String) dataValue, commandCall);
-            }
-            
-            if (replaceEntireValue)
-            {
-                // Replace the entire value with the result of the command call
-                String argStr = StringUtils.getParenthesesContent((String) dataValue);
-                String[] args = argStr.split(",");
-                String pathToOtherJob = "#0";
-                String[] pathIntoExposedData = args;
-                if (args.length > 0 && args[0].stripLeading().startsWith("#"))
-                {
-                    pathToOtherJob = args[0].stripLeading().stripTrailing();
-                    pathIntoExposedData = Arrays.copyOfRange(args, 1, args.length);
-                }
-                
-                Object value = getExposedData(job, pathToOtherJob, pathIntoExposedData);
-                collector.getAllNamedData().put(key, new NamedData(key, value));
-            }
-            else
-            {
-                // Replace command calls recursively in the JSON structure
-                JsonElement jsonElement = jsonReader.fromJson(jsonStr, JsonElement.class);
-                JsonElement processedElement = processJsonElementRecursively(jsonElement, job, 
-                        commandCall, jsonWriter, jsonReader);
-                
-                // Only update if the element was actually modified
-                if (processedElement != jsonElement)
-                {
-                    // Convert the modified JSON tree back to NamedData
-                    collector.getAllNamedData().put(key, 
-                            jsonReader.fromJson(processedElement, NamedData.class));
-                }
+                collector.getAllNamedData().put(key, updatedData);
             }
         }
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Processes one {@link NamedData} entry and resolves ACC jobs fetch commands
+     * in its content (including nested structures), when present.
+     * @param job the job context for fetching exposed data
+     * @param data the named data to process
+     * @param key the key under which the data is stored; can be null
+     * @param commandCall the command call string to search for
+     * @param keysToSkip map of keys to skip with warning templates
+     * @param logger logger for debug warnings
+     * @param jsonWriter Gson writer for serializing replacement values
+     * @param jsonReader Gson reader for parsing replacement JSON values
+     * @return the same NamedData if unchanged, or a replacement NamedData
+     */
+    private static NamedData processNamedDataRecursively(Job job, NamedData data,
+            String key, String commandCall, Map<String, String> keysToSkip,
+            Logger logger, Gson jsonWriter, Gson jsonReader)
+    {
+        // Skip this NamedData if its key is in the skip map
+        if (key != null && keysToSkip.containsKey(key))
+        {
+            String template = keysToSkip.get(key);
+            String warningMessage = template.replace("COMMANDCALL", commandCall);
+            logger.debug(warningMessage);
+            return data;
+        }
+
+        Object dataValue = data.getValue();
+
+        // Check if the value is a nested NamedDataCollector (e.g., ParameterStorage)
+        if (dataValue instanceof NamedDataCollector)
+        {
+            processNamedDataCollectorRecursively(job, (NamedDataCollector) dataValue,
+                    commandCall, keysToSkip);
+            return data;
+        }
+
+        // CompChemJob do not run themselfs in ACC so we their runtime is not available
+        // for fetching data. Thus, we need to process the directives of the CompChemJob.
+        if (dataValue instanceof CompChemJob)
+        {
+            Iterator<Directive> directiveIterator = ((CompChemJob) dataValue).directiveIterator();
+            while (directiveIterator.hasNext())
+            {
+                Directive d = directiveIterator.next();
+                fetchValuesFromIDirectiveComponentTree(job, d, commandCall, keysToSkip);
+            }
+            return data;
+        }
+
+        // For non-collector values, check if they're JSON-able
+        if (!NamedData.jsonable.contains(data.getType()))
+        {
+            String dataRef = key != null ? key : data.getReference();
+            logger.debug("WARNING: the parameter '" + dataRef + "'"
+                + " of type '" + data.getType() + "'"
+                + " is not JSON-able. Only JSON-able content can be "
+                + "fetched. Contact the authors if you feel this data "
+                + "type should become fetch-able.");
+            return data;
+        }
+
+        // Check if the JSON representation contains the command call
+        String jsonStr = jsonWriter.toJson(data);
+        if (!jsonStr.toUpperCase().contains(commandCall.toUpperCase()))
+        {
+            return data;
+        }
+
+        // See if the part to replace corresponds to the entire content of the data value
+        boolean replaceEntireValue = false;
+        if (dataValue instanceof String)
+        {
+            replaceEntireValue = StringUtils.hasSyntaxOfCommandCallWithParenthesesContent(
+                (String) dataValue, commandCall);
+        }
+
+        if (replaceEntireValue)
+        {
+            // Replace the entire value with the result of the command call
+            String argStr = StringUtils.getParenthesesContent((String) dataValue);
+            String[] args = argStr.split(",");
+            String pathToOtherJob = "#0";
+            String[] pathIntoExposedData = args;
+            if (args.length > 0 && args[0].stripLeading().startsWith("#"))
+            {
+                pathToOtherJob = args[0].stripLeading().stripTrailing();
+                pathIntoExposedData = Arrays.copyOfRange(args, 1, args.length);
+            }
+
+            Object value = getExposedData(job, pathToOtherJob, pathIntoExposedData);
+            return new NamedData(data.getReference(), value);
+        }
+
+        // Replace command calls recursively in the JSON structure
+        JsonElement jsonElement = jsonReader.fromJson(jsonStr, JsonElement.class);
+        JsonElement processedElement = processJsonElementRecursively(jsonElement, job,
+                commandCall, jsonWriter, jsonReader);
+
+        // Only update if the element was actually modified
+        if (processedElement != jsonElement)
+        {
+            return jsonReader.fromJson(processedElement, NamedData.class);
+        }
+        return data;
     }
     
 //------------------------------------------------------------------------------

@@ -3,6 +3,7 @@ package autocompchem.run.jobediting;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 
 /*   
  *   Copyright (C) 2018  Marco Foscato 
@@ -174,6 +175,52 @@ public class ActionTest
     			ActionObject.FOCUSJOB.toString().toLowerCase());
     	fromJson = reader.fromJson(json, Action.class);
     	assertEquals(act,fromJson);
+    }
+    
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testAdjustToJobData()
+    {
+    	Job containerJob = JobFactory.createJob(SoftwareId.ACC);
+    	containerJob.exposedOutput.putNamedData(new NamedData("DataName", 987));
+    	
+    	Job siblingJob = JobFactory.createJob(SoftwareId.ACC);
+    	siblingJob.exposedOutput.putNamedData(new NamedData("Foo",
+    			new NamedData("Bar", 123)));
+    	
+    	Job focusJob = JobFactory.createJob(SoftwareId.ACC);
+    	containerJob.addStep(siblingJob); // #-1.0 from focusJob
+    	containerJob.addStep(focusJob);   // #0
+    	
+    	Action action = new Action(ActionType.REDO, ActionObject.FOCUSJOB);
+    	action.addJobEditingTask(new SetJobParameter(new NamedData("FromTree",
+    			Job.GETACCJOBSDATA + "(#-1,DataName)")));
+    	
+    	Job preref = JobFactory.createJob(SoftwareId.ACC);
+    	preref.setParameter("PRE1", "value:"
+    			+ Job.GETACCJOBSDATA + "(#-1.0,Foo,Bar)");
+    	Job prerefNested = JobFactory.createJob(SoftwareId.ACC);
+    	prerefNested.setParameter("PRE2", Job.GETACCJOBSDATA + "(#-1,DataName)");
+    	preref.addStep(prerefNested);
+    	action.addPrerefinementStep(preref);
+    	
+    	Action adjusted = action.adjustToJobData(focusJob);
+    	
+    	assertNotSame(action, adjusted);
+    	
+    	SetJobParameter origTask = (SetJobParameter) action.jobEditTasks.get(0);
+    	assertEquals(Job.GETACCJOBSDATA + "(#-1,DataName)",
+    			origTask.parameter.getValueAsString());
+    	assertEquals("value:" + Job.GETACCJOBSDATA + "(#-1.0,Foo,Bar)",
+    			action.prerefinementSteps.get(0).getParameter("PRE1").getValueAsString());
+    	
+    	SetJobParameter adjustedTask = (SetJobParameter) adjusted.jobEditTasks.get(0);
+    	assertEquals(987, adjustedTask.parameter.getValue());
+    	assertEquals("value:123",
+    			adjusted.prerefinementSteps.get(0).getParameter("PRE1").getValueAsString());
+    	assertEquals(987, adjusted.prerefinementSteps.get(0).getStep(0)
+    			.getParameter("PRE2").getValue());
     }
     
 //------------------------------------------------------------------------------

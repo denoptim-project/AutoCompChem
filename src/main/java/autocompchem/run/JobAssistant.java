@@ -274,10 +274,17 @@ public class JobAssistant extends Worker
             if (evalJob.requestsAction())
             {
         	    Job reactiontriggeringJob = evalJob.getReactionTriggeringJob();
-        	    Job editedAssistedJob = healJob(reactiontriggeringJob, 
-        			   evalJob.getRequestedAction(), i, myJob, logger);
+
+				// The "cure" is the recipe to heal the job
+				Action cure = evalJob.getRequestedAction();
+
+				// Alter the settings of the assisted job according to the "cure" requested by the evaluation job
+        	    Job editedAssistedJob = healJob(reactiontriggeringJob, cure, i, myJob, logger);			
         	    inputPreparationJob.setParameter(WIROConstants.PARJOBDETAILSOBJ, 
         			   editedAssistedJob);
+				
+				// Alter the input of the job should the "cure" request an alteration of the input
+
             } else {
         	    break;
             }

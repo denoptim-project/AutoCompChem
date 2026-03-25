@@ -28,6 +28,7 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 
+import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.io.ACCJson;
 import autocompchem.run.EvaluationJob;
 import autocompchem.run.Job;
@@ -321,6 +322,79 @@ public class Action implements Cloneable
     {
         this.object = obj;
     }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Generate a job-specific action by adjusting this action to the data 
+     * made available to ACC by anything reachable from the given job via the
+     * data fetching mechanism triggered by {@link Job#GETACCJOBSDATA} and
+     * {@link Job#GETACCJOBSRESULTS}.
+     * @param job the job used as starting point (i.e., "#0)" for fetching data.
+     */
+    public Action adjustToJobData(Job job)
+    {
+        Action jobSpecificAction = this.clone();
+        for (int i = 0; i < jobSpecificAction.jobEditTasks.size(); i++)
+        {
+            jobSpecificAction.jobEditTasks.set(i,
+                    resolveJobEditingTaskFetch(job, jobSpecificAction.jobEditTasks.get(i)));
+        }
+        for (Job prerefinementStep : jobSpecificAction.prerefinementSteps)
+        {
+            fetchJobSubtreeFromAnchorJob(job, prerefinementStep);
+        }
+        return jobSpecificAction;
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Resolves {@link Job#GETACCJOBSDATA} and {@link Job#GETACCJOBSRESULTS}
+     * placeholders in-place for directive components carried by the given task.
+     */
+    private static IJobEditingTask resolveJobEditingTaskFetch(Job anchorJob,
+            IJobEditingTask task)
+    {
+        if (task instanceof SetJobParameter)
+        {
+            SetJobParameter sjp = (SetJobParameter) task;
+            NamedDataCollector ndc = new NamedDataCollector();
+            ndc.putNamedData(sjp.parameter);
+            Job.fetchValuesFromJobsTree(anchorJob, ndc, Job.GETACCJOBSDATA);
+            Job.fetchValuesFromJobsTree(anchorJob, ndc, Job.GETACCJOBSRESULTS);
+            return new SetJobParameter(ndc.getNamedData(sjp.parameter.getReference()));
+        }
+        if (task instanceof AddDirectiveComponent)
+        {
+            AddDirectiveComponent adc = (AddDirectiveComponent) task;
+            Job.fetchValuesFromJobsTreeForDirectiveComponent(anchorJob, adc.content,
+                    Job.GETACCJOBSDATA);
+            Job.fetchValuesFromJobsTreeForDirectiveComponent(anchorJob, adc.content,
+                    Job.GETACCJOBSRESULTS);
+            return task;
+        }
+        return task;
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Resolves {@link Job#GETACCJOBSDATA} and {@link Job#GETACCJOBSRESULTS}
+     * in every {@link Job} in the subtree (parameters and nested steps).
+     */
+    private static void fetchJobSubtreeFromAnchorJob(Job anchorJob, Job subtree)
+    {
+        Job.fetchValuesFromJobsTree(anchorJob, subtree.getParameters(),
+                Job.GETACCJOBSDATA);
+        Job.fetchValuesFromJobsTree(anchorJob, subtree.getParameters(),
+                Job.GETACCJOBSRESULTS);
+        for (int s = 0; s < subtree.getNumberOfSteps(); s++)
+        {
+            fetchJobSubtreeFromAnchorJob(anchorJob, subtree.getStep(s));
+        }
+    }
+   
 
 //------------------------------------------------------------------------------
 
