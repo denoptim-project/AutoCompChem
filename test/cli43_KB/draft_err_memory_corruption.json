@@ -1,6 +1,6 @@
 {
   "type": "ERROR",
-  "refName": "crest-err1.0_memory_corruption",
+  "refName": "draft_err_memory_corruption",
   "description": "The program has corrupted the internal data structure that managed heap space (tcache: thread locale cache). No recovery possible, we just rerun.",
   "context": [
     {

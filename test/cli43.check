@@ -1,0 +1,25 @@
+#!/bin/bash
+
+function not_passed() {
+  echo "NOT Passed: check condition leading to line '$1' of '$0'"
+  exit -1
+}
+
+if [ ! -f cli43.log ] ; then not_passed $LINENO ; fi
+if [ ! -d cli43_wdir ] ; then not_passed $LINENO ; fi
+if [ ! -f cli43_wdir/cli43.out ] ; then not_passed $LINENO ; fi
+if [ ! -f "cli43_wdir/Job_#0.0_0/cli43.out" ] ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c -i "JobEvaluator: Situation perceived = draft_err_memory_corruption" cli43.log)
+if [ 1 != "$n" ] ; then not_passed $LINENO ; fi
+
+if ! grep -q -i "unaligned tcache chunk detected" "cli43_wdir/Job_#0.0_0/cli43.out" ; then not_passed $LINENO ; fi
+if grep -q -i "unaligned tcache chunk detected" "cli43_wdir/cli43.out" ; then not_passed $LINENO ; fi
+
+if grep -q -i "CREST terminated normally" "cli43_wdir/Job_#0.0_0/cli43.out" ; then not_passed $LINENO ; fi
+if ! grep -q -i "CREST terminated normally" "cli43_wdir/cli43.out" ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c -i "Termination status: 0" cli43.log)
+if [ 1 == "$n" ] ; then echo Passed ; exit 0 ; fi
+not_passed $LINENO
+exit -1
