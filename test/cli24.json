@@ -26,6 +26,10 @@
       "value": "xtbinit.sdf"
     },
     {
+      "reference": "situationsDBRoot",
+      "value": "../../cli24_KB"
+    },
+    {
       "reference": "assistedJob",
       "type": "JOB",
       "value":
@@ -138,27 +142,6 @@
               {
                 "reference": "CMD",
                 "value": "bash ../../cli24_fakeRunner.sh"
-              }
-            ]
-          },
-          {
-            "jobType": "ShellJob",
-            "params": [
-              {
-                "reference": "APP",
-                "value": "SHELL"
-              },
-              {
-                "reference": "workDir",
-                "value": "cli24_wdir"
-              },
-              {
-                "reference": "VERBOSITY",
-                "value": "4"
-              },
-              {
-                "reference": "CMD",
-                "value": "cp -f xtblast.sdf xtbinit.sdf"
               }
             ]
           }

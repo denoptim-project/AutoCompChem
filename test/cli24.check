@@ -8,16 +8,13 @@ function not_passed() {
 # the log has a peculiar name to avoid confusion with the log feed channels
 if [ ! -f "cli24.log" ] ; then not_passed $LINENO ; fi
 
-n=0; n=$(grep -c -i "default list .*situations" "cli24.log")
-if [ 3 != "$n" ] ; then not_passed $LINENO ; fi
-
 n=0; n=$(grep -c -i "default .*configuration of info channels" "cli24.log")
 if [ 3 != "$n" ] ; then not_passed $LINENO ; fi
 
 n=0; n=$(grep -c -i "run did NOT terminate normally" "cli24.log")
 if [ 2 != "$n" ] ; then not_passed $LINENO ; fi
 
-n=0; n=$(grep -c -i "Situation perceived.*xtb-e1.0_GeomOptNotConverged" "cli24.log")
+n=0; n=$(grep -c -i "Situation perceived.*xtb_draft_GeomOptNotConverged" "cli24.log")
 if [ 2 != "$n" ] ; then not_passed $LINENO ; fi
 
 n=0; n=$(grep -c -i "run did terminate normally" "cli24.log")
