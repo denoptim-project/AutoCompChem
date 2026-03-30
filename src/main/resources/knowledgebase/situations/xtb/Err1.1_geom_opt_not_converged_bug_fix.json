@@ -26,8 +26,27 @@
   ],
   "reaction": {
     "type": "REDO",
-    "object": "FocusAndFollowingJobs",
-    "jobEditTasks": [],
+    "object": "assistedJob",
+    "jobEditTasks": [
+      {
+        "task": "SET_JOB_PARAMETER",
+        "parameter": {"reference": "inputGeometries", "value": "getACCJobsData(#0,JOBOUTPUTDATA,0,GEOMETRIES,LAST)"}
+      }
+    ],
+    "inputEditingTasks": [
+      {
+        "task": "REMOVE_JOB_PARAMETER",
+        "paramName": "infile"
+      },
+      {
+        "task": "REMOVE_JOB_PARAMETER",
+        "paramName": "INPUTGEOMETRIES"
+      },
+      {
+        "task": "REMOVE_JOB_PARAMETER",
+        "paramName": "INPUTGEOMETRIESFILE"
+      }
+    ],
     "jobArchivingRules": [
       {
         "type": "move",
@@ -38,7 +57,7 @@
         "pattern": "*.sdf"
       }
     ],
-    "prerefinementSteps": [],
+    "preRefinementSteps": [],
     "inheritedSettings": []
   }
 }
