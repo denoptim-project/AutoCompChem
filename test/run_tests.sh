@@ -269,10 +269,24 @@ function cliTesting() {
     # We run all tests unless a specific list of test IDs was given
     if [ ${#chosenCliTests[@]} -eq 0 ]
     then
-        for i in $(seq 1 $(ls  ../cli[0-9].sh ../cli[0-9][0-9].sh ../cli[0-9][0-9][0-9].sh 2>/dev/null | wc -l | awk '{print $1}'))
+        cliFiles=()
+        for argsFile in ../cli*.sh
         do
-            chosenCliTests+=($i)
+            [ -f "$argsFile" ] || continue
+            [[ "$argsFile" =~ \.\./cli[0-9]+\.sh$ ]] || continue
+            cliFiles+=("$argsFile")
         done
+        if [ ${#cliFiles[@]} -gt 0 ]
+        then
+            IFS=$'\n' cliFiles=($(printf '%s\n' "${cliFiles[@]}" | sort -V))
+            unset IFS
+            for argsFile in "${cliFiles[@]}"
+            do
+                i="${argsFile#../cli}"
+                i="${i%.sh}"
+                chosenCliTests+=("$i")
+            done
+        fi
     fi
     for i in ${chosenCliTests[@]}
     do
