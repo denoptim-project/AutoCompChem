@@ -48,9 +48,21 @@ public class ResourcesTools
 	{
 	    PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
 	    
-	    // Use wildcard pattern to get all resources recursively
-	    String pattern = "classpath*:" + basePath + "/**/*";
-	    Resource[] resources = resolver.getResources(pattern);
+	    // Avoid classpath-wide scans that can become very expensive with large
+	    // dependency trees; we only need resources from the first matching root.
+	    String pattern = "classpath:" + basePath + "/**/*";
+	    Resource[] resources;
+	    try {
+	    	resources = resolver.getResources(pattern);
+	    } catch (IOException e) {
+	    	// With classpath:..., Spring can throw if the base path does not exist.
+	    	// Treat missing roots as "no resources found" to preserve previous behavior.
+	    	if (isMissingClasspathRoot(e)) {
+	    		resources = new Resource[0];
+	    	} else {
+	    		throw e;
+	    	}
+	    }
 	    
 	    List<InputStream> streams = new ArrayList<>();
 		for (Resource resource : resources) {
@@ -72,6 +84,23 @@ public class ResourcesTools
 			}
 		}
 	    return streams;
+	}
+
+//------------------------------------------------------------------------------
+
+	private static boolean isMissingClasspathRoot(Throwable t)
+	{
+		Throwable current = t;
+		while (current != null)
+		{
+			String msg = current.getMessage();
+			if (msg != null && msg.contains("cannot be resolved to URL because it does not exist"))
+			{
+				return true;
+			}
+			current = current.getCause();
+		}
+		return false;
 	}
 	
 //------------------------------------------------------------------------------

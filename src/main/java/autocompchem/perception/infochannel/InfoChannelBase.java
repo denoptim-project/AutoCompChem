@@ -11,6 +11,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /*   
  *   Copyright (C) 2018  Marco Foscato 
@@ -52,6 +54,13 @@ import autocompchem.io.ResourcesTools;
 
 public class InfoChannelBase
 {
+	/**
+	 * Cache of default info channel DB loaded from classpath resources.
+	 * Key is the normalized prefix used in ACC knowledgebase.
+	 */
+	private static final ConcurrentMap<String, InfoChannelBase> DEFAULT_DB_CACHE =
+			new ConcurrentHashMap<String, InfoChannelBase>();
+
     /**
      * List of information channels
      */
@@ -115,11 +124,20 @@ public class InfoChannelBase
     			throws IOException
     {
        	String dbRoot = "knowledgebase/infochannels";
+       	String normalizedPrefix = "";
        	if (prefix!=null && !prefix.isBlank())
        	{
-       		dbRoot = dbRoot + "/" + prefix.toLowerCase();
+       		normalizedPrefix = prefix.toLowerCase();
+       		dbRoot = dbRoot + "/" + normalizedPrefix;
        	}
-       	return getInfoChannelDB(dbRoot);
+       	InfoChannelBase cached = DEFAULT_DB_CACHE.get(normalizedPrefix);
+       	if (cached == null)
+       	{
+       		cached = getInfoChannelDB(dbRoot);
+       		DEFAULT_DB_CACHE.putIfAbsent(normalizedPrefix, cached);
+       		cached = DEFAULT_DB_CACHE.get(normalizedPrefix);
+       	}
+       	return cached.clone();
     }  	
 	
 //------------------------------------------------------------------------------
@@ -140,16 +158,11 @@ public class InfoChannelBase
         {
         	for (InputStream is : ResourcesTools.getAllResourceStreams(basepath))
 			{
-        		BufferedReader br = new BufferedReader(new InputStreamReader(is));
-        		InfoChannel ic = reader.fromJson(br, InfoChannel.class);
-			    try {
-					br.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				} finally {
-					br.close();
-				}
-			    icb.addChannel(ic);
+        		try (BufferedReader br = new BufferedReader(new InputStreamReader(is)))
+        		{
+        			InfoChannel ic = reader.fromJson(br, InfoChannel.class);
+				    icb.addChannel(ic);
+        		}
 			}
 		} catch (Throwable t) {
 			throw new IOException("Could not read InfoChannel from '" + basepath 
@@ -347,11 +360,9 @@ public class InfoChannelBase
   	public InfoChannelBase clone()
   	{
   		InfoChannelBase clone = new InfoChannelBase();
-  		// This way we construct also the mapping that is not serialized
-        InfoChannelBase icb = new InfoChannelBase();
         for (InfoChannel ic : this.allInfoChannels)
         {
-        	icb.addChannel(ic.clone());
+        	clone.addChannel(ic.clone());
         }
   		return clone;
   	}

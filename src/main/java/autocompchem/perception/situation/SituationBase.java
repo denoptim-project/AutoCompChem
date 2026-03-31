@@ -11,6 +11,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /*   
  *   Copyright (C) 2018  Marco Foscato 
@@ -65,6 +67,13 @@ import autocompchem.perception.infochannel.InfoChannelTypeComparator;
 
 public class SituationBase implements Cloneable
 {
+	/**
+	 * Cache of default situation DB loaded from classpath resources.
+	 * Key is the normalized prefix used in ACC knowledgebase.
+	 */
+	private static final ConcurrentMap<String, SituationBase> DEFAULT_DB_CACHE =
+			new ConcurrentHashMap<String, SituationBase>();
+
     /**
      * List of situations
      */
@@ -187,12 +196,21 @@ public class SituationBase implements Cloneable
     			throws IOException
 	{
       	String dbRoot = "knowledgebase/situations";
+      	String normalizedPrefix = "";
       	if (prefix!=null && !prefix.isBlank())
       	{
-      		dbRoot = dbRoot + "/" + prefix.toLowerCase();
+      		normalizedPrefix = prefix.toLowerCase();
+      		dbRoot = dbRoot + "/" + normalizedPrefix;
       	}
-
-      	SituationBase defaultSitDB = getSituationDB(dbRoot);
+      	
+      	SituationBase cached = DEFAULT_DB_CACHE.get(normalizedPrefix);
+      	if (cached == null)
+      	{
+      		cached = getSituationDB(dbRoot);
+      		DEFAULT_DB_CACHE.putIfAbsent(normalizedPrefix, cached);
+      		cached = DEFAULT_DB_CACHE.get(normalizedPrefix);
+      	}
+      	SituationBase defaultSitDB = cached.clone();
       	
       	for (Situation s : getSituationsFromDefaultLocation().allSituations)
       	{
@@ -243,16 +261,11 @@ public class SituationBase implements Cloneable
         {
         	for (InputStream is : ResourcesTools.getAllResourceStreams(basepath))
 			{
-        		BufferedReader br = new BufferedReader(new InputStreamReader(is));
-				Situation s = reader.fromJson(br, Situation.class);
-			    try {
-					br.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				} finally {
-					br.close();
-				}
-				sb.addSituation(s);
+        		try (BufferedReader br = new BufferedReader(new InputStreamReader(is)))
+        		{
+					Situation s = reader.fromJson(br, Situation.class);
+					sb.addSituation(s);
+        		}
 			}
 		} catch (Throwable t) {
 			t.printStackTrace();

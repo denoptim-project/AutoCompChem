@@ -62,4 +62,14 @@ public class ResourcesToolsTest
     
 //------------------------------------------------------------------------------
 
+    @Test
+    public void testGetAllResourcesFromMissingRoot() throws Exception
+    {
+    	List<InputStream> allStreams =
+    			ResourcesTools.getAllResourceStreams("this_path_does_not_exist");
+    	assertTrue(allStreams.isEmpty());
+    }
+    
+//------------------------------------------------------------------------------
+
 }
