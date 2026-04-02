@@ -30,8 +30,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.lang.reflect.Type;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 
@@ -380,7 +382,7 @@ public class IOtools
      * @param vmFile name of the file to be read
      * @param start line number from which to extract lines
      * @param stop line number at which to stop the extraction
-     * @return the array with the tail of the text file.
+     * @return the array with the text from the file starting from line <code>start</code> and till line <code>stop</code>.
      */
 
     public static List<String> extractFromTo(File vmFile, int start, 
@@ -471,6 +473,42 @@ public class IOtools
             throw new RuntimeException(msg != null ? msg : "Error reading file");
 
         return lines;
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Reads the last <code>n</code> lines of a file
+     * @param file the file to be read
+     * @param n number of lines to read
+     * @return the array with the last <code>n</code> lines of the text file.
+     */
+
+    public static String tail(File file, int n)
+    {
+        StringBuilder tailLines = new StringBuilder();
+        try (BufferedReader tailBr = new BufferedReader(new FileReader(file)))
+        {
+            Deque<String> lastLines = new ArrayDeque<>(n);
+            String line;
+            while ((line = tailBr.readLine()) != null)
+            {
+                if (lastLines.size() == n)
+                {
+                    lastLines.removeFirst();
+                }
+                lastLines.addLast(line);
+            }
+            for (String tailLine : lastLines)
+            {
+                tailLines.append(tailLine).append(newline);
+            }
+        } catch (IOException tailEx)
+        {
+            throw new RuntimeException("Could not read last lines of log file '"
+                    + file + "': " + tailEx.getMessage(), tailEx);
+        }
+        return tailLines.toString();
     }
     
 //------------------------------------------------------------------------------

@@ -2,6 +2,7 @@ package autocompchem.io;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /*   
  *   Copyright (C) 2018  Marco Foscato 
@@ -132,6 +133,58 @@ public class IOtoolsTest
 		}
     }
     
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testTailReturnsLastNLines() throws Exception
+    {
+    	assertTrue(this.tempDir.isDirectory(), "Should be a directory");
+    	File f = new File(tempDir.getAbsolutePath() + SEP + "tail.txt");
+    	StringBuilder sb = new StringBuilder();
+    	for (int i = 0; i < 5; i++)
+    	{
+    		sb.append("Line ").append(i).append(NL);
+    	}
+    	IOtools.writeTXTAppend(f, sb.toString(), false);
+
+    	String expected = "Line 2" + NL + "Line 3" + NL + "Line 4" + NL;
+    	assertEquals(expected, IOtools.tail(f, 3));
+    }
+
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testTailWhenFileHasFewerLinesThanN() throws Exception
+    {
+    	assertTrue(this.tempDir.isDirectory(), "Should be a directory");
+    	File f = new File(tempDir.getAbsolutePath() + SEP + "tail_short.txt");
+    	IOtools.writeTXTAppend(f, "only" + NL + "two" + NL, false);
+
+    	String expected = "only" + NL + "two" + NL;
+    	assertEquals(expected, IOtools.tail(f, 10));
+    }
+
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testTailEmptyFile() throws Exception
+    {
+    	assertTrue(this.tempDir.isDirectory(), "Should be a directory");
+    	File f = new File(tempDir.getAbsolutePath() + SEP + "tail_empty.txt");
+    	IOtools.writeTXTAppend(f, "", false);
+
+    	assertEquals("", IOtools.tail(f, 5));
+    }
+
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testTailMissingFileThrows()
+    {
+    	File missing = new File(tempDir, "does_not_exist.txt");
+    	assertThrows(RuntimeException.class, () -> IOtools.tail(missing, 3));
+    }
+
 //------------------------------------------------------------------------------
 
 }
