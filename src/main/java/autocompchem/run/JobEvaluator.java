@@ -366,7 +366,8 @@ public class JobEvaluator extends Worker
 			
 			if (sitsDB==null)
 			{
-				logger.info("Trying to use default list of known situations.");
+				logger.info("Trying to use default list of known situations for " 
+				    + "software '" + software + "'.");
 				try {
 					sitsDB = SituationBase.getDefaultSituationDB(software.toString());
 				} catch (IOException e) {
@@ -383,7 +384,7 @@ public class JobEvaluator extends Worker
 			if (icDB==null)
 			{
 				logger.info("Trying to use default configuration of info "
-						+ "channels.");
+						+ "channels for software '" + software + "'.");
 				try {
 					icDB = InfoChannelBase.getDefaultInfoChannelDB(
 							software.toString());
