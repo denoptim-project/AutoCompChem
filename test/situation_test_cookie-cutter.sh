@@ -222,7 +222,7 @@ write_start_script "$out_start_script"
 write_check_script "$out_check"
 write_fake_runner "$out_fake"
 
-chmod -x "$out_start_script" "$out_check" "$out_fake"
+chmod +x "$out_start_script" "$out_check" "$out_fake"
 
 mkdir -p "$out_kb" "$out_t0" "$out_t1"
 
