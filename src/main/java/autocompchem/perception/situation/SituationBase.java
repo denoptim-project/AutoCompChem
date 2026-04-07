@@ -133,6 +133,7 @@ public class SituationBase implements Cloneable
         	try {
 				Situation s = (Situation) IOtools.readJsonFile(f, 
 						Situation.class);
+                logger.debug("Adding situation '" + s.getRefName() + "' from file '" + f.getAbsolutePath() + "'");
 				this.addSituation(s);
 			} catch (Exception e) {
 				e.printStackTrace();
