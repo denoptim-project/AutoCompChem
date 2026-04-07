@@ -1,0 +1,38 @@
+{
+  "type": "ERROR",
+  "refName": "crest-Err2.0_out-of-bounds_index",
+  "description": "The program triggers an out-of-bounds error, possibly due an internal error or a bug. No recovery possible, we just rerun.",
+  "context": [
+    {
+      "circumstance": "MatchText",
+      "channel": "LOGFEED",
+      "pattern": "forrtl: severe \\(154\\): array index out of bounds"
+    },
+    {
+      "circumstance": "MatchText",
+      "channel": "LOGFEED",
+      "pattern": "Command exited with non-zero status 154"
+    }
+  ],
+  "reaction": {
+    "type": "REDO",
+    "object": "FocusAndFollowingJobs",
+    "jobEditTasks": [],
+    "jobArchivingRules": [
+      {
+        "type": "move",
+        "pattern": "*"
+      },
+      {
+        "type": "copy",
+        "pattern": "*.sdf"
+      },
+      {
+        "type": "copy",
+        "pattern": "*.xyz"
+      }
+    ],
+    "prerefinementSteps": [],
+    "inheritedSettings": []
+  }
+}

@@ -1,0 +1,153 @@
+{
+  "jobType": "ACCJob",
+  "params": [
+    {
+      "reference": "TASK",
+      "value": "assistJob"
+    },
+    {
+      "reference": "workDir",
+      "value": "cli44_wdir"
+    },
+    {
+      "reference": "SOFTWAREID",
+      "value": "CREST"
+    },
+    {
+      "reference": "inFile",
+      "value": "../../cli44.sdf"
+    },
+    {
+      "reference": "templateConnectivity",
+      "value": "../../cli44.sdf"
+    },
+    {
+      "reference": "basenameOutput",
+      "value": "cli44"
+    },
+    {
+      "reference": "coordFile",
+      "value": "cli44.xyz"
+    },
+    {
+      "reference": "noJsonOutput",
+      "value": "false"
+    },
+    {
+      "reference": "situationsDBRoot",
+      "value": "../../cli44_KB"
+    },
+    {
+      "reference": "assistedJob",
+      "type": "JOB",
+      "value":
+      {
+        "jobType": "CompChemJob",
+        "directives": [
+          {
+            "name": "constrain",
+            "keywords": [
+              {
+                "reference": "force constant",
+                "value": 0.5
+              },
+              {
+                "reference": "reference",
+                "value": "cli44.xyz"
+              }
+            ],
+            "dirData": [
+              {
+                "accTaskParams": [
+                  {
+                    "reference": "TASK",
+                    "value": "getAtomListString"
+                  },
+                  {
+                    "reference": "SMARTS",
+                    "value": "[$([#44]),$([*]~[#44]),$([#1][#6]~[#44]),$([#7;X3]~[#6;X3]~[#44])] prefix: atoms: getAtomLabels"
+                  },
+                  {
+                    "reference": "labelType",
+                    "value": "IndexOnly"
+                  },
+                  {
+                    "reference": "zeroBased",
+                    "value": false
+                  }
+                ],
+                "reference": "frozen atoms"
+              }
+            ]
+          },
+          {
+            "name": "metadyn",
+            "dirData": [
+              {
+                "accTaskParams": [
+                  {
+                    "reference": "TASK",
+                    "value": "getAtomListString"
+                  },
+                  {
+                    "reference": "SMARTS",
+                    "value": "[!$([#44]);!$([*]~[#44]);!$([#1][#6]~[#44]);!$([#7;X3]~[#6;X3]~[#44])] prefix: atoms: getAtomLabels"
+                  },
+                  {
+                    "reference": "labelType",
+                    "value": "IndexOnly"
+                  },
+                  {
+                    "reference": "zeroBased",
+                    "value": false
+                  }
+                ],
+                "reference": "moving atoms"
+              }
+            ]
+          },
+          {
+            "name": "ffnb",
+            "dirData": [
+              {
+                "accTaskParams": [
+                  {
+                    "reference": "TASK",
+                    "value": "makeNearestNeighborMap"
+                  }
+                ],
+                "reference": "nearest neaighbor map generation"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "reference": "runJob",
+      "type": "JOB",
+      "value":
+      {
+        "jobType": "ShellJob",
+        "params": [
+          {
+            "reference": "CMD",
+            "value": "bash ../../cli44_fakeRunner.sh"
+          },
+          {
+            "reference": "workDir",
+            "value": "cli44_wdir"
+          }
+        ]
+      }
+    },
+    {
+      "reference": "maxRestart",
+      "value": "5"
+    },
+    {
+      "reference": "VERBOSITY",
+      "value": "4"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+#!/bin/bash
+
+function not_passed() {
+  echo "NOT Passed: check condition leading to line '$1' of '$0'"
+  exit -1
+}
+
+if [ ! -f cli44.log ] ; then not_passed $LINENO ; fi
+if [ ! -d cli44_wdir ] ; then not_passed $LINENO ; fi
+if [ ! -f cli44_wdir/cli44.out ] ; then not_passed $LINENO ; fi
+if [ ! -f "cli44_wdir/Job_#0.0_0/cli44.out" ] ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c -i "JobEvaluator: Situation perceived = crest-draft_out-of-bounds_index" cli44.log)
+if [ 1 != "$n" ] ; then not_passed $LINENO ; fi
+
+if ! grep -q -i "CREST terminated normally" "cli44_wdir/cli44.out" ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c -i "Termination status: 0" cli44.log)
+if [ 1 == "$n" ] ; then echo Passed ; exit 0 ; fi
+not_passed $LINENO
+exit -1
