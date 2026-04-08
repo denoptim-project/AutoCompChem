@@ -122,7 +122,7 @@ public class JobDefinitionConverter extends Worker
         {
 	        this.outFile = getNewFile(params.getParameter(
 	        		WorkerConstants.PAROUTFILE).getValueAsString());
-	        FileUtils.mustNotExist(this.outFile);
+	        manageExistingOutputFile(this.outFile);
 	        String ext = FileUtils.getFileExtension(outFile);
 	        if (ext != null)
 	        {

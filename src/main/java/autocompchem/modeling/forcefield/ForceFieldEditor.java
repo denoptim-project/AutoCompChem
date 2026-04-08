@@ -237,7 +237,7 @@ public class ForceFieldEditor extends Worker
             //Get and check output file
             this.oFFFile = getNewFile(
             		params.getParameter("OUTFFFILE").getValue().toString());
-            FileUtils.mustNotExist(this.oFFFile);
+            manageExistingOutputFile(this.oFFFile);
         } else {
             noOutput=true;
         }
@@ -356,6 +356,7 @@ public class ForceFieldEditor extends Worker
         switch (format)
         {
             case ForceFieldConstants.FFFILETNKFORMAT:
+                manageExistingOutputFile(file);
                 TinkerForceFieldHandler.writeForceFieldFile(ff,file);
                 break;
 

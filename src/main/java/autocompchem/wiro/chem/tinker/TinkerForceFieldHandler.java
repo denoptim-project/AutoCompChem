@@ -388,8 +388,6 @@ public class TinkerForceFieldHandler
         // divided into blocks, each one is created, writted to file and cleared
         // Search for the IOtools.write... statements
         
-        FileUtils.mustNotExist(file);
-
         // get utilities used below
         ArrayList<String> lines = new ArrayList<String>();
         StringBuilder sb = new StringBuilder();

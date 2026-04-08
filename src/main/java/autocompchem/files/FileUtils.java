@@ -415,41 +415,6 @@ public class FileUtils
 //------------------------------------------------------------------------------
 
     /**
-     * Terminates if file exists
-     * @param outFile path/name of the file that must not exist
-     */
-
-    public static void mustNotExist(String pathname)
-    {
-    	mustNotExist(new File(pathname));
-    }
-    
-//------------------------------------------------------------------------------
-
-    /**
-     * Terminates if file exists
-     * @param outFile the file that must not exist
-     */
-
-    public static void mustNotExist(File outFile)
-    {
-        if (outFile == null)
-        {
-            throw new IllegalArgumentException("Attempt to check for a "
-                  + "file but 'null' is given as name");
-        } else {
-            if (outFile.exists())
-            {
-                throw new IllegalStateException("File " +  outFile
-                    + " exists and this software doesn't have rights "
-                    + "to overwrite files.");
-            }
-        }
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
      * Check existence and r/w/x permission of a file/folder. The execution
      * will be stopped if the file does not exist or doesn't have the required
      * permissions

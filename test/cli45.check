@@ -1,0 +1,27 @@
+#!/bin/bash
+
+function not_passed() {
+  echo "NOT Passed: check condition leading to line '$1' of '$0'"
+  exit -1
+}
+
+
+if [ ! -f cli45_out.sdf ] ; then not_passed $LINENO ; fi
+
+if [ ! -f cli45_A.log ] ; then not_passed $LINENO ; fi
+if ! grep -q -i "File cli45_out.sdf exists and this software doesn't have rights to overwrite files" cli45_A.log ; then not_passed $LINENO ; fi
+
+if [ ! -f cli45_B.log ] ; then not_passed $LINENO ; fi
+if grep -q -i "exists and this software doesn't have rights to overwrite files" cli45_B.log ; then not_passed $LINENO ; fi
+if ! grep -q -i "Termination status: 0" cli45_B.log ; then not_passed $LINENO ; fi
+
+if [ ! -f cli45_nested_A.log ] ; then not_passed $LINENO ; fi
+if ! grep -q -i "File cli45_nested_out.sdf exists and this software doesn't have rights to overwrite files" cli45_nested_A.log ; then not_passed $LINENO ; fi
+
+if [ ! -f cli45_nested_B.log ] ; then not_passed $LINENO ; fi
+if grep -q -i "exists and this software doesn't have rights to overwrite files" cli45_nested_B.log ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c -i "Termination status: 0" cli45_nested_B.log)
+if [ 1 == "$n" ] ; then echo Passed ; exit 0 ; fi
+not_passed $LINENO
+exit -1

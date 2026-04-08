@@ -154,7 +154,7 @@ public class MolecularMeter extends AtomTupleGenerator
         {
 	        this.outTxtFile = getNewFile(params.getParameter(
 	        		WorkerConstants.PAROUTDATAFILE).getValueAsString());
-	        FileUtils.mustNotExist(this.outTxtFile);
+	        manageExistingOutputFile(this.outTxtFile);
         }
     }
     

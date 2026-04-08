@@ -113,7 +113,7 @@ public class GaussianJobDetailsConverter extends Worker
         	outFilePathname = inFilePathname + ".json";
         }
         this.outFile = getNewFile(outFilePathname);
-        FileUtils.mustNotExist(this.outFile);
+        manageExistingOutputFile(this.outFile);
     }
     
 //-----------------------------------------------------------------------------

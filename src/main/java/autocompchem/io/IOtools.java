@@ -60,7 +60,6 @@ import autocompchem.atom.AtomUtils;
 import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.BufferedTranslator;
-import autocompchem.files.FileUtils;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrixConstants;
@@ -1049,11 +1048,10 @@ public class IOtools
     /**
      * Writes the definition of a job in parameter's file format to a file.
      * @param job the job to serialize into parameters file format.
-     * @param file the file in which to write. Must not exist.
+     * @param file the file in which to write.
      */
     public static void writeJobToPAR(Job job, File file)
     {
-		FileUtils.mustNotExist(file);
 		if (! (job instanceof ACCJob))
 		{
         	throw new IllegalArgumentException("cannot write "
@@ -1069,11 +1067,10 @@ public class IOtools
     /**
      * Writes the definition of a job in JSON format to a file.
      * @param job the job to serialize into JSON format.
-     * @param file the file in which to write. Must not exist.
+     * @param file the file in which to write.
      */
     public static void writeJobToJSON(Job job, File file)
     {
-		FileUtils.mustNotExist(file);
 		Gson writer = ACCJson.getWriter();
 		IOtools.writeTXTAppend(file, writer.toJson(job), true);
     }

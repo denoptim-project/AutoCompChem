@@ -31,6 +31,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 
+import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileUtils;
@@ -246,6 +247,8 @@ public class ACCMain
         File paramsFile = null;
         boolean foundJob = false;
         File jobFile = null;
+        boolean foundOverwrite = false;
+        String overwriteValue = "true";
         Map<String, String> cliReplacements = null;
 
         // WARNING: ASSUMPTION ON SHORT OPTIONS
@@ -346,6 +349,19 @@ public class ACCMain
                     iarg++;
                 }
             }
+
+            // NB: the overwrite parameter acts recursively! See after creation of job.
+            if (arg.equalsIgnoreCase("--"+WorkerConstants.PAROVERWRITEOUTPUT))
+            {
+                foundOverwrite = true;
+                if (iarg+1 < args.length && !isAnOption(args[iarg+1]))
+                {
+                    overwriteValue = args[iarg+1];
+                    iarg++;
+                }
+                iarg++;
+                continue;
+            }
         }
         
         // Check consistency between use of -t, -p, and -j
@@ -406,7 +422,7 @@ public class ACCMain
                 continue;
             }
 
-            // Skip --STRINGFROMCLI and all old:new tokens up to the next option
+            // Skip --replace and all old:new tokens up to the next option
             if (arg.equalsIgnoreCase(CLIREPLACE))
             {
                 int j = iarg + 1;
@@ -415,6 +431,13 @@ public class ACCMain
                     j++;
                 }
                 iarg = j - 1;
+                continue;
+            }
+
+            // Skip --overwrite
+            if (arg.equalsIgnoreCase("--"+WorkerConstants.PAROVERWRITEOUTPUT))
+            {
+                iarg++;
                 continue;
             }
                 
@@ -490,6 +513,12 @@ public class ACCMain
         {
             Terminator.withMsgAndStatus("ERROR! Could not parse command line "
                     + "arguments to make a job. Check your input.", -1);
+        }
+
+        if (foundOverwrite)
+        {
+            // NB: the overwrite parameter acts recursively!
+            job.setParameter(new NamedData(WorkerConstants.PAROVERWRITEOUTPUT, overwriteValue), true);
         }
         
         return job;

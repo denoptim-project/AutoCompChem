@@ -512,7 +512,7 @@ public class Job implements Runnable
         {
 	        for (Job step : steps)
 	        {
-	        	step.setParameter(param);
+	        	step.setParameter(param, recursive);
 	        }
         }
     }

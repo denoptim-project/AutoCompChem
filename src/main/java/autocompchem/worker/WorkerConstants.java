@@ -71,6 +71,11 @@ public class WorkerConstants
 	public static final String PAROUTFORMAT = "OUTFORMAT";
 
 	/**
+	 * Key of parameter defining if the output file is allowed to be overwritten.
+	 */
+	public static final String PAROVERWRITEOUTPUT = "OVERWRITE";
+
+	/**
 	 * Key of parameter defining to write to the output file only the last output 
 	 * structure when sets of output structures are available.
 	 */

@@ -44,6 +44,7 @@ import autocompchem.run.IOutputExposer;
 import autocompchem.run.Job;
 import autocompchem.run.JobConstants;
 import autocompchem.utils.NumberUtils;
+import autocompchem.utils.StringUtils;
 
 
 /**
@@ -384,6 +385,56 @@ public abstract class Worker implements IOutputExposer
     		return myJob.getUserDir();
     	}
     	return new File(System.getProperty("user.dir"));
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Checks if the output file is allowed to be overwritten.
+     * @return <code>true</code> if the output file is allowed to be overwritten,
+     * <code>false</code> otherwise.
+     */
+    public boolean canOverwriteOutput()
+    {
+        if (params.contains(WorkerConstants.PAROVERWRITEOUTPUT))
+        {
+            return StringUtils.parseBoolean(params.getParameter(
+                WorkerConstants.PAROVERWRITEOUTPUT).getValueAsString(), true);
+        }
+        return false;
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Manages the existence of an output file according to the overwrite policy
+     * defined by the {@link WorkerConstants#PAROVERWRITEOUTPUT} parameter.
+     * @param file the file to manage.
+     * @throws IllegalArgumentException if the file is null.
+     * @throws IllegalStateException if the file exists and the overwrite policy
+     * is not allowed.
+     */
+    public void manageExistingOutputFile(File file) throws IllegalArgumentException, 
+        IllegalStateException
+    {
+        if (file == null)
+        {
+            throw new IllegalArgumentException("Attempt to check for existence of "
+                    + "file but 'null' is given as file name.");
+        }
+        if (file.exists())
+        {
+            if (canOverwriteOutput())
+            {
+                logger.warn("WARNING: File '" +  file
+                    + "' exists but is allowed to be overwritten.");
+                return;
+            } else {
+                throw new IllegalStateException("File " +  file
+                    + " exists and this software doesn't have rights "
+                    + "to overwrite files.");
+            }
+        }
     }
     
 //------------------------------------------------------------------------------

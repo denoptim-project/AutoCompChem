@@ -1,0 +1,45 @@
+{
+  "jobType": "ACCJob",
+  "steps": [
+    {
+      "jobType": "ACCJob",
+      "params": [
+        {
+          "reference": "TASK",
+          "value": "readAtomContainers"
+        },
+        {
+          "reference": "infile",
+          "value": "../cli45.sdf"
+        },
+        {
+          "reference": "outFile",
+          "value": "cli45_nested_out.sdf"
+        }
+      ]
+    },
+    {
+      "jobType": "ACCJob",
+      "steps": [
+        {
+          "jobType": "ACCJob",
+          "params": [
+            {
+              "reference": "TASK",
+              "value": "readAtomContainers"
+            },
+            {
+              "reference": "infile",
+              "value": "../cli45.sdf"
+            },
+            {
+              "reference": "outFile",
+              "value": "cli45_nested_out.sdf"
+            }
+          ]
+        }
+        
+      ]
+    }    
+  ]
+}

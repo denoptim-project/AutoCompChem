@@ -20,15 +20,20 @@ package autocompchem.worker;
 
 
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.File;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import com.google.gson.JsonParseException;
+
+import autocompchem.datacollections.ParameterStorage;
 
 
 
@@ -40,6 +45,31 @@ import com.google.gson.JsonParseException;
 
 public class WorkerTest 
 {
+    @TempDir
+    File tempDir;
+
+    private static final String SEP = System.getProperty("file.separator");
+
+    /**
+     * Creates a {@link DummyWorker} with the given parameters, plus the
+     * mandatory TASK parameter needed to call {@link Worker#setParameters}.
+     */
+    private DummyWorker makeWorker(ParameterStorage extra)
+    {
+        DummyWorker w = new DummyWorker();
+        ParameterStorage ps = new ParameterStorage();
+        ps.setParameter(WorkerConstants.PARTASK, DummyWorker.DUMMYTASKTASK.casedID);
+        if (extra != null)
+        {
+            for (String key : extra.getRefNamesSet())
+            {
+                ps.setParameter(extra.getParameter(key));
+            }
+        }
+        w.setParameters(ps);
+        return w;
+    }
+
 //-----------------------------------------------------------------------------
     
     @Test
@@ -109,6 +139,92 @@ public class WorkerTest
     	assertEquals("The pathname to the file to read as input.", ci.doc);
     	ci = knownInput.get(2);
     	assertEquals(3, ci.doc.split("\\n").length);
+    }
+
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testManageExistingOutputFile_nullFile()
+    {
+        DummyWorker w = makeWorker(null);
+        assertThrows(IllegalArgumentException.class,
+                () -> w.manageExistingOutputFile(null));
+    }
+
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testManageExistingOutputFile_nonExistingFile()
+    {
+        DummyWorker w = makeWorker(null);
+        File absent = new File(tempDir, "absent.txt");
+        assertDoesNotThrow(() -> w.manageExistingOutputFile(absent));
+    }
+
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testManageExistingOutputFile_existingFile_noOverwrite() throws Exception
+    {
+        DummyWorker w = makeWorker(null);
+        File existing = new File(tempDir, "existing.txt");
+        existing.createNewFile();
+        assertThrows(IllegalStateException.class,
+                () -> w.manageExistingOutputFile(existing));
+    }
+
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testManageExistingOutputFile_existingFile_overwriteTrue() throws Exception
+    {
+        ParameterStorage extra = new ParameterStorage();
+        extra.setParameter(WorkerConstants.PAROVERWRITEOUTPUT, "true");
+        DummyWorker w = makeWorker(extra);
+        File existing = new File(tempDir, "existing_ow.txt");
+        existing.createNewFile();
+        assertDoesNotThrow(() -> w.manageExistingOutputFile(existing));
+    }
+
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testManageExistingOutputFile_existingFile_overwriteYes() throws Exception
+    {
+        ParameterStorage extra = new ParameterStorage();
+        extra.setParameter(WorkerConstants.PAROVERWRITEOUTPUT, "yes");
+        DummyWorker w = makeWorker(extra);
+        File existing = new File(tempDir, "existing_yes.txt");
+        existing.createNewFile();
+        assertDoesNotThrow(() -> w.manageExistingOutputFile(existing));
+    }
+
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testManageExistingOutputFile_existingFile_overwriteValueless() throws Exception
+    {
+        // Value-less parameter (null value) is treated as true by StringUtils.parseBoolean(..., true)
+        ParameterStorage extra = new ParameterStorage();
+        extra.setParameter(WorkerConstants.PAROVERWRITEOUTPUT);
+        DummyWorker w = makeWorker(extra);
+        File existing = new File(tempDir, "existing_kw.txt");
+        existing.createNewFile();
+        assertDoesNotThrow(() -> w.manageExistingOutputFile(existing));
+    }
+
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testManageExistingOutputFile_existingFile_overwriteFalse() throws Exception
+    {
+        ParameterStorage extra = new ParameterStorage();
+        extra.setParameter(WorkerConstants.PAROVERWRITEOUTPUT, "false");
+        DummyWorker w = makeWorker(extra);
+        File existing = new File(tempDir, "existing_no.txt");
+        existing.createNewFile();
+        assertThrows(IllegalStateException.class,
+                () -> w.manageExistingOutputFile(existing));
     }
 
 //------------------------------------------------------------------------------

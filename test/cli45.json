@@ -1,0 +1,17 @@
+{
+  "jobType": "ACCJob",
+  "params": [
+    {
+      "reference": "TASK",
+      "value": "readAtomContainers"
+    },
+    {
+      "reference": "infile",
+      "value": "../cli45.sdf"
+    },
+    {
+      "reference": "outFile",
+      "value": "cli45_out.sdf"
+    }
+  ]
+}

@@ -556,7 +556,7 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
 		ccJobInput = manageOutputFileStructure(mols, ccJobInput);
 		
 		// Produce the actual main input file
-		FileUtils.mustNotExist(ccJobInput);
+		manageExistingOutputFile(ccJobInput);
 		IOtools.writeTXTAppend(ccJobInput, 
 				getTextForInput(molSpecJob).toString(), false);
 		
@@ -567,7 +567,7 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
 			cleanCCJ.removeACCTasks();
 			File jdFileOut = getNewFile(ccJobInputNameRoot 
 					+ WIROConstants.JSONJDEXTENSION);
-			FileUtils.mustNotExist(jdFileOut);
+			manageExistingOutputFile(jdFileOut);
 			Gson writer = ACCJson.getWriter();
 			IOtools.writeTXTAppend(jdFileOut, writer.toJson(cleanCCJ), true);
 		}
