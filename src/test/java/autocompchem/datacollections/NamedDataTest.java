@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.vecmath.Point3d;
+
 import org.junit.jupiter.api.Test;
 import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.AtomContainerSet;
@@ -66,6 +68,39 @@ import autocompchem.text.TextBlock;
 
 public class NamedDataTest 
 {
+
+	private static int normalModeComponentCount(NormalMode nm)
+	{
+		int n = 0;
+		while (true)
+		{
+			try
+			{
+				nm.getComponent(n);
+				n++;
+			}
+			catch (IndexOutOfBoundsException ex)
+			{
+				return n;
+			}
+		}
+	}
+
+	private static void assertNormalModeContentEquals(NormalMode a, NormalMode b)
+	{
+		assertEquals(a.getFrequency(), b.getFrequency(), 1e-9);
+		assertEquals(a.isImaginary(), b.isImaginary());
+		int nc = normalModeComponentCount(a);
+		assertEquals(nc, normalModeComponentCount(b));
+		for (int i = 0; i < nc; i++)
+		{
+			Point3d pA = a.getComponent(i);
+			Point3d pB = b.getComponent(i);
+			assertEquals(pA.x, pB.x, 1e-9);
+			assertEquals(pA.y, pB.y, 1e-9);
+			assertEquals(pA.z, pB.z, 1e-9);
+		}
+	}
 
 //------------------------------------------------------------------------------
     
@@ -243,6 +278,39 @@ public class NamedDataTest
     			ConstraintsSetTest.getTestConstraintSet()));
     	nds.add(new NamedData("ZMatrix", 
     			ZMatrixTest.getTestZMatrix()));
+    	{
+    		NormalMode nm = new NormalMode();
+    		nm.setFrequency(42.5);
+    		nm.setImaginary(true);
+    		nm.setComponent(0, 0, 0.1);
+    		nm.setComponent(0, 1, 0.2);
+    		nm.setComponent(0, 2, 0.3);
+    		nm.setComponent(1, 0, 1.0);
+    		nm.setComponent(1, 1, 2.0);
+    		nm.setComponent(1, 2, 3.0);
+    		nds.add(new NamedData("NormalMode", nm));
+    	}
+    	{
+    		NormalModeSet nms = new NormalModeSet();
+    		NormalMode nmA = new NormalMode();
+    		nmA.setFrequency(10.0);
+    		nmA.setImaginary(false);
+    		nmA.setComponent(0, 0, 5.0);
+    		nmA.setComponent(0, 1, 6.0);
+    		nmA.setComponent(0, 2, 7.0);
+    		NormalMode nmB = new NormalMode();
+    		nmB.setFrequency(20.0);
+    		nmB.setImaginary(true);
+    		nmB.setComponent(0, 0, 1.0);
+    		nmB.setComponent(0, 1, 0.0);
+    		nmB.setComponent(0, 2, -1.0);
+    		nmB.setComponent(1, 0, 2.0);
+    		nmB.setComponent(1, 1, 2.0);
+    		nmB.setComponent(1, 2, 2.0);
+    		nms.add(nmA);
+    		nms.add(nmB);
+    		nds.add(new NamedData("NormalModeSet", nms));
+    	}
     	nds.add(new NamedData("ConstraintSet", 
     			ConstraintsSetTest.getTestConstraintSet()));
     	nds.add(new NamedData("AnnotatedAtomTupleList", 
@@ -284,6 +352,23 @@ public class NamedDataTest
         			JSONableIAtomContainer jiac2 = new JSONableIAtomContainer(
         					(IAtomContainer) nd2.getValue());
         			assertTrue(jiac.equals(jiac2));
+        		} else if (NamedDataType.NORMALMODE == nd.getType())
+        		{
+        			assertEquals(nd.getReference(), nd2.getReference());
+        			assertEquals(nd.getType(), nd2.getType());
+        			assertNormalModeContentEquals((NormalMode) nd.getValue(),
+        					(NormalMode) nd2.getValue());
+        		} else if (NamedDataType.NORMALMODESET == nd.getType())
+        		{
+        			assertEquals(nd.getReference(), nd2.getReference());
+        			assertEquals(nd.getType(), nd2.getType());
+        			NormalModeSet a = (NormalModeSet) nd.getValue();
+        			NormalModeSet b = (NormalModeSet) nd2.getValue();
+        			assertEquals(a.size(), b.size());
+        			for (int m = 0; m < a.size(); m++)
+        			{
+        				assertNormalModeContentEquals(a.get(m), b.get(m));
+        			}
         		} else {
 		        	jsonStr = writer.toJson(nd2);
 		        	assertEquals(nd.getReference(), nd2.getReference());

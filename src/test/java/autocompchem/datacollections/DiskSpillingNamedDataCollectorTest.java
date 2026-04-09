@@ -48,11 +48,34 @@ public class DiskSpillingNamedDataCollectorTest
 		File spill = new File(tempDir, "spill2");
 		DiskSpillingNamedDataCollector c =
 				new DiskSpillingNamedDataCollector(spill);
-		NormalMode nm = new NormalMode();
-		c.putNamedData(new NamedData("NM", nm));
+		NonJsonableType njt = new NonJsonableType("non-jsonable");
+		c.putNamedData(new NamedData("NJ", njt));
 
-		assertEquals(nm, c.getNamedData("NM").getValue());
+		assertEquals(njt, c.getNamedData("NJ").getValue());
 		assertEquals(0, spill.listFiles().length);
+	}
+
+//------------------------------------------------------------------------------
+
+	private class NonJsonableType 
+	{
+		private String name;
+		public NonJsonableType(String name)
+		{
+			this.name = name;
+		}
+		public String getName()
+		{
+			return name;
+		}
+		public void setName(String name)
+		{
+			this.name = name;
+		}
+		public String toString()
+		{
+			return name;
+		}
 	}
 
 //------------------------------------------------------------------------------

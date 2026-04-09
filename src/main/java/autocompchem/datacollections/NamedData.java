@@ -134,6 +134,8 @@ public class NamedData implements Cloneable
             		NamedDataType.ATOMCONTAINERSET,
             		NamedDataType.CONSTRAINTSSET,
             		NamedDataType.ZMATRIX,
+            		NamedDataType.NORMALMODE,
+            		NamedDataType.NORMALMODESET,
             		NamedDataType.JOB,
             		NamedDataType.ANNOTATEDATOMTUPLELIST,
             		NamedDataType.ACTION,
@@ -931,6 +933,12 @@ public class NamedData implements Cloneable
 					break;
 				case ZMATRIX:
 					joValue = context.deserialize(je, ZMatrix.class);
+					break;
+				case NORMALMODE:
+					joValue = context.deserialize(je, NormalMode.class);
+					break;
+				case NORMALMODESET:
+					joValue = context.deserialize(je, NormalModeSet.class);
 					break;
 				case JOB:
 					joValue = context.deserialize(je, Job.class);

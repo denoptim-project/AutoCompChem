@@ -255,8 +255,6 @@ public class DiskSpillingNamedDataCollector extends NamedDataCollector
 								+ "': " + e.getMessage(), e);
 			}
 		} else {
-			//TODO-gg del
-			IOtools.writeLineAppend(new File("/tmp/non_spilled.txt"), ref + " " + data.getType() + " " + data.getValue(), true);
 			if (spilledKeys.remove(ref))
 			{
 				deleteSpillFile(ref);
