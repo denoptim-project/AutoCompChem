@@ -36,5 +36,10 @@ public class JobConstants
 	 */
 	public static final String PARCOPYTOWORKDIR = "COPYTOWORKDIR";
 	
+	/**
+	 * Keyword for requesting to use low memory mode, i.e., spilling
+	 * of exposed output to disk.
+	 */
+	public static final String PARLOWMEMORYMODE = "LOWMEM";
 
 }

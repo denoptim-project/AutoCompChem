@@ -36,7 +36,7 @@ import autocompchem.utils.NumberUtils;
 import autocompchem.utils.StringUtils;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
-import jakarta.el.ExpressionFactory;
+import autocompchem.worker.WorkerConstants;
 
 
 /**
@@ -145,6 +145,16 @@ public class JobLooper extends Worker
 		if (hasParameter(PARLOOPEDJOB)) 
 		{
 			loopedJob = (Job) params.getParameter(PARLOOPEDJOB).getValue();
+			if (params.contains(JobConstants.PARLOWMEMORYMODE))
+			{
+				loopedJob.setParameter(new NamedData(JobConstants.PARLOWMEMORYMODE, 
+					params.getParameter(JobConstants.PARLOWMEMORYMODE).getValue()), true);
+			}
+			if (params.contains(WorkerConstants.PAROVERWRITEOUTPUT))
+			{
+				loopedJob.setParameter(new NamedData(WorkerConstants.PAROVERWRITEOUTPUT, 
+					params.getParameter(WorkerConstants.PAROVERWRITEOUTPUT).getValue()), true);
+			}
 		}
     	
 		if (hasParameter(PARMAXITERATIONS)) 
@@ -178,14 +188,9 @@ public class JobLooper extends Worker
 	{
     	if (task.equals(LOOPJOBTASK))
     	{
-			NamedDataCollector results = runLoopedJob(getMyJob(), loopedJob, 
+			runLoopedJob(getMyJob(), loopedJob, 
 				maxIterations, replacementRules, writeIterationJSONFiles, 
 				"Job"+getMyJob().getId());
-
-			if (exposedOutputCollector != null)
-			{
-				exposeOutputData(new NamedData(LOOPJOBTASK.ID, results));
-			}
     	} else {
 			dealWithTaskMismatch();
 		}
@@ -194,8 +199,9 @@ public class JobLooper extends Worker
 //------------------------------------------------------------------------------
 
 	/**
-	 * Runs a loop repeating a {@link Job} a given number of times using the 
-	 * iteration number to alter the job definition.
+	 * Configures a loop repeating a {@link Job} a given number of times using the 
+	 * iteration number to alter the job definition. The iterationa are then executed
+	 * by the {@link Job} class as steps of the container job.
 	 * @param containerJob the container job that will contain the steps of the loop.
 	 * @param jobTmpl the template job to loop over.
 	 * @param maxIterations the maximum number of iterations of the loop.
@@ -207,7 +213,7 @@ public class JobLooper extends Worker
 	 * iteration JSON files.
 	 */
 	
-    public static NamedDataCollector runLoopedJob(Job containerJob, Job jobTmpl, 
+    public static void runLoopedJob(Job containerJob, Job jobTmpl, 
 		int maxIterations, Map<String, String> replacementRules, 
 		boolean writeIterationJSONFiles, String looperJobName)
 	{
@@ -216,7 +222,6 @@ public class JobLooper extends Worker
 		// Job details alteration happens in the JSON representation of the job
 		String jobTemplateAsJson = ACCJson.getWriter().toJson(jobTmpl);
 
-		NamedDataCollector results = new NamedDataCollector();
 		for (int i=0; i<maxIterations; i++)
 		{
 			logger.debug("Configuring iteration " + i + " of " + maxIterations);
@@ -254,13 +259,11 @@ public class JobLooper extends Worker
 				IOtools.writeTXTAppend(new File(looperJobName + "_iteration-" + i + ".json"), alteredJobJson, false);
 			}
 
-			// Create and run the altered job
+			// Create the altered job
 			Job currentStep = (Job) ACCJson.getReader().fromJson(alteredJobJson, Job.class);
 			containerJob.addStep(currentStep);
 		}
 		logger.info("Configured " + maxIterations + " iterations of the template job.");
-
-		return results;
 	}
 	
 //------------------------------------------------------------------------------

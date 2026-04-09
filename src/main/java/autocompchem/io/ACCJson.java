@@ -1,14 +1,25 @@
 package autocompchem.io;
 
+import java.io.File;
+import java.io.IOException;
+
 import org.openscience.cdk.AtomContainerSet;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
+import com.google.gson.stream.JsonWriter;
 
+import autocompchem.datacollections.DiskSpillingNamedDataCollector;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedData.NamedDataDeserializer;
 import autocompchem.datacollections.NamedData.NamedDataSerializer;
+import autocompchem.datacollections.NamedDataCollector;
+import autocompchem.datacollections.NamedDataCollector.NamedDataCollectorDeserializer;
+import autocompchem.datacollections.NamedDataCollector.NamedDataCollectorSerializer;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.datacollections.ParameterStorage.ParameterStorageDeserializer;
 import autocompchem.datacollections.ParameterStorage.ParameterStorageSerializer;
@@ -50,6 +61,7 @@ import autocompchem.perception.situation.SituationBase;
 import autocompchem.perception.situation.SituationBase.SituationBaseDeserializer;
 import autocompchem.perception.situation.SituationBase.SituationBaseSerializer;
 import autocompchem.run.ACCJob;
+import autocompchem.run.SoftwareId;
 import autocompchem.run.EvaluationJob;
 import autocompchem.run.Job;
 import autocompchem.run.Job.JobDeserializer;
@@ -113,7 +125,65 @@ import autocompchem.worker.ConfigItem.ConfigItemTypeDeserializer;
 
 public class ACCJson 
 {
-	
+	/**
+	 * Serializes a path as a JSON string ({@link File#getPath()}), so relative
+	 * vs absolute paths round-trip consistently.
+	 */
+	private static final TypeAdapter<File> FILE_TYPE_ADAPTER =
+			new TypeAdapter<File>()
+			{
+				@Override
+				public void write(JsonWriter out, File value) throws IOException
+				{
+					if (value == null)
+					{
+						out.nullValue();
+					} else
+					{
+						out.value(value.getPath());
+					}
+				}
+
+				@Override
+				public File read(JsonReader in) throws IOException
+				{
+					if (in.peek() == JsonToken.NULL)
+					{
+						in.nextNull();
+						return null;
+					}
+					return new File(in.nextString());
+				}
+			};
+
+	/** JSON string is {@link SoftwareId#toString()} (the underlying name). */
+	private static final TypeAdapter<SoftwareId> SOFTWARE_ID_TYPE_ADAPTER =
+			new TypeAdapter<SoftwareId>()
+			{
+				@Override
+				public void write(JsonWriter out, SoftwareId value) throws IOException
+				{
+					if (value == null)
+					{
+						out.nullValue();
+					} else
+					{
+						out.value(value.toString());
+					}
+				}
+
+				@Override
+				public SoftwareId read(JsonReader in) throws IOException
+				{
+					if (in.peek() == JsonToken.NULL)
+					{
+						in.nextNull();
+						return null;
+					}
+					return new SoftwareId(in.nextString());
+				}
+			};
+
 	private static ACCJson instance = null;
 	
 	Gson reader;
@@ -129,6 +199,8 @@ public class ACCJson
     {
     	writer = new GsonBuilder()
     			.setPrettyPrinting()
+    	        .registerTypeAdapter(File.class, FILE_TYPE_ADAPTER)
+    	        .registerTypeAdapter(SoftwareId.class, SOFTWARE_ID_TYPE_ADAPTER)
     	        .registerTypeAdapter(Job.class, new JobSerializer())
     	        .registerTypeAdapter(ACCJob.class, new JobSerializer())
     	        .registerTypeAdapter(MonitoringJob.class, new JobSerializer())
@@ -151,6 +223,10 @@ public class ACCJson
     	        		new KeywordSerializer())
     	        .registerTypeAdapter(ParameterStorage.class, 
     	        		new ParameterStorageSerializer())
+    	        .registerTypeAdapter(NamedDataCollector.class,
+					new NamedDataCollectorSerializer())
+    	        .registerTypeAdapter(DiskSpillingNamedDataCollector.class,
+					new NamedDataCollectorSerializer())
     	        .registerTypeAdapter(Directive.class, new DirectiveSerializer())
     	        .registerTypeAdapter(DirComponentAddress.class, 
     	        		new DirComponentAddressSerializer())
@@ -180,6 +256,8 @@ public class ACCJson
     	
     	reader = new GsonBuilder()
     			.setPrettyPrinting()
+    	        .registerTypeAdapter(File.class, FILE_TYPE_ADAPTER)
+    	        .registerTypeAdapter(SoftwareId.class, SOFTWARE_ID_TYPE_ADAPTER)
     	        .registerTypeAdapter(Job.class, new JobDeserializer())
     	        .registerTypeAdapter(DirectiveData.class, 
     	        		new DirectiveDataDeserializer())
@@ -191,6 +269,10 @@ public class ACCJson
     	        		new DirComponentAddressDeserializer())
     	        .registerTypeAdapter(ParameterStorage.class, 
     	        		new ParameterStorageDeserializer())
+    	        .registerTypeAdapter(NamedDataCollector.class,
+    	        		new NamedDataCollectorDeserializer())
+    	        .registerTypeAdapter(DiskSpillingNamedDataCollector.class,
+    	        		new NamedDataCollectorDeserializer())
     	        .registerTypeAdapter(IJobEditingTask.class, 
     	        		new IJobEditingTaskDeserializer())
     	        .registerTypeAdapter(IJobSettingsInheritTask.class, 

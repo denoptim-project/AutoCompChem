@@ -1,0 +1,90 @@
+{
+  "jobType": "ACCJob",
+  "steps": [
+    {
+      "jobType": "ACCJob",
+      "params": [
+        {
+          "reference": "TASK",
+          "value": "generateConstraints"
+        },
+        {
+          "reference": "infile",
+          "value": "cli46.sdf"
+        },
+        {
+          "reference": "copyToWorkDir",
+          "value": "../../cli46.sdf"
+        },
+        {
+          "reference": "SMARTS",
+          "value": "[#44]~[*;!#44] GetCurrentValue"
+        },
+        {
+          "reference": "workDir",
+          "value": "cli46_nested_1"
+        }
+      ]
+    },
+    {
+      "jobType": "ACCJob",
+      "params": [
+        {
+          "reference": "TASK",
+          "value": "MeasureGeomDescriptors"
+        },
+        {
+          "reference": "infile",
+          "value": "../../cli46.sdf"
+        },
+        {
+          "reference": "SMARTS",
+          "value": "[#7] [Ru] name=myDescriptor"
+        }
+      ]
+    },
+    {
+      "jobType": "ACCJob",
+      "steps": [
+        {
+          "jobType": "ACCJob",
+          "params": [
+            {
+              "reference": "TASK",
+              "value": "MeasureGeomDescriptors"
+            },
+            {
+              "reference": "infile",
+              "value": "../../../cli46.sdf"
+            },
+            {
+              "reference": "SMARTS",
+              "value": "[#7] [Ru] name=myDescriptor"
+            },
+            {
+              "reference": "workDir",
+              "value": "cli46_nested_2"
+            }
+          ]
+        },
+        {
+          "jobType": "ACCJob",
+          "params": [
+            {
+              "reference": "TASK",
+              "value": "generateConstraints"
+            },
+            {
+              "reference": "infile",
+              "value": "../../cli46.sdf"
+            },
+            {
+              "reference": "SMARTS",
+              "value": "[#7]~[*] GetCurrentValue"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

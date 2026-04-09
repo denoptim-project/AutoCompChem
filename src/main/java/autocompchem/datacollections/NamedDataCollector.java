@@ -1,5 +1,18 @@
 package autocompchem.datacollections;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+import com.google.gson.reflect.TypeToken;
+
 /*
  *   Copyright (C) 2016  Marco Foscato
  *
@@ -306,6 +319,48 @@ public class NamedDataCollector implements Cloneable
   	{
   		allData.clear();
   	}
+
+//------------------------------------------------------------------------------
+
+	/**
+	 * JSON form is the same as {@link ParameterStorage}: a JSON array of
+	 * {@link NamedData} entries (not a keyed object), so it stays compatible
+	 * with existing Gson usage for parameters.
+	 */
+	public static class NamedDataCollectorSerializer
+			implements JsonSerializer<NamedDataCollector>
+	{
+		@Override
+		public JsonElement serialize(NamedDataCollector src, Type typeOfSrc,
+				JsonSerializationContext context)
+		{
+			Collection<NamedData> list =
+					new ArrayList<NamedData>(src.getAllNamedData().values());
+			return context.serialize(list);
+		}
+	}
+
+//------------------------------------------------------------------------------
+
+	public static class NamedDataCollectorDeserializer
+			implements JsonDeserializer<NamedDataCollector>
+	{
+		@Override
+		public NamedDataCollector deserialize(JsonElement json, Type typeOfT,
+				JsonDeserializationContext context) throws JsonParseException
+		{
+			List<NamedData> list = context.deserialize(json,
+					new TypeToken<List<NamedData>>()
+					{
+					}.getType());
+			NamedDataCollector ndc = new NamedDataCollector();
+			for (NamedData nd : list)
+			{
+				ndc.putNamedData(nd);
+			}
+			return ndc;
+		}
+	}
 
 //------------------------------------------------------------------------------
 

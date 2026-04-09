@@ -36,6 +36,7 @@ import autocompchem.perception.infochannel.InfoChannelBase;
 import autocompchem.perception.situation.Situation;
 import autocompchem.perception.situation.SituationBase;
 import autocompchem.run.Job;
+import autocompchem.run.SoftwareId;
 import autocompchem.run.jobediting.Action;
 import autocompchem.text.TextBlock;
 import autocompchem.utils.StringUtils;
@@ -100,6 +101,7 @@ public class NamedData implements Cloneable
         INFOCHANNELBASE,
         JOB,
         FILE,
+        SOFTWAREID,
         BASISSET, 
         ZMATRIX, 
         LISTOFDOUBLES, 
@@ -111,7 +113,9 @@ public class NamedData implements Cloneable
         CONSTRAINTSSET,
         ANNOTATEDATOMTUPLELIST,
         CONFORMATIONALSPACE,
-        NEARESTNEIGHBORMAP};
+        NEARESTNEIGHBORMAP,
+        NAMEDDATA,
+        NAMEDDATACOLLECTOR};
         
     /**
      * List of types that can be serailized to JSON
@@ -121,6 +125,8 @@ public class NamedData implements Cloneable
             		NamedDataType.INTEGER,
             		NamedDataType.DOUBLE,
             		NamedDataType.BOOLEAN,
+            		NamedDataType.LISTOFDOUBLES,
+            		NamedDataType.LISTOFINTEGERS,
             		NamedDataType.TEXTBLOCK,
             		NamedDataType.PARAMETERSTORAGE,
             		NamedDataType.BASISSET,
@@ -136,7 +142,11 @@ public class NamedData implements Cloneable
             		NamedDataType.INFOCHANNEL,
             		NamedDataType.INFOCHANNELBASE,
             		NamedDataType.CONFORMATIONALSPACE,
-            		NamedDataType.NEARESTNEIGHBORMAP));
+            		NamedDataType.NEARESTNEIGHBORMAP,
+            		NamedDataType.NAMEDDATA,
+            		NamedDataType.NAMEDDATACOLLECTOR,
+            		NamedDataType.FILE,
+            		NamedDataType.SOFTWAREID));
     // NB: when extending the above list, remember to add the corresponding case
     // in the NamedDataDeserializer!
     
@@ -270,7 +280,6 @@ public class NamedData implements Cloneable
 		    		AtomContainerSet acs = new AtomContainerSet();
 		        	for (int i=0; i<lst.size(); i++)
 		        	{
-		        		
 		        		acs.addAtomContainer((IAtomContainer) lst.get(i));
 		        	}
 		        	tmpValue = acs;
@@ -428,6 +437,10 @@ public class NamedData implements Cloneable
     			tp = NamedDataType.FILE;
     			break;
 
+    		case ("SoftwareId"):
+    			tp = NamedDataType.SOFTWAREID;
+    			break;
+
     		case ("Molecule"):
     			tp = NamedDataType.IATOMCONTAINER;
     			break;
@@ -569,6 +582,15 @@ public class NamedData implements Cloneable
     		case ("NearestNeighborMap"):
     			tp = NamedDataType.NEARESTNEIGHBORMAP;
     			break;
+
+    		case ("NamedData"):
+    			tp = NamedDataType.NAMEDDATA;
+    			break;
+
+    		case ("NamedDataCollector"):
+    		case ("DiskSpillingNamedDataCollector"):
+    			tp = NamedDataType.NAMEDDATACOLLECTOR;
+    			break;
     		
     		default:
     			tp = NamedDataType.UNDEFINED;
@@ -661,7 +683,11 @@ public class NamedData implements Cloneable
 	        case FILE:
 	            cVal = new File(((File) value).getAbsolutePath());
 	            break;
-	
+
+	        case SOFTWAREID:
+	        	cVal = new SoftwareId(((SoftwareId) value).toString());
+	        	break;
+
 	        case ZMATRIX:
 	        	cVal = ((ZMatrix) value).clone();
 	            break;
@@ -712,6 +738,14 @@ public class NamedData implements Cloneable
 	        	
 	        case NEARESTNEIGHBORMAP:
 	        	cVal = ((NearestNeighborMap) value).clone();
+	        	break;
+
+	        case NAMEDDATA:
+	        	cVal = ((NamedData) value).clone();
+	        	break;
+
+	        case NAMEDDATACOLLECTOR:
+	        	cVal = ((NamedDataCollector) value).clone();
 	        	break;
 	        	
 	        default:
@@ -874,6 +908,12 @@ public class NamedData implements Cloneable
 					joValue = new TextBlock(context.deserialize(je,
 							new TypeToken<ArrayList<String>>(){}.getType()));
 					break;
+				case LISTOFDOUBLES:
+					joValue = context.deserialize(je, ListOfDoubles.class);
+					break;
+				case LISTOFINTEGERS:
+					joValue = context.deserialize(je, ListOfIntegers.class);
+					break;
 				case PARAMETERSTORAGE:
 					joValue = context.deserialize(je, ParameterStorage.class);
 					break;
@@ -919,6 +959,18 @@ public class NamedData implements Cloneable
 					break;
 				case NEARESTNEIGHBORMAP:
 					joValue = context.deserialize(je, NearestNeighborMap.class);
+					break;
+				case NAMEDDATA:
+					joValue = context.deserialize(je, NamedData.class);
+					break;
+				case NAMEDDATACOLLECTOR:
+					joValue = context.deserialize(je, NamedDataCollector.class);
+					break;
+				case FILE:
+					joValue = context.deserialize(je, File.class);
+					break;
+				case SOFTWAREID:
+					joValue = context.deserialize(je, SoftwareId.class);
 					break;
 					
 				default:

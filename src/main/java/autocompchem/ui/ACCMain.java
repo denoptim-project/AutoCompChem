@@ -38,6 +38,7 @@ import autocompchem.files.FileUtils;
 import autocompchem.log.LogUtils;
 import autocompchem.run.ACCJob;
 import autocompchem.run.Job;
+import autocompchem.run.JobConstants;
 import autocompchem.run.JobFactory;
 import autocompchem.utils.NumberUtils;
 import autocompchem.utils.TimeUtils;
@@ -249,6 +250,8 @@ public class ACCMain
         File jobFile = null;
         boolean foundOverwrite = false;
         String overwriteValue = "true";
+        boolean foundLowMemoryMode = false;
+        String lowMemoryModeValue = "true";
         Map<String, String> cliReplacements = null;
 
         // WARNING: ASSUMPTION ON SHORT OPTIONS
@@ -359,7 +362,18 @@ public class ACCMain
                     overwriteValue = args[iarg+1];
                     iarg++;
                 }
-                iarg++;
+                continue;
+            }
+
+            // NB: the low memory mode parameter acts recursively!
+            if (arg.equalsIgnoreCase("--"+JobConstants.PARLOWMEMORYMODE))
+            {
+                foundLowMemoryMode = true;
+                if (iarg+1 < args.length && !isAnOption(args[iarg+1]))
+                {
+                    lowMemoryModeValue = args[iarg+1];
+                    iarg++;
+                }
                 continue;
             }
         }
@@ -515,12 +529,20 @@ public class ACCMain
                     + "arguments to make a job. Check your input.", -1);
         }
 
+        // Deal with CLI args that apply recursively to all nesting levels of the job
         if (foundOverwrite)
         {
-            // NB: the overwrite parameter acts recursively!
             job.setParameter(new NamedData(WorkerConstants.PAROVERWRITEOUTPUT, overwriteValue), true);
         }
-        
+        if (foundLowMemoryMode)
+        {
+            job.setParameter(new NamedData(JobConstants.PARLOWMEMORYMODE, lowMemoryModeValue), true);
+        }
+        // NB: the recursion only explores the job's tree, but does not go into 
+        // jobs that are defined as parameters of other jobs, i.e., the assisted 
+        // and looped jobs. Those have to be manipulated by the respective 
+        // worker classes.
+
         return job;
     }
     

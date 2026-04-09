@@ -155,14 +155,35 @@ public class JobAssistant extends Worker
 		if (hasParameter(PARASSISTEDJOB)) 
 		{
 			assistedJob = (Job) params.getParameter(PARASSISTEDJOB).getValue();
+			if (params.contains(JobConstants.PARLOWMEMORYMODE))
+			{
+				assistedJob.setParameter(new NamedData(JobConstants.PARLOWMEMORYMODE, 
+					params.getParameter(JobConstants.PARLOWMEMORYMODE).getValue()), true);
+			}
+			if (params.contains(WorkerConstants.PAROVERWRITEOUTPUT))
+			{
+				assistedJob.setParameter(new NamedData(WorkerConstants.PAROVERWRITEOUTPUT, 
+					params.getParameter(WorkerConstants.PAROVERWRITEOUTPUT).getValue()), true);
+			}
 		}
     	
 		if (hasParameter(PARRUNJOB)) 
 		{
 			runJob = (Job) params.getParameter(PARRUNJOB).getValue();
+			if (params.contains(JobConstants.PARLOWMEMORYMODE))
+			{
+				runJob.setParameter(new NamedData(JobConstants.PARLOWMEMORYMODE, 
+					params.getParameter(JobConstants.PARLOWMEMORYMODE).getValue()), true);
+			}
+			if (params.contains(WorkerConstants.PAROVERWRITEOUTPUT))
+			{
+				runJob.setParameter(new NamedData(WorkerConstants.PAROVERWRITEOUTPUT, 
+					params.getParameter(WorkerConstants.PAROVERWRITEOUTPUT).getValue()), true);
+			}
 		} else if (hasParameter(PARASSISTEDJOB)) {
-			throw new IllegalArgumentException("Missing definition of assisted job. "
-					+ "Please, use 'ASSISTEDJOB' in yout input.");
+			throw new IllegalArgumentException("Missing definition of run job, i.e., "
+			        + "the job that runs the assisted job, if any."
+					+ "Please, use '" + PARRUNJOB + "' in your input.");
 		}
 		
 		if (hasParameter(PARMAXRESTART)) 

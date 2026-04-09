@@ -987,10 +987,10 @@ public class CompChemJob extends Job implements Cloneable
   	
     public List<IAtomContainer> getRestartGeoms()
     {
-      	@SuppressWarnings("unchecked")
-  		Map<Integer, NamedDataCollector> jobOutputData = 
-  		(Map<Integer, NamedDataCollector>) exposedOutput.getNamedData(
-  				WIROConstants.JOBOUTPUTDATA).getValue();
+		 
+		NamedDataCollector allStepsData = (NamedDataCollector)  
+			exposedOutput.getNamedData(WIROConstants
+				.JOBOUTPUTDATA).getValue();
       	
       	int focusJobStepID = (int) exposedOutput.getNamedData(
       			JobEvaluator.NUMSTEPSKEY).getValue();
@@ -999,7 +999,7 @@ public class CompChemJob extends Job implements Cloneable
       	List<IAtomContainer> iacs = new ArrayList<IAtomContainer>();
       	for (int i=(focusJobStepID); i>-1; i--)
   		{
-      		NamedDataCollector stepData = jobOutputData.get(focusJobStepID);
+      		NamedDataCollector stepData = (NamedDataCollector) allStepsData.getNamedData(i+"").getValue();
           	if (!stepData.contains(ChemSoftConstants.JOBDATAGEOMETRIES))
           	{
           		// No geometry from this step. Try previous step

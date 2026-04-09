@@ -1,9 +1,5 @@
 package autocompchem.run;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-
 /*   
  *   Copyright (C) 2018  Marco Foscato 
  *
@@ -23,6 +19,12 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.condition.OS.WINDOWS;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -32,14 +34,27 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.vecmath.Point3d;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.io.TempDir;
+import org.openscience.cdk.Atom;
+import org.openscience.cdk.AtomContainer;
+import org.openscience.cdk.interfaces.IAtomContainer;
 
+import autocompchem.datacollections.ListOfDoubles;
 import autocompchem.datacollections.NamedData;
+import autocompchem.datacollections.ParameterConstants;
+import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileUtils;
+import autocompchem.io.ACCJson;
 import autocompchem.io.IOtools;
+import autocompchem.modeling.atomtuple.AtomTupleConstants;
+import autocompchem.molecule.MolecularMeter;
+import autocompchem.molecule.geometry.GeomDescriptorDefinition;
 import autocompchem.utils.NumberUtils;
+import autocompchem.worker.WorkerConstants;
 
 
 /**
@@ -260,7 +275,6 @@ public class JobTest
     	j1.addStep(j1_2);
     	j1.addStep(j1_3);
     	
-
     	j1_1.addStep(j1_1_1);
     	j1_1.addStep(j1_1_2);
     	j1_1_2.addStep(j1_1_2_1);
@@ -810,4 +824,228 @@ public class JobTest
     
 //------------------------------------------------------------------------------
 
+    @Test
+    public void testGetJobInputParametersHash_isStableForSameJob()
+    {
+    	Job job = JobFactory.createJob(SoftwareId.ACC);
+    	job.setParameter("HASH_TEST_KEY", "v1", false);
+
+    	String h1 = Job.getJobInputParametersHash(job);
+    	String h2 = Job.getJobInputParametersHash(job);
+
+    	assertNotNull(h1);
+    	assertFalse(h1.isEmpty());
+    	assertEquals(h1, h2);
+    }
+
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testGetJobInputParametersHash_changesWhenInputParameterChanges()
+    {
+    	Job job = JobFactory.createJob(SoftwareId.ACC);
+    	job.setParameter("HASH_TEST_KEY", "before", false);
+
+    	String before = Job.getJobInputParametersHash(job);
+    	job.setParameter("HASH_TEST_KEY", "after", false);
+    	String after = Job.getJobInputParametersHash(job);
+
+    	assertNotEquals(before, after);
+    }
+
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testGetJobInputParametersHash_ignoresLowMemAndOverwriteParameters()
+    {
+    	Job withRuntime = JobFactory.createJob(SoftwareId.ACC);
+    	withRuntime.setParameter("HASH_TEST_KEY", "same", false);
+    	withRuntime.setParameter(JobConstants.PARLOWMEMORYMODE, true, false);
+    	withRuntime.setParameter(WorkerConstants.PAROVERWRITEOUTPUT, true, false);
+
+    	Job baseline = JobFactory.createJob(SoftwareId.ACC);
+    	baseline.setParameter("HASH_TEST_KEY", "same", false);
+
+    	assertEquals(
+    			Job.getJobInputParametersHash(baseline),
+    			Job.getJobInputParametersHash(withRuntime));
+    }
+
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testGetJobInputParametersHash_nestedStepParameterAffectsParent()
+    {
+    	Job root = new Job();
+    	Job step = new Job();
+    	root.addStep(step);
+    	step.setParameter("STEPKEY", 1, false);
+
+    	String h1 = Job.getJobInputParametersHash(root);
+    	step.setParameter("STEPKEY", 2, false);
+    	String h2 = Job.getJobInputParametersHash(root);
+
+    	assertNotEquals(h1, h2);
+    }
+
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testGetJobInputParametersHash_addingStepChangesParentHash()
+    {
+    	Job root = new Job();
+    	String emptySteps = Job.getJobInputParametersHash(root);
+
+    	root.addStep(new Job());
+    	String oneStep = Job.getJobInputParametersHash(root);
+
+    	assertNotEquals(emptySteps, oneStep);
+    }
+
+//------------------------------------------------------------------------------
+
+	/**
+	 * Two levels of nested ACC steps ({@code root → mid → leaf}), each running
+	 * {@link MolecularMeter#MEASUREGEOMDESCRIPTORSTASK measureGeomDescriptors}
+	 * on the same on-the-fly SDF under {@link #tempDir}.
+	 */
+	@Test
+	public void testGetOutputCollectorWithSpilledOutput()
+			throws Exception
+	{
+		assertTrue(tempDir.isDirectory(), "Should be a directory");
+
+		File sdfFile = new File(tempDir, "nested_geom_mol.sdf");
+		IAtomContainer mol = new AtomContainer();
+		mol.addAtom(new Atom("C", new Point3d(0.0, 0.0, 0.0)));
+		mol.addAtom(new Atom("O", new Point3d(2.0, 0.0, 0.0)));
+		mol.addAtom(new Atom("N", new Point3d(1.0, 1.0, 0.0)));
+		mol.addAtom(new Atom("P", new Point3d(1.0, 2.2, 0.0)));
+		IOtools.writeSDFAppend(sdfFile, mol, false);
+
+		String labelLeaf = "NESTEDLEAFDIST";
+		String labelMid = "NESTEDMIDDIST";
+
+		ParameterStorage paramsLeaf = new ParameterStorage();
+		paramsLeaf.setParameter(WorkerConstants.PARTASK,
+			MolecularMeter.MEASUREGEOMDESCRIPTORSTASK.ID);
+		paramsLeaf.setParameter(WorkerConstants.PARINFILE,
+			sdfFile.getAbsolutePath());
+		paramsLeaf.setParameter(AtomTupleConstants.KEYRULETYPEATOMIDS,
+			"0 1 " + GeomDescriptorDefinition.KEYNAME + "="
+					+ labelLeaf);
+						
+		ParameterStorage paramsMid = new ParameterStorage();
+		paramsMid.setParameter(WorkerConstants.PARTASK,
+			MolecularMeter.MEASUREGEOMDESCRIPTORSTASK.ID);
+		paramsMid.setParameter(WorkerConstants.PARINFILE,
+			sdfFile.getAbsolutePath());
+		paramsMid.setParameter(AtomTupleConstants.KEYRULETYPEATOMIDS,
+			"2 3 " + GeomDescriptorDefinition.KEYNAME + "="
+						+ labelMid);
+
+		Job leaf = JobFactory.createJob(SoftwareId.ACC);
+		leaf.setParameters(paramsLeaf);
+
+		Job mid = JobFactory.createJob(SoftwareId.ACC);
+		mid.setParameters(paramsMid);
+		mid.addStep(leaf);
+
+		Job root = JobFactory.createJob(SoftwareId.ACC);
+		root.addStep(mid);
+
+		// PArt of the test is to NOT set the work dir, so that the spill directory is different from the job work dir
+		root.setParameter(JobConstants.PARWORKDIR, tempDir.getAbsolutePath());
+		root.setParameter(new NamedData(JobConstants.PARLOWMEMORYMODE, true), true);
+
+		root.run();
+
+		assertTrue(root.isCompleted(), "Root job should complete");
+		assertTrue(mid.isCompleted(), "Mid job should complete");
+		assertTrue(leaf.isCompleted(), "Leaf job should complete");
+
+		// Check that the output of the nested steps is spilled
+		File spillDir = root.getExposedOutputSpillDirectory();
+		assertTrue(new File(spillDir, "0/mol-0_NESTEDMIDDIST.nd.json").isFile());
+		assertTrue(new File(spillDir, "0/0/mol-0_NESTEDLEAFDIST.nd.json").isFile());
+
+		NamedData ndLeaf = (NamedData) IOtools.readJsonFile(new File(spillDir, "0/0/mol-0_NESTEDLEAFDIST.nd.json"), NamedData.class);
+		NamedData ndMid = (NamedData) IOtools.readJsonFile(new File(spillDir, "0/mol-0_NESTEDMIDDIST.nd.json"), NamedData.class);
+		assertTrue(ndLeaf.getValue() instanceof ListOfDoubles, "Value should be a ListOfDoubles");
+		assertEquals(2.0, ((ListOfDoubles) ndLeaf.getValue()).get(0), 0.001);
+		assertEquals(1.2, ((ListOfDoubles) ndMid.getValue()).get(0), 0.001);
+
+		// Check that the output is accessible from the job output collector
+		assertGeomDescriptorDistanceNear(leaf, labelLeaf, 2.0);
+		assertGeomDescriptorDistanceNear(mid, labelMid, 1.2);
+	}
+
+	private static void assertGeomDescriptorDistanceNear(Job job,
+			String labelSubstring, double expected) throws Exception
+	{
+		String key = "";
+		for (String cand : job.getOutputCollector().getAllNamedData().keySet())
+		{
+			if (cand.contains(labelSubstring))
+			{
+				key = cand;
+				break;
+			}
+		}
+		assertFalse(key.isEmpty(),
+				"Expected output key containing '" + labelSubstring + "'");
+
+		String line = job.getOutputCollector().getNamedData(key)
+				.getValueAsLines().get(0);
+		double dist = Double.parseDouble(line);
+		assertTrue(Math.abs(dist - expected) < 0.0001,
+				"Distance should match expected value");
+	}
+
+//------------------------------------------------------------------------------
+
+	@Test
+	public void rootJobIdMapsToAccJobDataWithRootSegmentSuffix()
+	{
+		assertTrue(tempDir.isDirectory(), "Should be a directory");
+		File w = tempDir;
+		File spill = Job.resolveExposedOutputSpillDirectory(w, "hash", "#0");
+		assertEquals(new File(w, Job.ACC_JOB_DATA_DIR_NAME + "-hash_0"), spill);
+	}
+
+//------------------------------------------------------------------------------
+
+	@Test
+	public void nestedIdsMapToSubfolders()
+	{
+		assertTrue(tempDir.isDirectory(), "Should be a directory");
+		File w = tempDir;
+		File base = new File(w, Job.ACC_JOB_DATA_DIR_NAME + "-hash_0");
+		assertEquals(new File(base, "0"),
+				Job.resolveExposedOutputSpillDirectory(w, "hash", "#0.0"));
+		assertEquals(new File(new File(base, "0"), "0"),
+				Job.resolveExposedOutputSpillDirectory(w, "hash", "#0.0.0"));
+		assertEquals(new File(base, "1"),
+				Job.resolveExposedOutputSpillDirectory(w, "hash", "#0.1"));
+		assertEquals(new File(new File(w, Job.ACC_JOB_DATA_DIR_NAME + "-hash_2"), "2"),
+				Job.resolveExposedOutputSpillDirectory(w, "hash", "#2.2"));
+		assertEquals(new File(base, "4"),
+				Job.resolveExposedOutputSpillDirectory(w, "hash", "#0.4"));
+		assertEquals(new File(new File(base, "4"), "0"),
+				Job.resolveExposedOutputSpillDirectory(w, "hash", "#0.4.0"));
+	}
+
+//------------------------------------------------------------------------------
+
+	@Test
+	public void rejectsUnsafeSegments()
+	{
+		assertTrue(tempDir.isDirectory(), "Should be a directory");
+		File w = tempDir;
+		assertThrows(IllegalArgumentException.class,
+				() -> Job.resolveExposedOutputSpillDirectory(w, "hash", "#0..1"));
+	}
+
+//------------------------------------------------------------------------------
+	
 }

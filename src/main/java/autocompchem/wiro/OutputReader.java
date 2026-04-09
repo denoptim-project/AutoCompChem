@@ -268,8 +268,15 @@ public class OutputReader extends Worker
         {
         	exposeOutputData(new NamedData(MATCHESTOTEXTQRYSFORPERCEPTION, 
         			perceptionTQMatches));
+			
+        	NamedDataCollector allStepsData = new NamedDataCollector();
+			for (Integer stepId : stepsData.keySet())
+			{
+				NamedDataCollector stepData = stepsData.get(stepId);
+				allStepsData.putNamedData(new NamedData(stepId.toString(), stepData));
+			}
         	exposeOutputData(new NamedData(WIROConstants.JOBOUTPUTDATA, 
-        			stepsData));
+        			allStepsData));
         	exposeOutputData(new NamedData(WIROConstants.SOFTWAREID, 
         			getSoftwareID()));
         }

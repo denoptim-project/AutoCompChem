@@ -19,6 +19,7 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import com.google.common.math.StatsAccumulator;
 
 import autocompchem.datacollections.NamedData;
+import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.files.FileFingerprint;
 import autocompchem.modeling.forcefield.EquilibriumValue;
 import autocompchem.modeling.forcefield.ForceConstant;
@@ -324,8 +325,14 @@ public class VibModuleOutputReader extends ChemSoftOutputReader
         {
         	exposeOutputData(new NamedData(MATCHESTOTEXTQRYSFORPERCEPTION, 
         			perceptionTQMatches));
+        	NamedDataCollector allStepsData = new NamedDataCollector();
+			for (Integer stepId : stepsData.keySet())
+			{
+				NamedDataCollector stepData = stepsData.get(stepId);
+				allStepsData.putNamedData(new NamedData(stepId.toString(), stepData));
+			}
         	exposeOutputData(new NamedData(WIROConstants.JOBOUTPUTDATA, 
-        			stepsData));
+        			allStepsData));
         	exposeOutputData(new NamedData(WIROConstants.SOFTWAREID, 
         			getSoftwareID()));
   /*

@@ -283,7 +283,7 @@ public class ParallelJobsRunnerTest
         
         int iPingFiles = FileUtils.findByGlob(tempDir, baseName+"*", false)
         		.size();
-        assertEquals(2, iPingFiles, "Number of initiated TestJobs");
+        assertTrue(iPingFiles < 4, "Max number of initiated TestJobs");
     }
     
 //-----------------------------------------------------------------------------

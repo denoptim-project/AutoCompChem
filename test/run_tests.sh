@@ -199,7 +199,7 @@ function functionalityTesting() {
     cd $tst/results
     if $doCleanup
     then
-        rm -rf $tst/results/*
+        find "$tst/results" -mindepth 1 -exec rm -rf {} +
     fi
 
     # We run all tests unless a specific list of test IDs was given
@@ -263,7 +263,7 @@ function cliTesting() {
     cd $tst/results
     if $doCleanup
     then
-        rm -rf $tst/results/*
+        find "$tst/results" -mindepth 1 -exec rm -rf {} +
     fi
 
     # We run all tests unless a specific list of test IDs was given

@@ -52,6 +52,7 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.google.gson.reflect.TypeToken;
 
+import autocompchem.datacollections.DiskSpillingNamedDataCollector;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.datacollections.ParameterConstants;
@@ -124,6 +125,13 @@ public class Job implements Runnable
 	 * relations).
 	 */
 	private int jobHashCode;
+
+    /**
+     * Hash of the job's input parameters. Produced right before the job runs.
+     * This hash is used to identify the job's input parameters and is used to
+     * create the spill directory for the exposed output data.
+     */
+    private String jobInputParametersHash;
 	
 	/**
 	 * Counter for subjobs
@@ -218,13 +226,34 @@ public class Job implements Runnable
      * File separator on this OS
      */
     protected static final String SEP = System.getProperty("file.separator");
+
+    /**
+     * Prefix for the root folder that holds spilled {@link #exposedOutput} data.
+     * The actual directory name is {@code ACC_JOB_DATA_DIR_NAME + "-" +} the
+     * root job hash + "_" +
+     * outermost job id segment (e.g. {@code .accJobData-<rootJobHash>_0}); see
+     * {@link #resolveExposedOutputSpillDirectory(File, String, String)}.
+     */
+    public static final String ACC_JOB_DATA_DIR_NAME = ".accJobData";
     
     /**
      * Container for any kind of output that is made available to the outside
      * world /w.r.t. this job) via the {@link #getOutput} method. 
      * We say these data is "exposed".
+     * <p>
+     * At {@link #run()} startup, {@link DiskSpillingNamedDataCollector} is
+     * enabled automatically under the outermost job's work directory as
+     * {@code .accJobData-}<i>rootId</i> with further subfolders from
+     * {@link #getId()}. Manual override is possible via
+     * {@link #setExposedOutputSpillDirectory(File)}.
      */
     public NamedDataCollector exposedOutput = new NamedDataCollector();
+
+    /**
+     * Directory where this job's {@link #exposedOutput} spill files belong,
+     * under {@link #getOutermostJob()}{@code .getUserDir()}.
+     */
+    private File outputSpillDir;
     
     /**
      * Logger
@@ -507,6 +536,10 @@ public class Job implements Runnable
         if (param.getReference().equals(ParameterConstants.VERBOSITY))
         {
         	processVerbosity(param);
+        }
+        if (param.getReference().equals(JobConstants.PARWORKDIR))
+        {
+            processWorkDirInstructions();
         }
         if (recursive)
         {
@@ -979,6 +1012,134 @@ public class Job implements Runnable
     }
     
 //------------------------------------------------------------------------------
+
+    /**
+     * Walks {@link #getContainer()} and {@link #getParent()} until the job that
+     * has neither (the root of the tree for {@link #getId()}).
+     */
+    public Job getOutermostJob()
+    {
+    	Job j = this;
+    	for (;;)
+    	{
+    		if (j.containerJob != null)
+    		{
+    			j = j.containerJob;
+    		} else if (j.parentJob != null)
+    		{
+    			j = j.parentJob;
+    		} else
+    		{
+    			return j;
+    		}
+    	}
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Resolves the directory for {@link #exposedOutput} disk spill for a job
+     * with the given id, under the outermost job's work directory
+     * {@code rootWorkDir}.
+     * <p>
+     * The first segment after {@code #} is the outermost job id and is appended
+     * to {@link #ACC_JOB_DATA_DIR_NAME} after a hyphen (e.g. {@code .accJobData-0});
+     * each further segment is one subdirectory under that root folder.
+     * <p>
+     * Examples: {@code #0} &rarr; {@code rootWorkDir/.accJobData-0};
+     * {@code #0.0} &rarr; {@code rootWorkDir/.accJobData-0/0};
+     * {@code #0.1} &rarr; {@code rootWorkDir/.accJobData-0/1};
+     * {@code #0.0.0} &rarr; {@code rootWorkDir/.accJobData-0/0/0};
+     * {@code #0.4.0} &rarr; {@code rootWorkDir/.accJobData-0/4/0}.
+     * @param rootWorkDir work directory of {@link #getOutermostJob()}
+     * @param jobId value of {@link #getId()} (must start with {@code #})
+     * @return spill directory (may not exist yet)
+     */
+    public static File resolveExposedOutputSpillDirectory(File rootWorkDir,
+    		String rootJobHash, String jobId)
+    {
+    	Objects.requireNonNull(rootWorkDir, "rootWorkDir");
+    	Objects.requireNonNull(jobId, "jobId");
+    	if (!jobId.startsWith("#"))
+    	{
+    		throw new IllegalArgumentException(
+    				"Job id must start with '#': " + jobId);
+    	}
+    	String body = jobId.substring(1);
+    	if (body.isEmpty())
+    	{
+    		throw new IllegalArgumentException("Empty job id body: " + jobId);
+    	}
+    	String[] parts = body.split("\\.");
+    	for (String p : parts)
+    	{
+    		validateAccJobDataPathSegment(p);
+    	}
+    	File base = new File(rootWorkDir,
+    			ACC_JOB_DATA_DIR_NAME + "-" + rootJobHash + "_" + parts[0]);
+    	if (parts.length == 1)
+    	{
+    		return base;
+    	}
+    	File dir = base;
+    	for (int i = 1; i < parts.length; i++)
+    	{
+    		dir = new File(dir, parts[i]);
+    	}
+    	return dir;
+    }
+
+//------------------------------------------------------------------------------
+
+    private static void validateAccJobDataPathSegment(String seg)
+    {
+    	if (seg == null || seg.isEmpty())
+    	{
+    		throw new IllegalArgumentException(
+    				"Invalid job id segment (empty) in .accJobData path");
+    	}
+    	if (seg.contains("..") || seg.indexOf('/') >= 0 || seg.indexOf('\\') >= 0)
+    	{
+    		throw new IllegalArgumentException(
+    				"Invalid job id segment for .accJobData path: '" + seg + "'");
+    	}
+    }
+
+//------------------------------------------------------------------------------
+    
+    /**
+     * Configures the spill directory for the exposed output data.
+     */
+    public void configureExposedOutputSpillDir()
+    {
+    	Job root = getOutermostJob();
+        outputSpillDir = resolveExposedOutputSpillDirectory(root.getUserDir(), 
+            root.jobInputParametersHash, getId());
+        if (this == root && outputSpillDir.exists())
+        {
+            // Here we could intercept previous runs and resume them.
+            // For now, we remove the spill directory and create a new one.
+            try {
+                FileUtils.delete(outputSpillDir);
+            } catch (IOException e) {
+                throw new RuntimeException("Could not delete spill directory "
+                        + outputSpillDir, e);
+            }
+        }
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Directory where this job's {@link #exposedOutput} spill files belong,
+     * under {@link #getOutermostJob()}{@code .getUserDir()}.
+     */
+    public File getExposedOutputSpillDirectory()
+    {
+    	return outputSpillDir;
+    }
+
+//------------------------------------------------------------------------------
     
     /**
      * Sets the identifier of this job.
@@ -1027,6 +1188,9 @@ public class Job implements Runnable
     public final void run()
     {
     	started = true;
+
+        // Produce the hash of the job's input parameters
+        jobInputParametersHash = getJobInputParametersHash(this);
     	
     	// NB: this line in the log is used to detect the beginning of a job's
     	// step in the log of ACC jobs.
@@ -1056,6 +1220,22 @@ public class Job implements Runnable
 
     	// Take copies of files than need copying
     	copyFilesToWorkDir();
+
+        // Configure the spill directory for exposed output data
+    	try
+    	{
+            if (params.contains(JobConstants.PARLOWMEMORYMODE))
+            {
+                configureExposedOutputSpillDir();
+                setExposedOutputSpillDirectory(outputSpillDir);
+            }
+    	} catch (IOException e)
+    	{
+    		throw new RuntimeException(
+    				"Could not initialize exposed output spill (" 
+                    + ACC_JOB_DATA_DIR_NAME + "*) for job "
+    				+ getId(), e);
+    	}
     	
         // First do the work of this very Job
         runThisJobSubClassSpecific();
@@ -1241,6 +1421,45 @@ public class Job implements Runnable
     public NamedDataCollector getOutputCollector()
     {
     	return exposedOutput;
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Replaces {@link #exposedOutput} with a {@link DiskSpillingNamedDataCollector}
+     * under the given directory. Existing entries are migrated so that
+     * JSON-serializable {@link NamedData} values are written to disk; small or
+     * non-JSON-able entries (e.g. {@code LOG}/{@code ERR} file handles) stay in
+     * memory. Call once the job work directory is known, before heavy output is
+     * produced, if heap growth from exposed data is a concern.
+     * @param spillDirectory directory to hold per-key {@code *.nd.json} files
+     * @throws IOException if the directory cannot be created
+     */
+    public void setExposedOutputSpillDirectory(File spillDirectory)
+    		throws IOException
+    {
+    	if (spillDirectory == null)
+    	{
+    		return;
+    	}
+    	File target = spillDirectory.getAbsoluteFile();
+        outputSpillDir = target;
+    	if (exposedOutput instanceof DiskSpillingNamedDataCollector)
+    	{
+    		DiskSpillingNamedDataCollector existing =
+    				(DiskSpillingNamedDataCollector) exposedOutput;
+    		if (target.getCanonicalFile().equals(
+    				existing.getSpillDirectory().getCanonicalFile()))
+    		{
+    			return;
+    		}
+    	}
+    	NamedDataCollector previous = this.exposedOutput;
+    	this.exposedOutput = new DiskSpillingNamedDataCollector(spillDirectory);
+    	for (NamedData nd : previous.getAllNamedData().values())
+    	{
+    		this.exposedOutput.putNamedData(nd);
+    	}
     }
     
 //------------------------------------------------------------------------------
@@ -1719,6 +1938,14 @@ public class Job implements Runnable
     private void finalizeStatusAndNotifications(boolean notify) 
     {
     	completed = true;
+
+        // Spill a completion flag
+        File spillDir = getExposedOutputSpillDirectory();
+        if (spillDir!=null && spillDir.exists())
+        {
+            File completionFile = new File(spillDir, "completed");
+            IOtools.writeLineAppend(completionFile, "Job " + getId() + " completed", false);
+        }
     	
     	// Handling of exceptions
     	for (Job step : steps)
@@ -1740,12 +1967,6 @@ public class Job implements Runnable
     		notifyObserver();
     	}
     	
-    	// We do this to liberate memory
-    	if (hasParent())
-    	{
-    		parentJob.removeChild(this);
-    	}
-    	
     	// final check for 
     	if (hasException)
     	{
@@ -1755,6 +1976,12 @@ public class Job implements Runnable
                 throw new Error(thrownExc.getClass().getSimpleName()
                         + " thrown by job " + getId() + ".", thrownExc);
             }
+        }
+
+        // Liberate memory
+    	if (hasParent())
+        {
+            parentJob.removeChild(this);
         }
     }
 
@@ -2286,6 +2513,29 @@ public class Job implements Runnable
 			   && Objects.equals(this.steps, other.steps);
     }
    
+//-----------------------------------------------------------------------------
+
+    /**
+     * Returns a hash of the job's input parameters (excluding those that are
+     * not relevant to the job's input, such as low memory mode and overwrite output)
+     * considering also the job's steps parameters.
+     * @return the hash of the job's input parameters.
+     */
+    public static String getJobInputParametersHash(Job job)
+    {
+        ParameterStorage paramsToHash = job.params.clone();
+        paramsToHash.removeData(JobConstants.PARLOWMEMORYMODE);
+        paramsToHash.removeData(WorkerConstants.PAROVERWRITEOUTPUT);
+
+        for (Job step : job.steps)
+        {
+            paramsToHash.putNamedData(step.getId(), new NamedData(step.getId(), 
+                getJobInputParametersHash(step)));
+        }
+
+        return Integer.toHexString(Objects.hash(paramsToHash));
+    }
+
 //-----------------------------------------------------------------------------
 
 	@Override

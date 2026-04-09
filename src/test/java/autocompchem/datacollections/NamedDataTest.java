@@ -51,6 +51,7 @@ import autocompchem.molecule.intcoords.zmatrix.ZMatrixTest;
 import autocompchem.molecule.vibrations.NormalMode;
 import autocompchem.molecule.vibrations.NormalModeSet;
 import autocompchem.perception.situation.Situation;
+import autocompchem.run.SoftwareId;
 import autocompchem.run.jobediting.Action;
 import autocompchem.run.jobediting.Action.ActionObject;
 import autocompchem.run.jobediting.Action.ActionType;
@@ -65,7 +66,6 @@ import autocompchem.text.TextBlock;
 
 public class NamedDataTest 
 {
-
 
 //------------------------------------------------------------------------------
     
@@ -122,6 +122,10 @@ public class NamedDataTest
     	nd.setValue(f);
     	assertTrue(NamedDataType.FILE.equals(nd.getType()),
     			"Detecting File");
+
+    	nd.setValue(SoftwareId.ACC);
+    	assertTrue(NamedDataType.SOFTWAREID.equals(nd.getType()),
+    			"Detecting SoftwareId");
     	
     	Situation sit = new Situation();
     	nd.setValue(sit);
@@ -194,6 +198,17 @@ public class NamedDataTest
     	nd.setValue(cs);
     	assertTrue(NamedDataType.CONFORMATIONALSPACE.equals(nd.getType()),
     			"Detecting ConformationalSpace"); 
+
+    	NamedData nested = new NamedData("innerRef", "innerVal");
+    	nd.setValue(nested);
+    	assertTrue(NamedDataType.NAMEDDATA.equals(nd.getType()),
+    			"Detecting NamedData");
+
+    	NamedDataCollector ndc = new NamedDataCollector();
+    	ndc.putNamedData(new NamedData("k", "v"));
+    	nd.setValue(ndc);
+    	assertTrue(NamedDataType.NAMEDDATACOLLECTOR.equals(nd.getType()),
+    			"Detecting NamedDataCollector");
     	
     	Object o = new Object();
     	nd.setValue(o);
@@ -214,6 +229,10 @@ public class NamedDataTest
     	nds.add(new NamedData("Integer", 1));
     	nds.add(new NamedData("Double",  1.23));
     	nds.add(new NamedData("Double", 1.0));
+    	nds.add(new NamedData("ListOfDoubles",
+    			new ListOfDoubles(Arrays.asList(1.1, 2.2, 3.3))));
+    	nds.add(new NamedData("ListOfIntegers",
+    			new ListOfIntegers(Arrays.asList(7, 8, 9))));
     	nds.add(new NamedData("TextBlock", 
     			new ArrayList<String>(Arrays.asList("These","are","3 lines"))));
     	nds.add(new NamedData("BasisSet", 
@@ -230,6 +249,15 @@ public class NamedDataTest
     			AnnotatedAtomTupleListTest.getTestAnnotatedAtomTupleList()));
     	nds.add(new NamedData("ConformationalSpace", 
     			ConformationalSpaceTest.getTestConformationalSpace()));
+    	nds.add(new NamedData("nested",
+    			new NamedData("leaf", "deep")));
+    	NamedDataCollector coll = new NamedDataCollector();
+    	coll.putNamedData(new NamedData("a", 1));
+    	coll.putNamedData(new NamedData("b", new NamedData("inner", "x")));
+    	nds.add(new NamedData("collector", coll));
+    	nds.add(new NamedData("File", new File("pathname.txt")));
+    	nds.add(new NamedData("SoftwareId", SoftwareId.ACC));
+    	nds.add(new NamedData("SoftwareIdCustom", new SoftwareId("xTB")));
     	
     	// The following ones are non-JSON-able
     	nds.add(new NamedData("Situation", new Situation()));

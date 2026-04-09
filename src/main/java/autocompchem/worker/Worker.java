@@ -484,7 +484,7 @@ public abstract class Worker implements IOutputExposer
 //------------------------------------------------------------------------------
 
 	/**
-	 * Adds some data the the collection of exposed data.
+	 * Adds some data to the collection of exposed data.
 	 * @param data the data to expose
 	 */
 	public void exposeOutputData(NamedData data)
@@ -507,7 +507,7 @@ public abstract class Worker implements IOutputExposer
 	 * in the job that contains this one, i.e., the container job. 
 	 * This method assumes the container job defined a sequential workflow, so
 	 * it refers to the job with index immediately preceding the index of the 
-	 * job this worked is charged with.
+	 * job this worker is charged with.
 	 * @param refName the name of the data to fetch.
 	 * @param tolerant use <code>true</code> to allow returning 
 	 * <code>null</code>, or <code>false</code> to trigger errors explaining

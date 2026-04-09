@@ -22,9 +22,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 
 
+import java.io.File;
+
 import javax.vecmath.Point3d;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+
+import com.google.gson.Gson;
+
+import autocompchem.io.ACCJson;
 import org.openscience.cdk.Atom;
 import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -105,6 +112,40 @@ public class NamedDataCollectorTest
     	assertEquals(2, 
     			((NormalModeSet) cndc.getNamedData("NMS").getValue()).size(),
     			"Checking cloned list of modess");
+    }
+
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testJsonRoundTripNamedDataCollector() throws Exception
+    {
+    	NamedDataCollector ndc = new NamedDataCollector();
+    	ndc.putNamedData(new NamedData("x", "hello"));
+    	ndc.putNamedData(new NamedData("y", 42));
+
+    	Gson w = ACCJson.getWriter();
+    	Gson r = ACCJson.getReader();
+    	String json = w.toJson(ndc);
+    	NamedDataCollector back = r.fromJson(json, NamedDataCollector.class);
+    	assertEquals(ndc, back);
+    }
+
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testJsonRoundTripDiskSpillingNamedDataCollector(@TempDir File spill)
+    		throws Exception
+    {
+    	DiskSpillingNamedDataCollector ds =
+    			new DiskSpillingNamedDataCollector(spill);
+    	ds.putNamedData(new NamedData("spilled", "data"));
+
+    	Gson w = ACCJson.getWriter();
+    	Gson r = ACCJson.getReader();
+    	String json = w.toJson(ds);
+    	NamedDataCollector back = r.fromJson(json, NamedDataCollector.class);
+    	assertEquals(1, back.size());
+    	assertEquals("data", back.getNamedData("spilled").getValue());
     }
 
 //------------------------------------------------------------------------------

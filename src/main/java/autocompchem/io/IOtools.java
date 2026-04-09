@@ -728,25 +728,19 @@ public class IOtools
 					analyzer.setDataCollector(allData);
 					analyzer.performTask();
 					
-					@SuppressWarnings("unchecked")
-					Map<Integer, NamedDataCollector> dataByStep =
-							(Map<Integer, NamedDataCollector>) 
+					NamedDataCollector allStepsData = (NamedDataCollector)  
 								allData.getNamedData(WIROConstants
 										.JOBOUTPUTDATA).getValue();
-					
-					for (Integer stepId : dataByStep.keySet())
-					{
-						NamedDataCollector stepData = dataByStep.get(stepId);
-						if (stepData.contains(
-								ChemSoftConstants.JOBDATAGEOMETRIES))
-						{
-							AtomContainerSet acs = (AtomContainerSet) 
-									stepData.getNamedData(ChemSoftConstants
-											.JOBDATAGEOMETRIES).getValue();
-							for (IAtomContainer iac : acs.atomContainers())
-								mols.add(iac);
-						}
-					}
+                    for (String stepId : allStepsData.getAllNamedData().keySet())
+                    {
+                        NamedDataCollector stepDataCollector = (NamedDataCollector) allStepsData.getNamedData(stepId).getValue();
+                        if (stepDataCollector.contains(ChemSoftConstants.JOBDATAGEOMETRIES))
+                        {
+                            AtomContainerSet acs = (AtomContainerSet) stepDataCollector.getNamedData(ChemSoftConstants.JOBDATAGEOMETRIES).getValue();
+                            for (IAtomContainer iac : acs.atomContainers())
+                                mols.add(iac);
+                        }
+                    }
 					
 					if (mols.size()==0)
 					{
