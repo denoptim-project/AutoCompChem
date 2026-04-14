@@ -268,6 +268,17 @@ public class Action implements Cloneable
 //------------------------------------------------------------------------------
     
     /**
+     * Returns the list of job's data archiving rules.
+     * @return the list of data archiving rules.
+     */
+    public List<DataArchivingRule> getJobArchivingRules()
+    {
+        return jobArchivingRules;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
      * Collects all the patterns for filenames for a given type of data 
      * archiving task.
      * @return the list of patterns.

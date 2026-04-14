@@ -2,6 +2,7 @@ package autocompchem.run.jobediting;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /*   
  *   Copyright (C) 2018  Marco Foscato 
@@ -75,6 +76,22 @@ public class DataArchivingRuleTest
     	fromJson = reader.fromJson(json, DataArchivingRule.class);
     	assertEquals(original, fromJson);
     }
+    
+//------------------------------------------------------------------------------
+
+	@Test
+	public void testConstructor() throws Exception
+	{
+		DataArchivingRule rule = new DataArchivingRule(ArchivingTaskType.RENAME_COPY_LAST_SEQUENTIAL,
+			"*_IDX.dat", "newName.dat");
+		assertEquals(ArchivingTaskType.RENAME_COPY_LAST_SEQUENTIAL, rule.getType());
+		assertEquals("*_IDX.dat", rule.getPattern());
+		assertEquals("newName.dat", rule.getNewName());
+		assertThrows(IllegalArgumentException.class, () -> {
+			new DataArchivingRule(ArchivingTaskType.RENAME_COPY_LAST_SEQUENTIAL,
+				"*.dat", "newName.dat");
+		});
+	}
     
 //------------------------------------------------------------------------------
 

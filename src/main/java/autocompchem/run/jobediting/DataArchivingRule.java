@@ -12,15 +12,23 @@ import com.google.gson.JsonParseException;
  * A rule defining what to do with data saved on files. Typically, we
  * want to archive some data (i.e., keep a copy of the files just to avoid 
  * overwriting the files), copy (i.e., keep a snapshot of previous data),
- * or delete previous data.
+ * rename a copy,
+ * or delete previous data. This class only collects the information about what to do,
+ * it does not perform the action. The implementation if in {@link ActionApplier}.
  */
 public class DataArchivingRule 
 {
 	/**
+	 * Placeholder for sequential index in the pattern (e.g., "*_IDX.dat"
+	 * will results in patterns like "*_0.dat", "*_1.dat", etc.)
+	 */
+	public static final String SEQUENTIAL_INDEX = "IDX";
+
+	/**
 	 * Defines if a data archiving rule is meant for moving, copying or removing
 	 * data.
 	 */
-	public static enum ArchivingTaskType {MOVE, COPY, DELETE};
+	public static enum ArchivingTaskType {MOVE, COPY, DELETE, RENAME_COPY_LAST_SEQUENTIAL};
 
     //--------------------------------------------------------------------------
   	
@@ -55,6 +63,11 @@ public class DataArchivingRule
 	 * the pathname.
 	 */
 	private String pattern;
+
+	/**
+	 * The new name for the file.
+	 */
+	private String newName;
 	
 //------------------------------------------------------------------------------
 	
@@ -72,60 +85,42 @@ public class DataArchivingRule
 	 */
 	public DataArchivingRule(ArchivingTaskType type, String pattern)
 	{
+		this(type, pattern, null);
+		if (type == ArchivingTaskType.RENAME_COPY_LAST_SEQUENTIAL)
+			throw new IllegalArgumentException(
+			"New name is required for RENAME_COPY_LAST_SEQUENTIAL type");
+	}
+	
+//------------------------------------------------------------------------------
+	
+	/**
+	 * Construct a rule that defines what to do and applies to any data found 
+	 * in files with names matching the given pattern.
+	 * @param type defines what tape of action we are expected to do upon 
+	 * request to archive data matched by this rule.
+	 * @param pattern string identifying filenames (not pathnames!) that contain
+	 * data subject to this data archiving rule.  The pattern
+	 * can have the form <code>*string</code>, <code>string*</code>, or 
+	 * <code>*string*</code> depending on whether the string is expected to be 
+	 * at the end, the beginning, or in the middle of the the last component of 
+	 * the pathname.
+	 * @param newName the new name for the file. Used only if the type is 
+	 * RENAME_COPY_LAST_SEQUENTIAL.
+	 */
+	public DataArchivingRule(ArchivingTaskType type, String pattern, String newName)
+	{
 		this.type = type;
 		this.pattern = pattern;
-	}
-	
-//------------------------------------------------------------------------------
-
-	/**
-	 * Construct a rule that asks to move any data found 
-	 * in files with names matching the given pattern into an archive folder.
-	 * @param pattern string identifying filenames (not pathnames!) that contain
-	 * data subject to this data archiving rule.  The pattern
-	 * can have the form <code>*string</code>, <code>string*</code>, or 
-	 * <code>*string*</code> depending on whether the string is expected to be 
-	 * at the end, the beginning, or in the middle of the the last component of 
-	 * the pathname.
-	 */
-	public static DataArchivingRule makeMoveRule(String pattern)
-	{
-		return new DataArchivingRule(ArchivingTaskType.MOVE, pattern);
-	}
-	
-//------------------------------------------------------------------------------
-
-	/**
-	 * Construct a rule that asks to copy any data found 
-	 * in files with names matching the given pattern into an archive folder
-	 * while keeping a copy in the original location.
-	 * @param pattern string identifying filenames (not pathnames!) that contain
-	 * data subject to this data archiving rule.  The pattern
-	 * can have the form <code>*string</code>, <code>string*</code>, or 
-	 * <code>*string*</code> depending on whether the string is expected to be 
-	 * at the end, the beginning, or in the middle of the the last component of 
-	 * the pathname.
-	 */
-	public static DataArchivingRule makeCopyRule(String pattern)
-	{
-		return new DataArchivingRule(ArchivingTaskType.COPY, pattern);
-	}
-	
-//------------------------------------------------------------------------------
-
-	/**
-	 * Construct a rule that asks to remove any data found 
-	 * in files with names matching the given pattern.
-	 * @param pattern string identifying filenames (not pathnames!) that contain
-	 * data subject to this data archiving rule. The pattern
-	 * can have the form <code>*string</code>, <code>string*</code>, or 
-	 * <code>*string*</code> depending on whether the string is expected to be 
-	 * at the end, the beginning, or in the middle of the the last component of 
-	 * the pathname.
-	 */
-	public static DataArchivingRule makeDeleteRule(String pattern)
-	{
-		return new DataArchivingRule(ArchivingTaskType.DELETE, pattern);
+		if (type == ArchivingTaskType.RENAME_COPY_LAST_SEQUENTIAL
+			 && !pattern.contains(SEQUENTIAL_INDEX))
+		{
+			throw new IllegalArgumentException("Pattern '" + pattern 
+			    + "' does not contain '" 
+			    + SEQUENTIAL_INDEX + "' as placeholder for the sequential index. "
+			    + "Please, include '" + SEQUENTIAL_INDEX 
+				+ "' as placeholder in the pattern.");
+		}
+		this.newName = newName;
 	}
 
 //------------------------------------------------------------------------------
@@ -144,6 +139,15 @@ public class DataArchivingRule
 	 */
 	public String getPattern() {
 		return pattern;
+	}
+
+//------------------------------------------------------------------------------
+
+	/**
+	 * @return the new name for the file.
+	 */
+	public String getNewName() {
+		return newName;
 	}
 	
 //------------------------------------------------------------------------------
@@ -165,7 +169,13 @@ public class DataArchivingRule
  	    if (!this.type.equals(other.type))
  	    	return false;
  	    
- 	    return this.pattern.equals(other.pattern);
+ 	    if (!this.pattern.equals(other.pattern))
+ 	    	return false;
+ 	    
+ 	    if (this.type == ArchivingTaskType.RENAME_COPY_LAST_SEQUENTIAL)
+ 	    	return this.newName.equals(other.newName);
+ 	    
+ 	    return true;
     }
     
 //-----------------------------------------------------------------------------
@@ -173,7 +183,7 @@ public class DataArchivingRule
     @Override
     public int hashCode()
     {
-    	return Objects.hash(type, pattern);
+    	return Objects.hash(type, pattern, newName);
     }
   
 //------------------------------------------------------------------------------
@@ -182,8 +192,15 @@ public class DataArchivingRule
   	 * @return a string representation of this object
   	 */
     @Override
-  	public String toString() {
-  		return type.toString() + " " + pattern;
+  	public String toString() 
+	{
+		StringBuilder sb = new StringBuilder();
+		sb.append(this.getClass().getSimpleName()).append(" [");
+		sb.append(type.toString()).append(" ").append(pattern);
+		if (type == ArchivingTaskType.RENAME_COPY_LAST_SEQUENTIAL)
+			sb.append(" to ").append(newName);
+		sb.append("]]");
+		return sb.toString();
   	}
 
 //------------------------------------------------------------------------------
