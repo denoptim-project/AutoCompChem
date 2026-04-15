@@ -97,7 +97,8 @@ public class OrcaOutputReader extends ChemSoftOutputReader
         while ((line = buffRead.readLine()) != null)
         {
         	lineNum++;
-        	if (line.matches(".*" + OrcaConstants.LOGJOBSTEPSTART+ ".*"))
+        	if (line.matches(".*" + OrcaConstants.LOGJOBSTEPSTART+ ".*")
+        		|| line.matches(".*" + OrcaConstants.LOGJOBSTEPSTART_COMPOUND+ ".*"))
         	{
         		if (first)
         		{
@@ -115,7 +116,7 @@ public class OrcaOutputReader extends ChemSoftOutputReader
                     stepScfConvEnergies = new ListOfDoubles();
                     stepGeoms = new AtomContainerSet();
                     
-                	//...and move on to next step.
+                	// ...and move on to next step.
         			stepId++;
         			stepInitLineNum = lineNum;
         		}

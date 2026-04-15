@@ -38,8 +38,9 @@ public class MatchDirComponent extends Circumstance implements IScoring
 	public final DirComponentAddress address;
 
     /**
-     * Index of the job's step to focus on, in any.
+     * Index of the job's step to focus on, if any.
      */
+    //TODO-gg remove
     public final int stepId;
 
     /**
@@ -152,6 +153,8 @@ public class MatchDirComponent extends Circumstance implements IScoring
     {
     	if (input.getClass() != JobDetailsAsSource.class)
     		return 0;
+        if (!(((JobDetailsAsSource) input).job instanceof CompChemJob))
+            return 0;
     	CompChemJob job = (CompChemJob) ((JobDetailsAsSource) input).job;
     	
     	List<IDirectiveComponent> matches = job.getDirectiveComponents(address);
@@ -179,9 +182,7 @@ public class MatchDirComponent extends Circumstance implements IScoring
             {
                 score = 1.0;
             }
-        }
-        else
-        {
+        } else {
             //NB: here we can make the score dependent on #matches 
             if (matches.size() > 0)
             {
@@ -295,7 +296,7 @@ public class MatchDirComponent extends Circumstance implements IScoring
         if (!this.address.equals(other.address))
             return false;        
 
-        if (!this.value.equals(other.value))
+        if (this.value != null && other.value != null && !this.value.equals(other.value))
             return false;
         
         if (this.stepId != other.stepId)

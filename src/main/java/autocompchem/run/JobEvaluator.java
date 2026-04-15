@@ -40,6 +40,7 @@ import autocompchem.perception.infochannel.FileAsSource;
 import autocompchem.perception.infochannel.InfoChannel;
 import autocompchem.perception.infochannel.InfoChannelBase;
 import autocompchem.perception.infochannel.InfoChannelType;
+import autocompchem.perception.infochannel.JobDetailsAsSource;
 import autocompchem.perception.situation.Situation;
 import autocompchem.perception.situation.SituationBase;
 import autocompchem.run.jobediting.Action;
@@ -271,6 +272,11 @@ public class JobEvaluator extends Worker
 			}
 		}
 		
+		// NB: the jobBeingEvaluated is considered a JOBDETAILS info channel 
+		// only once we know if it's jobBeingEvaluated or one of its sub jobs is
+		// the job relevant for perception. See under performTask().
+		// The mechanism here is mainly meant for testing purposes, and to offer 
+		// the possivility to load multiple job details files.
 		if (hasParameter(ParameterConstants.INFOSRCJOBDETAILS)) 
 		{
 			String pathNames = params.getParameter(
@@ -291,11 +297,13 @@ public class JobEvaluator extends Worker
 			}
 		}
 		
-		//NB: ParameterConstants.INFOSRCJOBDETAILS is not really equivalent to
-		// ParameterConstants.JOBDEF even though they will probably have
-		// the same content, but INFOSRCJOBDETAILS allows to include more
-		// so we keep it separated.
-		
+		// NB: ParameterConstants.INFOSRCJOBDETAILS is not really equivalent to
+		// ParameterConstants.JOBDEF even though they might often be related,
+		// but the first is a file-based info channel, while the second is a 
+		// actual Job object.
+		// Note also, that jobBeingEvaluated is considered a JOBDETAILS info channel 
+		// only once we know if it's jobBeingEvaluated or one of its sub jobs is
+		// the job relevant for perception. See under performTask().
 		if (hasParameter(ParameterConstants.JOBDEF)) 
 		{
 			File file = getNewFile(params.getParameter(
@@ -309,6 +317,10 @@ public class JobEvaluator extends Worker
 			}
 		}
 		
+		// Redundant wrt ParameterConstants.JOBDEF, but moe self-explanatory.
+		// Note also, that jobBeingEvaluated is considered a JOBDETAILS info channel 
+		// only once we know if it's jobBeingEvaluated or one of its sub jobs is
+		// the job relevant for perception. See under performTask().
 		if (hasParameter(ParameterConstants.JOBTOEVALUATE)) 
 		{
 			if (jobBeingEvaluated!=null)
@@ -427,7 +439,7 @@ public class JobEvaluator extends Worker
 						+ "channels.");
 			}
 		} else {
-			// Endure consistency with job running this worker
+			// Ensure consistency with job running this worker
 			if (myJob!=null && (myJob instanceof EvaluationJob))
 			{
 				Job jobInMyJob = ((EvaluationJob)myJob).getJobBeingEvaluated();
@@ -443,6 +455,9 @@ public class JobEvaluator extends Worker
 				}
 			}
 		}
+		// NB: the jobBeingEvaluated is considered a JOBDETAILS info channel 
+		// only once we know if it jobBeingEvaluated of one of is sub jobs is
+		// the job relevant for perception. See under performTask().
 	}
 	
 //------------------------------------------------------------------------------
@@ -507,17 +522,29 @@ public class JobEvaluator extends Worker
 			throw new UnsupportedOperationException("Analysis of parallel batches is "
 					+ "not implemented yet. Please, contact the developers "
 					+ "and present your use case.");
-			// Must define idxFocusJob in here
 		} else {
-			// In here, we define what is the "focus job", i.e., the job
-			// that triggers the reaction. It can be jobBeingEvaluated, or
-			// one of its steps.
 			try {
+				// In here, we indirectly define what is the "focus job", 
+				// i.e., the job that triggers the reaction. It can be 
+				// jobBeingEvaluated, or one of its sub jobs (i.e., steps).
+				// We do this by exposing the number of steps found in the 
+				// LOGFEED info channels.
 				analyzeLogFilesSerialJob(p);
 			} catch (Exception e) {
 				logger.error("Exception while reading logs. ", e);
 				exposeOutputData(new NamedData(EXCEPTION, e.toString()));
 			}
+		}
+
+		// Adjust the JOBDETAILS info channel to the "focus job", i.e., the job
+		// that triggers the reaction. It can be jobBeingEvaluated, or one of its 
+		// sub jobs (i.e., steps). This specific adjustment is done only on the
+		// context-specific info channel base that will be used for perception.
+		if (jobBeingEvaluated != null)
+		{
+			Job reactionTriggeringJob = ((EvaluationJob) myJob).getReactionTriggeringJob();
+			p.getContextSpecificICB().addChannel(
+				new JobDetailsAsSource(reactionTriggeringJob));
 		}
 		
 		try {
@@ -546,7 +573,7 @@ public class JobEvaluator extends Worker
 			{
 				// The generalities of the cure are defined in the situation...
 				Action reaction = s.getReaction().clone();
-				// ...but the specifics needsto be adjusted to the data produced by the evaluation
+				// ...but the specifics need to be adjusted to the data produced by the evaluation
 				reaction = reaction.adjustToJobData(jobBeingEvaluated);
 				
 				// NB: this triggers notification of a request of action on the

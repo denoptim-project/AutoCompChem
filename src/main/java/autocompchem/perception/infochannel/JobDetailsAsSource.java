@@ -16,12 +16,10 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
 import autocompchem.run.Job;
-import autocompchem.wiro.chem.CompChemJob;
 
 
 /**
- * Class projecting the details of a {@link CompChemJob} into an information
- * channel.
+ * Class projecting the details of a {@link Job} into an information channel.
  *
  * @author Marco Foscato
  */
@@ -31,7 +29,7 @@ public class JobDetailsAsSource extends InfoChannel
     /**
      * Text organized by lines
      */
-    public final CompChemJob job;
+    public final Job job;
 
 //------------------------------------------------------------------------------
 
@@ -39,10 +37,11 @@ public class JobDetailsAsSource extends InfoChannel
      * Constructs an empty ShortTextAsSource
      */
 
-    public JobDetailsAsSource(CompChemJob job)
+    public JobDetailsAsSource(Job job)
     {
         super();
         this.job = job;
+        this.setType(InfoChannelType.JOBDETAILS);
     }
     
 //------------------------------------------------------------------------------
@@ -99,7 +98,7 @@ public class JobDetailsAsSource extends InfoChannel
                 throw new JsonParseException(msg);
             } 
 
-			CompChemJob job = (CompChemJob) context.deserialize(
+			Job job = (Job) context.deserialize(
 					jsonObject.get("job"), Job.class);
 
             InfoChannelType type = context.deserialize(

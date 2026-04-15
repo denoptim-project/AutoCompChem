@@ -34,6 +34,7 @@ import org.apache.logging.log4j.Logger;
 
 import autocompchem.perception.circumstance.ICircumstance;
 import autocompchem.perception.circumstance.IScoring;
+import autocompchem.perception.circumstance.MatchDirComponent;
 import autocompchem.perception.circumstance.MatchText;
 import autocompchem.perception.infochannel.InfoChannel;
 import autocompchem.perception.infochannel.InfoChannelBase;
@@ -352,12 +353,12 @@ public class Perceptron
         	List<String> names = new ArrayList<String>();
         	occurringSituations.stream().forEach(s -> names.add(
         			s.getRefName()));
-        	String msg = init + "Confusion - The situation matches "
+        	String msg = init + "Confusion - The job matches "
         			+ "multiple known situation. You may have to make "
                     + "the situations more specific as to "
                     + "disctiminate between these: " 
                     + StringUtils.mergeListToString(names, ", ", true);
-        	logger.debug(msg);
+        	logger.warn(msg);
             break;
         }
     }
@@ -387,14 +388,20 @@ public class Perceptron
             
             IScoring sc = (IScoring) c;
             
-            // evaluate circumstance now
-            double score = 1.0;
-            
-            // Scan all the input channels of relevant type
-            for (InfoChannel ic : specICB.getChannelsOfType(c.getChannelType()))
-            {	
-            	logger.trace(newline +"Scanning InfoChannel: "+ic);
-                score = score * sc.calculateScore(ic);
+            // If there is no InfoChannel to be analyzed the score must be 0
+            double score = 0.0;
+            List<InfoChannel> icList = specICB.getChannelsOfType(c.getChannelType());
+            if (icList.size() > 0)
+            {
+                // Scan all the input channels of relevant type. If none matches the
+                // circumstance, the score will become 0 because of sc.calculateScore(ic),
+                // but we start by setting the score to 1.0 to allow multiplication of scores.
+                score = 1.0;
+                for (InfoChannel ic : icList)
+                {	
+                    logger.trace(newline +"Scanning InfoChannel: "+ic);
+                    score = score * sc.calculateScore(ic);
+                }
             }
 
             scoreCollector.addScore(scp, score);

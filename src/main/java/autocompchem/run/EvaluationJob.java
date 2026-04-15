@@ -96,6 +96,9 @@ public class EvaluationJob extends ACCJob
      */
   	public Job getReactionTriggeringJob()
   	{
+        // WARNING: assumption that it is always the last step that triggers!
+        // One day we may introduce per-step conditions that could make 
+        // intermediate, non-final steps trigger a reaction.
   		if (exposedOutput.contains(JobEvaluator.NUMSTEPSKEY))
   		{
   			int idx = ((int) exposedOutput.getNamedData(

@@ -58,10 +58,16 @@ public class OrcaConstants
 			" JOBS TO BE PROCESSED THIS RUN ";
 
 	/**
-	 * String identifying the beginning of a single Orca job in a run that
-	 * includes more than one job.
-	 */
+	* String identifying the beginning of a single Orca job in a run that
+	* includes more than one job (multi-step job).
+	*/
 	public static final String LOGJOBSTEPSTART = "  JOB NUMBER ";
+
+	/**
+	 * String identifying the beginning of a single Orca job in a compound job.
+	 */
+	//NB: Should match "COMPOUND JOB  1" but not "COMPOUND JOB MainJOB"
+	public static final String LOGJOBSTEPSTART_COMPOUND = " COMPOUND JOB  ";
 
 	/**
 	 * String identifying the normal termination of a single/multi job run. 

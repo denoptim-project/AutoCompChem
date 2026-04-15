@@ -23,6 +23,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -61,6 +62,7 @@ import autocompchem.files.FileUtils;
 import autocompchem.io.ACCJson;
 import autocompchem.io.IOtools;
 import autocompchem.log.LogUtils;
+import autocompchem.utils.NumberAwareStringComparator;
 import autocompchem.utils.NumberUtils;
 import autocompchem.utils.StringUtils;
 import autocompchem.wiro.chem.CompChemJob;
@@ -464,6 +466,26 @@ public class Job implements Runnable
     public Object getParameterValue(String paramId)
     {
         return params.getParameterOrNull(paramId);
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Searches for a parameter in the chain of containers of the given job.
+     * Containers are explored from the innermost to the outermost.
+     * @param job the job to search in  
+     * @param paramId the parameter to search for
+     * @return the value of the parameter if found, <code>null</code> otherwise
+     */
+    public static NamedData getParameterInContainers(Job job, String paramId)
+    {
+        for (Job container : job.getContainers()) 
+        {
+            if (container.hasParameter(paramId)) {
+                return container.getParameter(paramId);
+            }
+        }
+        return null;
     }
     
 //------------------------------------------------------------------------------
@@ -1744,9 +1766,30 @@ public class Job implements Runnable
         	} else if (value instanceof NamedDataCollector)
 	    	{
 	    		NamedDataCollector container = (NamedDataCollector) value;
-	    		if (!container.contains(nestedContentID))
-	    			return null;
-	    		nestedValue = container.getNamedData(nestedContentID).getValue();
+                Set<String> keys = container.getAllNamedData().keySet();
+                List<String> sortedKeys = new ArrayList<String>(keys);
+                NumberAwareStringComparator comparator = new NumberAwareStringComparator();
+                Collections.sort(sortedKeys, comparator);
+                if ("LAST".equals(nestedContentID.toUpperCase())) {
+                    nestedValue = container.getNamedData(sortedKeys.get(sortedKeys.size() - 1)).getValue();
+                } else if ("FIRST".equals(nestedContentID.toUpperCase())) {
+                    nestedValue = container.getNamedData(sortedKeys.get(0)).getValue();
+                } else {
+                    if (!container.contains(nestedContentID))
+                    {
+                        String pathUpToHere = "";
+                        for (int j = 0; j < i; j++) {
+                            pathUpToHere += pathIntoExposedData[j] + ",";
+                        }
+                        logger.warn("WARNING: the data '" + pathUpToHere + nestedContentID 
+                            + "' is not available in the output exposed by job " 
+                            + job.getId()
+                            + ". The job exposes only the following data names: " 
+                            + container.getAllNamedData().keySet().toString() + ". Returning null.");
+                        return null;
+                    }
+                    nestedValue = container.getNamedData(nestedContentID).getValue();
+                }
 	    	} else if (value instanceof Map) 
 	    	{
 	    		Map<?,?> map = (Map<?, ?>) value;
@@ -2645,6 +2688,29 @@ public class Job implements Runnable
                     			jsonObject.get("directives"),
                     			new TypeToken<ArrayList<Directive>>(){}.getType()));
                 	}
+                	break;
+                }
+
+                case "TestJob":
+                {
+                	if (!jsonObject.has(TestJob.JSON_LOG_PATH))
+                	{
+                		throw new JsonParseException("Missing '"
+                				+ TestJob.JSON_LOG_PATH + "' for TestJob");
+                	}
+                	String logPath = context.deserialize(
+                			jsonObject.get(TestJob.JSON_LOG_PATH),
+                			String.class);
+                	int wallTime = jsonObject.has(TestJob.JSON_WALL_TIME)
+                			? jsonObject.get(TestJob.JSON_WALL_TIME).getAsInt()
+                			: 1;
+                	int delay = jsonObject.has(TestJob.JSON_DELAY)
+                			? jsonObject.get(TestJob.JSON_DELAY).getAsInt()
+                			: 500;
+                	int period = jsonObject.has(TestJob.JSON_PERIOD)
+                			? jsonObject.get(TestJob.JSON_PERIOD).getAsInt()
+                			: 490;
+                	job = new TestJob(logPath, wallTime, delay, period);
                 	break;
                 }
 

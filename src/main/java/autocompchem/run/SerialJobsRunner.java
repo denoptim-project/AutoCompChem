@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -290,7 +291,8 @@ public class SerialJobsRunner extends JobsRunner
 		    	} catch (Exception e) {
 		    		// Future.get() throws ExecutionException wrapping the original exception
 		    		// The exception has already been stored in the job via the run() method
-		    		logger.trace("Exception detected in job execution. " +
+					// This, unless it happes in some other place, i.e., in the future.get() method.
+		    		logger.trace(e.getClass().getSimpleName() + " detected in job execution. " +
 		    				"Stopping submission of remaining jobs.");
 		    		exceptionDetected = true;
 		    		break;

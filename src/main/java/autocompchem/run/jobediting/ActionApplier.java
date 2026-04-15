@@ -13,6 +13,7 @@ import java.util.HashMap;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import autocompchem.datacollections.NamedData;
 import autocompchem.files.FileUtils;
 import autocompchem.run.EvaluationJob;
 import autocompchem.run.Job;
@@ -22,6 +23,7 @@ import autocompchem.run.jobediting.Action.ActionType;
 import autocompchem.run.jobediting.DataArchivingRule.ArchivingTaskType;
 import autocompchem.utils.SetUtils;
 import autocompchem.utils.StringUtils;
+import autocompchem.wiro.WIROConstants;
 
 /**
  * A tool for performing {@link Action}s that edit a workflow, 
@@ -420,6 +422,33 @@ public class ActionApplier
 				{
 					filesToRenameCopyMap.put(file, rule.getNewName());
 				}
+			} else if (rule.getType().equals(ArchivingTaskType.RENAME_COPY_BASENAME))
+			{
+				String basename = "";
+				if (job.hasParameter(WIROConstants.PAROUTFILEROOT))
+					basename = job.getParameter(WIROConstants.PAROUTFILEROOT).getValueAsString();
+				else {
+					NamedData paramValue = Job.getParameterInContainers(job, WIROConstants.PAROUTFILEROOT);
+					if (paramValue != null)
+					{
+						basename = paramValue.getValueAsString();
+					} else {
+						if (job.hasParameter(WIROConstants.PAROUTFILE))
+							basename = FileUtils.getRootOfFileName(job.getParameter(WIROConstants.PAROUTFILE).getValueAsString());
+						else
+							basename = job.getId();
+					}
+				}
+				String pattern = rule.getPattern().replace(DataArchivingRule.BASENAME, basename);
+
+				logger.debug("Pattern for " + ArchivingTaskType.RENAME_COPY_BASENAME + " rule '" 
+				   + rule.getPattern() + "' becomes '" + pattern + "' for job " + job.getId());
+
+				List<File> matches = FileUtils.findByGlob(jobsRootPath, pattern, true);
+				for (File file : matches)
+				{
+					filesToRenameCopyMap.put(file, rule.getNewName());
+				}
 			}
 		}
         
@@ -467,7 +496,7 @@ public class ActionApplier
         }
         filesToArchive.removeAll(nonExisting);
         
-		if (filesToArchive.size()==0 && filesToCopy.size()==0)
+		if (filesToArchive.size()==0 && filesToCopy.size()==0 && filesToRenameCopyMap.size()==0)
 		{
 			// Nothing else to do.
 			return;
@@ -505,6 +534,9 @@ public class ActionApplier
 			// Use getNewFile to ensure the archive file path respects work directory configuration
 			File newFile = job.getNewFile(jobsRootPath.getAbsolutePath() 
 					+ File.separator + filesToRenameCopyMap.get(file));
+			// Avoid that the new file is moved after being overwritten
+			filesToArchive.remove(newFile);
+			candidateFilesToTrash.remove(newFile);
 			try {
 				FileUtils.copy(file, newFile);
 			} catch (IOException e) {

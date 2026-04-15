@@ -379,7 +379,7 @@ public class Action implements Cloneable
     private static IJobEditingTask resolveJobEditingTaskFetch(Job anchorJob,
             IJobEditingTask task)
     {
-        //TODO-gg cover other types!
+        //TODO-gg cover other types! Make it a method of IJobEditingTask
         if (task instanceof SetJobParameter)
         {
             SetJobParameter sjp = (SetJobParameter) task;

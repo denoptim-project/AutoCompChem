@@ -987,7 +987,6 @@ public class CompChemJob extends Job implements Cloneable
   	
     public List<IAtomContainer> getRestartGeoms()
     {
-		 
 		NamedDataCollector allStepsData = (NamedDataCollector)  
 			exposedOutput.getNamedData(WIROConstants
 				.JOBOUTPUTDATA).getValue();

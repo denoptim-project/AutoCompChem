@@ -20,7 +20,7 @@ package autocompchem.utils;
 import java.util.Comparator;
 
 /**
- * Comparator for trings that embedd numbers
+ * Comparator for strings that embed numbers
  * 
  * @author Marco Foscato
  */

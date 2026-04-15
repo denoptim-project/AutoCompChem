@@ -60,15 +60,14 @@ import autocompchem.perception.infochannel.ShortTextAsSource.ShortTextAsSourceSe
 import autocompchem.perception.situation.SituationBase;
 import autocompchem.perception.situation.SituationBase.SituationBaseDeserializer;
 import autocompchem.perception.situation.SituationBase.SituationBaseSerializer;
-import autocompchem.run.ACCJob;
 import autocompchem.run.SoftwareId;
-import autocompchem.run.EvaluationJob;
 import autocompchem.run.Job;
 import autocompchem.run.Job.JobDeserializer;
 import autocompchem.run.Job.JobSerializer;
-import autocompchem.run.MonitoringJob;
 import autocompchem.run.ShellJob;
 import autocompchem.run.ShellJob.ShellJobSerializer;
+import autocompchem.run.TestJob;
+import autocompchem.run.TestJob.TestJobSerializer;
 import autocompchem.run.jobediting.Action.ActionObject;
 import autocompchem.run.jobediting.Action.ActionObjectDeserializer;
 import autocompchem.run.jobediting.Action.ActionType;
@@ -201,20 +200,15 @@ public class ACCJson
     			.setPrettyPrinting()
     	        .registerTypeAdapter(File.class, FILE_TYPE_ADAPTER)
     	        .registerTypeAdapter(SoftwareId.class, SOFTWARE_ID_TYPE_ADAPTER)
-    	        .registerTypeAdapter(Job.class, new JobSerializer())
-    	        .registerTypeAdapter(ACCJob.class, new JobSerializer())
-    	        .registerTypeAdapter(MonitoringJob.class, new JobSerializer())
-    	        .registerTypeAdapter(EvaluationJob.class, new JobSerializer())
-    	        .registerTypeAdapter(ShellJob.class, new ShellJobSerializer())
-    	        .registerTypeAdapter(CompChemJob.class, 
-    	        		new CompChemJobSerializer())
     	        /*
-    	         * WARNING: there are extensions of Job that are not meant to
-    	         * be JSON-serialized, so we do not provide any type adapter!
-    	         * However, attempts to JSON-serialize any instance of any of 
-    	         * those types will lead to problems (typically stack overflow
-    	         * of illegal reflective access.
+    	         * Specific Job subclasses first so they win over the hierarchy
+    	         * adapter (Gson uses the first matching factory).
     	         */
+    	        .registerTypeAdapter(ShellJob.class, new ShellJobSerializer())
+    	        .registerTypeAdapter(CompChemJob.class,
+    	        		new CompChemJobSerializer())
+    	        .registerTypeAdapter(TestJob.class, new TestJobSerializer())
+    	        .registerTypeHierarchyAdapter(Job.class, new JobSerializer())
     	        .registerTypeAdapter(DirectiveData.class, 
     	        		new DirectiveDataSerializer())
     	        .registerTypeAdapter(NamedData.class, 
@@ -258,7 +252,7 @@ public class ACCJson
     			.setPrettyPrinting()
     	        .registerTypeAdapter(File.class, FILE_TYPE_ADAPTER)
     	        .registerTypeAdapter(SoftwareId.class, SOFTWARE_ID_TYPE_ADAPTER)
-    	        .registerTypeAdapter(Job.class, new JobDeserializer())
+    	        .registerTypeHierarchyAdapter(Job.class, new JobDeserializer())
     	        .registerTypeAdapter(DirectiveData.class, 
     	        		new DirectiveDataDeserializer())
     	        .registerTypeAdapter(NamedData.class, 

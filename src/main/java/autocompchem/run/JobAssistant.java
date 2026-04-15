@@ -155,6 +155,15 @@ public class JobAssistant extends Worker
 		if (hasParameter(PARASSISTEDJOB)) 
 		{
 			assistedJob = (Job) params.getParameter(PARASSISTEDJOB).getValue();
+			// The basename is assigned by default because it is useful to do 
+			// perception and archiving of the assisted job.
+			if (params.contains(WIROConstants.PAROUTFILEROOT) 
+				&& !assistedJob.hasParameter(WIROConstants.PAROUTFILEROOT))
+			{
+				assistedJob.setParameter(new NamedData(WIROConstants.PAROUTFILEROOT, 
+					params.getParameter(WIROConstants.PAROUTFILEROOT).getValue()));
+			}
+			// The following are parameters that are recursively propagated to the assisted job
 			if (params.contains(JobConstants.PARLOWMEMORYMODE))
 			{
 				assistedJob.setParameter(new NamedData(JobConstants.PARLOWMEMORYMODE, 

@@ -939,13 +939,24 @@ public class OrcaInputWriter extends ChemSoftInputWriter
     	} else if (job.getNumberOfSteps()==1) {
     		logger.warn("WARNING! Found a multistep job with only "
     				+ "one step. I assume you meant to prepare the input for "
-    				+ "a single step job.");
+    				+ "a single step job. "
+					+ "Contact the authors if this assumption is incorrect.");
     		CompChemJob step = (CompChemJob) job.getStep(0);
     		preProcessingJob(step);
+			// Now the directives on the embedded job
     		Iterator<Directive> it = step.directiveIterator();
 			while (it.hasNext())
 			{
 				Directive d = it.next();
+				sb.append(StringUtils.mergeListToString(
+						getTextForInput(d, true), NL));
+			}
+			// Take any directive from the master job as
+			// geometry may have been defined only in the master job.
+			Iterator<Directive> itOut = job.directiveIterator();
+			while (itOut.hasNext())
+			{
+				Directive d = itOut.next();
 				sb.append(StringUtils.mergeListToString(
 						getTextForInput(d, true), NL));
 			}
