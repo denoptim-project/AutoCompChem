@@ -99,6 +99,7 @@ public class ACCOutputReader extends OutputReader
         			stepData = new NamedDataCollector();
                     
         			stepId++;
+					reader.setStepId(stepId);
         			stepInitLineNum = lineNum;
         		}
         	} 

@@ -22,19 +22,19 @@ public class DataArchivingRule
 	 * Placeholder for sequential index in the pattern (e.g., "*_IDX.dat"
 	 * will results in patterns like "*_0.dat", "*_1.dat", etc.)
 	 */
-	public static final String SEQUENTIAL_INDEX = "IDX";
+	public static final String INDEX_PLHLD = "IDX";
 
 	/*
 	 * Placeholder for the base name of the file.
 	 */
-	public static final String BASENAME = "BASENAME";
+	public static final String BASENAME_PLHLD = "BASENAME_PLHLD";
 
 	/**
 	 * Defines if a data archiving rule is meant for moving, copying or removing
 	 * data.
 	 */
 	public static enum ArchivingTaskType {MOVE, COPY, DELETE, 
-		RENAME_COPY_BASENAME,
+		RENAME_COPY_BASENAME_IDX,
 		RENAME_COPY_LAST_SEQUENTIAL};
 
     //--------------------------------------------------------------------------
@@ -94,11 +94,11 @@ public class DataArchivingRule
 	{
 		this(type, pattern, null);
 		if (type == ArchivingTaskType.RENAME_COPY_LAST_SEQUENTIAL
-			|| type == ArchivingTaskType.RENAME_COPY_BASENAME
+			|| type == ArchivingTaskType.RENAME_COPY_BASENAME_IDX
 		)
 			throw new IllegalArgumentException("New name is required for " 
-			    + ArchivingTaskType.RENAME_COPY_LAST_SEQUENTIAL + " or " 
-				+ ArchivingTaskType.RENAME_COPY_BASENAME + " types");
+			    + ArchivingTaskType.RENAME_COPY_LAST_SEQUENTIAL + ", "
+				+ ArchivingTaskType.RENAME_COPY_BASENAME_IDX + " types.");
 	}
 	
 //------------------------------------------------------------------------------
@@ -115,28 +115,31 @@ public class DataArchivingRule
 	 * at the end, the beginning, or in the middle of the the last component of 
 	 * the pathname.
 	 * @param newName the new name for the file. Used only if the type is 
-	 * {@link ArchivingTaskType#RENAME_COPY_LAST_SEQUENTIAL} 
-	 * or {@link ArchivingTaskType#RENAME_COPY_BASENAME}.
+	 * {@link ArchivingTaskType#RENAME_COPY_LAST_SEQUENTIAL} or
+	 * {@link ArchivingTaskType#RENAME_COPY_INDEXED}
+	 * or {@link ArchivingTaskType#RENAME_COPY_BASENAME_PLHLD}.
 	 */
 	public DataArchivingRule(ArchivingTaskType type, String pattern, String newName)
 	{
 		this.type = type;
 		this.pattern = pattern;
 		if (type == ArchivingTaskType.RENAME_COPY_LAST_SEQUENTIAL
-			 && !pattern.contains(SEQUENTIAL_INDEX))
+			 && !pattern.contains(INDEX_PLHLD))
 		{
 			throw new IllegalArgumentException("Pattern '" + pattern 
 			    + "' does not contain '" 
-			    + SEQUENTIAL_INDEX + "' as placeholder for the sequential index. "
-			    + "Please, include '" + SEQUENTIAL_INDEX 
+			    + INDEX_PLHLD + "' as placeholder for the sequential index. "
+			    + "Please, include '" + INDEX_PLHLD 
 				+ "' as placeholder in the pattern.");
 		}
-		if (type == ArchivingTaskType.RENAME_COPY_BASENAME
-			&& !pattern.contains(BASENAME))
+		if (type == ArchivingTaskType.RENAME_COPY_BASENAME_IDX
+			&& (!pattern.contains(BASENAME_PLHLD) || !pattern.contains(INDEX_PLHLD)))
 		{
 			throw new IllegalArgumentException("Pattern '" + pattern 
-			    + "' does not contain '" + BASENAME + "' as placeholder for the base name. "
-			    + "Please, include '" + BASENAME + "' as placeholder in the pattern.");
+			    + "' does not contain '" + BASENAME_PLHLD + "' as placeholder for the base name and '" 
+			    + INDEX_PLHLD + "' as placeholder for the sequential index. "
+			    + "Please, include '" + BASENAME_PLHLD + "' and '" 
+				+ INDEX_PLHLD + "' as placeholders in the pattern.");
 		}
 		this.newName = newName;
 	}
@@ -190,7 +193,8 @@ public class DataArchivingRule
  	    if (!this.pattern.equals(other.pattern))
  	    	return false;
  	    
- 	    if (this.type == ArchivingTaskType.RENAME_COPY_LAST_SEQUENTIAL)
+ 	    if (this.type == ArchivingTaskType.RENAME_COPY_LAST_SEQUENTIAL
+			|| this.type == ArchivingTaskType.RENAME_COPY_BASENAME_IDX)
  	    	return this.newName.equals(other.newName);
  	    
  	    return true;
@@ -216,7 +220,7 @@ public class DataArchivingRule
 		sb.append(this.getClass().getSimpleName()).append(" [");
 		sb.append(type.toString()).append(" ").append(pattern);
 		if (type == ArchivingTaskType.RENAME_COPY_LAST_SEQUENTIAL 
-			|| type == ArchivingTaskType.RENAME_COPY_BASENAME)
+			|| type == ArchivingTaskType.RENAME_COPY_BASENAME_IDX)
 		{
 			sb.append(" to ").append(newName);
 		}

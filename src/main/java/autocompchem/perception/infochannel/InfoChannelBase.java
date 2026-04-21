@@ -192,9 +192,21 @@ public class InfoChannelBase
         }
         else
         {
-            mapByICType.put(ict,
-                            new ArrayList<InfoChannel>(Arrays.asList(channel)));
+            mapByICType.put(ict, new ArrayList<InfoChannel>(Arrays.asList(channel)));
         }
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Remove a channel
+     * @param channel the channel to be removed from this list
+     */
+
+    public void removeChannel(InfoChannel channel)
+    {
+        allInfoChannels.remove(channel);
+        mapByICType.get(channel.getType()).remove(channel);
     }
 
 //------------------------------------------------------------------------------

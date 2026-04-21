@@ -22,11 +22,13 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedDataCollector;
@@ -87,6 +89,12 @@ public class JobEvaluator extends Worker
 	 * found in the evaluated job.
 	 */
 	public static final String NUMSTEPSKEY = "NumberOfStepsFoundInEvaluatedJob";
+
+	/**
+	 * The string used to identify the job triggering a reaction in the exposed 
+	 * data structure of the job output when a reaction is triggered.
+	 */
+	public static final String REACTIONTRIGGERINGJOB = "ReactionTriggeringJob";
 	
 	/**
 	 * The string used to identify the perceived situation in the exposed 
@@ -317,7 +325,7 @@ public class JobEvaluator extends Worker
 			}
 		}
 		
-		// Redundant wrt ParameterConstants.JOBDEF, but moe self-explanatory.
+		// Redundant wrt ParameterConstants.JOBDEF, but more self-explanatory.
 		// Note also, that jobBeingEvaluated is considered a JOBDETAILS info channel 
 		// only once we know if it's jobBeingEvaluated or one of its sub jobs is
 		// the job relevant for perception. See under performTask().
@@ -512,9 +520,12 @@ public class JobEvaluator extends Worker
 		}
 
 		// NB: by default we think that there is only one step. If we can parse
-		// the log/output and detect which step of the job failed, then we get
+		// the log/output and detect how many steps were actually run, then we get
 		// an accurate value, otherwise we assume it is only a single-step
 		// job.
+		int numberOfSteps = 1;
+
+		// Parallel drivers are not supported yet.
 		if (jobBeingEvaluated != null
 				&& jobBeingEvaluated.runsParallelSubjobs()
 				&& jobBeingEvaluated.getNumberOfSteps()>1)
@@ -524,64 +535,111 @@ public class JobEvaluator extends Worker
 					+ "and present your use case.");
 		} else {
 			try {
-				// In here, we indirectly define what is the "focus job", 
-				// i.e., the job that triggers the reaction. It can be 
-				// jobBeingEvaluated, or one of its sub jobs (i.e., steps).
-				// We do this by exposing the number of steps found in the 
-				// LOGFEED info channels.
-				analyzeLogFilesSerialJob(p);
+				// Parsing of the log files defines how many steps are found in 
+				// the job. Checks of the consistency between the #steps defined
+				// in the jobBeingEvaluated and the #steps found in the log/output 
+				// files is done inside this call.
+				numberOfSteps = analyzeLogFilesSerialJob(p);
 			} catch (Exception e) {
 				logger.error("Exception while reading logs. ", e);
 				exposeOutputData(new NamedData(EXCEPTION, e.toString()));
 			}
 		}
 
-		// Adjust the JOBDETAILS info channel to the "focus job", i.e., the job
-		// that triggers the reaction. It can be jobBeingEvaluated, or one of its 
-		// sub jobs (i.e., steps). This specific adjustment is done only on the
-		// context-specific info channel base that will be used for perception.
-		if (jobBeingEvaluated != null)
+		for (int iStep=0; iStep<numberOfSteps; iStep++) 
 		{
-			Job reactionTriggeringJob = ((EvaluationJob) myJob).getReactionTriggeringJob();
-			p.getContextSpecificICB().addChannel(
-				new JobDetailsAsSource(reactionTriggeringJob));
-		}
-		
-		try {
-			p.perceive();
-			// Minimal log is done by Perceptron according to verbosity
+			logger.info("Perception for step " + iStep);
+
+			p.reset();
+
+			// Chop the definition of the job into the details of the step 
+			// considered now.
+			Job stepBeingEvaluated = null;
+			JobDetailsAsSource stepDetails = null;
+			boolean addedStepDetails = false;
+			if (jobBeingEvaluated != null)
+			{
+				if (jobBeingEvaluated.getNumberOfSteps()>0) {
+					stepBeingEvaluated = jobBeingEvaluated.getStep(iStep);
+				} else {
+					stepBeingEvaluated = jobBeingEvaluated;
+				}
+				stepDetails = new JobDetailsAsSource(stepBeingEvaluated);
+				p.getContextSpecificICB().addChannel(stepDetails);
+				addedStepDetails = true;
+			}
+
+			//TODO-gg add job output data as IC
+
+			// Recover information from previously-read LOG/OUTPUT info channels, 
+			// restraining to the step considered now.
+			if (exposedOutputCollector != null 
+				&& exposedOutputCollector.contains(
+					OutputReader.MATCHESTOTEXTQRYSFORPERCEPTION))
+			{
+				@SuppressWarnings("unchecked")
+				Map<Integer,Map<TxtQuery,Map<Integer,String>>> matchesByStepId = (Map<Integer,Map<TxtQuery,Map<Integer,String>>>)
+				exposedOutputCollector.getNamedData(ChemSoftOutputReader.MATCHESTOTEXTQRYSFORPERCEPTION)
+						.getValue();
+				if (matchesByStepId.containsKey(iStep))
+				{
+					Map<TxtQuery,Map<Integer,String>> matchesByTQ = matchesByStepId.get(iStep);
+					for (TxtQuery tq : matchesByTQ.keySet())
+					{
+						p.collectPerceptionScoresForTxtMatchers(tq, new ArrayList<String>(matchesByTQ.get(tq).values()));
+					}
+				}
+			}
+			
+			// Do perception
+			try {
+				p.perceive();
+				// Minimal log is done by Perceptron according to verbosity
+				if (p.isAware())
+				{
+					Situation sit = p.getOccurringSituations().get(0);
+					logger.info("JobEvaluator: Situation perceived = " 
+							+ sit.getRefName());
+				} else {
+					logger.info("JobEvaluator: No known situation perceived.");
+				}
+			} catch (Exception e) {
+				logger.error("Exception while doing perception. ", e);
+				exposeOutputData(new NamedData(EXCEPTION, e.toString()));
+			}
+			
+			// Process and expose conclusions of perception
 			if (p.isAware())
 			{
-				Situation sit = p.getOccurringSituations().get(0);
-				logger.info("JobEvaluator: Situation perceived = " 
-						+ sit.getRefName());
-			} else {
-				logger.info("JobEvaluator: No known situation perceived.");
-			}
-		} catch (Exception e) {
-			logger.error("Exception while doing perception. ", e);
-			exposeOutputData(new NamedData(EXCEPTION, e.toString()));
-		}
-		
-		// Process and expose conclusions of the evaluation
-		if (p.isAware())
-		{
-			Situation s = p.getOccurringSituations().get(0);
-			exposeOutputData(new NamedData(SITUATIONOUTKEY, s));
-			
-			if (s.hasReaction())
-			{
-				// The generalities of the cure are defined in the situation...
-				Action reaction = s.getReaction().clone();
-				// ...but the specifics need to be adjusted to the data produced by the evaluation
-				reaction = reaction.adjustToJobData(jobBeingEvaluated);
+				Situation s = p.getOccurringSituations().get(0);
+				exposeOutputData(new NamedData(SITUATIONOUTKEY, s));
 				
-				// NB: this triggers notification of a request of action on the
-				// observer (if any observer is present)
-				((EvaluationJob) myJob).setRequestedAction(reaction);
-				exposeOutputData(new NamedData(REACTIONTOSITUATION, reaction));
+				if (s.hasReaction())
+				{
+					// The generalities of the cure are defined in the situation...
+					Action reaction = s.getReaction().clone();
+					// ...but the specifics need to be adjusted to the data produced by the evaluation
+					reaction = reaction.adjustToJobData(stepBeingEvaluated);
+
+					// Define the triggering job
+					exposeOutputData(new NamedData(REACTIONTRIGGERINGJOB, stepBeingEvaluated));
+					
+					// NB: this triggers notification of a request of action on the
+					// observer (if any observer is present)
+					((EvaluationJob) myJob).setRequestedAction(reaction);
+					exposeOutputData(new NamedData(REACTIONTOSITUATION, reaction));
+
+					// Only one reaction is allowed to be triggered per evaluation job
+					break;
+				}
 			}
-		}
+
+			// Remove info channels that applied only to the step being evaluated
+			if (addedStepDetails)
+			{
+				p.getContextSpecificICB().removeChannel(stepDetails);
+			}
+	    }
 	}
 	
 //------------------------------------------------------------------------------
@@ -592,11 +650,19 @@ public class JobEvaluator extends Worker
 	 * such info channels. Thus, we read and collect scores from those 
 	 * information channels before perception. Therefore, we need to 
 	 * communicate the findings to the perceptron.
+	 * Note that, in here, we also check for the consistency between the #steps 
+	 * defined in the jobBeingEvaluated and the #steps found in the log/output 
+	 * files.
+	 * 
+	 * @param p the perceptron to use for perception
+	 * @return the number of steps (sub-jobs) found in the job, as detected by 
+	 * parsing the log/output files. Minimum value is 1.
 	 */
-	private void analyzeLogFilesSerialJob(Perceptron p)
+	private int analyzeLogFilesSerialJob(Perceptron p)
 	{
 		List<InfoChannel> logs = p.getContextSpecificICB().getChannelsOfType(
 				InfoChannelType.LOGFEED);
+		int numberOfSteps = 0;
 		for (InfoChannel ic : logs)
 		{
 			if (!(ic instanceof FileAsSource))
@@ -607,8 +673,9 @@ public class JobEvaluator extends Worker
 			}
 			FileAsSource fas = (FileAsSource) ic;
 			
-			analyzeLogFileOfSerialJob(p, fas);
+			numberOfSteps = numberOfSteps + analyzeLogFileOfSerialJob(p, fas);
 		}
+		return Math.max(1, numberOfSteps);
 	}
 	
 //------------------------------------------------------------------------------
@@ -617,13 +684,25 @@ public class JobEvaluator extends Worker
 	 * Deals with the parsing of one single log/output feed. The parsing of
 	 * data is done according to the type of log that is detected within this
 	 * method.
+	 * 
+	 * Note that, in here, we also check for the consistency between the #steps 
+	 * defined in the jobBeingEvaluated and the #steps found in the log/output 
+	 * files.
+	 * 
+	 * @param p the perceptron to use for perception
+	 * @param log the log/output file to parse
+	 * @return the number of steps (sub-jobs) found in the job, as detected by 
+	 * parsing the log/output files.
 	 */
-	private void analyzeLogFileOfSerialJob(Perceptron p, FileAsSource log)
+	private int analyzeLogFileOfSerialJob(Perceptron p, FileAsSource log)
 	{
+		// We may be asked to parse files that are not really defining any step,
+		// in which case we just return 0.
+		int numberOfSteps = 0;
+
 		ParameterStorage analysisParams = params.clone();
 		analysisParams.setParameter(WorkerConstants.PARTASK, Task.make(
 				"analyseOutput").casedID);
-		
 		
 		// The info channel has been already made context-specific, so
 		// the pathname does not need to account for potential change of user.dir
@@ -639,11 +718,8 @@ public class JobEvaluator extends Worker
 						+ "' is listed as " + InfoChannelType.LOGFEED
 						+ " but is not found.");
 			}
-			return;
+			return 0;
 		}
-		
-		//TODO: add analysis tasks according to the requirements of the 
-		// situations that can be perceived. E.g., extraction of geometries.
 		
 		// Get appropriate parser to use
 		ReaderWriterFactory builder = ReaderWriterFactory.getInstance();
@@ -662,7 +738,7 @@ public class JobEvaluator extends Worker
 			logger.warn("WARNING: "
 					+ "No suitable parser found for log/output file '"
 					+ fileToParse + "'.");
-			return;
+			return 0;
 		}
 		outputParser.setParameters(analysisParams);
 		outputParser.initialize();
@@ -673,8 +749,8 @@ public class JobEvaluator extends Worker
 		
 		// Expose information from the analysis as part of the results of the
 		// task done by this worker. Some of the info is already embedded in the
-		// JOBOUTPUTDATA, but it is convenient to expose 
-		// it even further to simplify access to some pivotal bit of 
+		// JOBOUTPUTDATA, but it is convenient to expose it
+		// even further to simplify access to some pivotal bit of 
 		// information.
 		exposeOutputData(new NamedData(NORMALTERMKEY,
 				outputParser.getNormalTerminationFlag()));
@@ -682,8 +758,13 @@ public class JobEvaluator extends Worker
 				WIROConstants.JOBOUTPUTDATA));
 		exposeOutputData(exposedByAnalzer.getNamedData(
 				WIROConstants.SOFTWAREID));
-		exposeOutputData(new NamedData(NUMSTEPSKEY,
-				outputParser.getStepsFound()));
+		exposeOutputData(exposedByAnalzer.getNamedData(
+				OutputReader.MATCHESTOTEXTQRYSFORPERCEPTION));
+		numberOfSteps = numberOfSteps + outputParser.getStepsFound();
+		exposeOutputData(new NamedData(NUMSTEPSKEY, numberOfSteps));
+
+		String msg = "JobEvaluator: " + NL + "#steps found in the log/output files = " 
+		    + numberOfSteps;
 		
 		if (jobBeingEvaluated!=null)
 		{
@@ -692,27 +773,48 @@ public class JobEvaluator extends Worker
 				exposeOutputData(jobBeingEvaluated.getParameter(
 						ChemSoftConstants.PARGEOM));
 			}
+			// We expose both as data of the master job and of the steps, if any (see below)
 			jobBeingEvaluated.exposedOutput.putNamedData(exposedByAnalzer.getNamedData(
 				WIROConstants.JOBOUTPUTDATA));
-		}
-		
-		//TODO we should put any of the data exposed by the outputParser
-		// into info channels, so that it can be used by perception.
-		// This may need to add a data feed-like type of info channel.
-		// The data is stored in the jobBeingEvaluated.exposedOutput, 
-		// so we should link the IC to the exposed output.
-		
-		@SuppressWarnings("unchecked")
-		Map<TxtQuery,List<String>> matchesByTQ = (Map<TxtQuery,List<String>>)
-				exposedByAnalzer.getNamedData(
-						ChemSoftOutputReader.MATCHESTOTEXTQRYSFORPERCEPTION)
-				.getValue();
-		for (TxtQuery tq : matchesByTQ.keySet())
-		{
-			p.collectPerceptionScoresForTxtMatchers(tq, matchesByTQ.get(tq));
+
+			if (jobBeingEvaluated.getNumberOfSteps()>0) 
+			{
+				int numberOfStepsInJobDefinition = jobBeingEvaluated.getNumberOfSteps();
+
+				msg += NL + "#steps in job definition = " + numberOfStepsInJobDefinition;
+				if (numberOfStepsInJobDefinition < numberOfSteps)
+				{
+					throw new IllegalStateException(
+						"Number of steps found in the log/output files ("
+						+ numberOfSteps + ") "
+						+ "is greater than the number of steps in the job definition ("
+						+ numberOfStepsInJobDefinition + "). "
+						+ "Ensure the job definition is correct, "
+						+ "or check parsing of the log/output files.");
+				}
+
+				NamedDataCollector allStepsData = (NamedDataCollector) exposedByAnalzer.getNamedData(
+					WIROConstants.JOBOUTPUTDATA).getValue();
+				for (int iStep=0; iStep<numberOfSteps; iStep++)
+				{
+					// The use of the string version of the integer step ID is an internal
+					// See also OutputReader.
+					NamedDataCollector stepData = (NamedDataCollector) allStepsData.getNamedData(
+						iStep+"").getValue();
+					for (String key : stepData.getAllNamedData().keySet())
+					{
+						jobBeingEvaluated.getStep(iStep).exposedOutput.putNamedData(
+							stepData.getNamedData(key));
+					}
+				}
+			}
 		}
 
+		logger.info(msg);
+	
 		p.setInfoChannelAsRead(log);
+
+		return numberOfSteps;
 	}
 	
 //------------------------------------------------------------------------------

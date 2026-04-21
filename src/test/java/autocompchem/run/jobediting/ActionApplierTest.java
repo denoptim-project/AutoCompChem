@@ -172,7 +172,7 @@ public class ActionApplierTest
     	
     	Action action = getTestAction();
 
-    	ActionApplier.archivePreviousResults(job, 6, action, this.tempDir);
+    	ActionApplier.archivePreviousResults(job, 2, 6, action, this.tempDir);
     	
     	File archiveDir = new File(tempDir+SEP+"Job_#0_6");
     	assertTrue(archiveDir.exists());

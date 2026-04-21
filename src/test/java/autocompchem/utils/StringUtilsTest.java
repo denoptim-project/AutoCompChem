@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
@@ -456,6 +457,65 @@ public class StringUtilsTest
 		assertFalse(StringUtils.hasSyntaxOfCommandCallWithParenthesesContent(
 			"(arg1, arg2) more text", commandCall));
     }
+    
+//------------------------------------------------------------------------------
+
+	@Test
+	public void testEvaluateEmbeddedExpressionsInString_nullAndPlain()
+	{
+		assertNull(StringUtils.evaluateEmbeddedExpressionsInString(null));
+		assertEquals("", StringUtils.evaluateEmbeddedExpressionsInString(""));
+		assertEquals("no el here", StringUtils.evaluateEmbeddedExpressionsInString(
+				"no el here"));
+		assertEquals("price $5",
+				StringUtils.evaluateEmbeddedExpressionsInString("price $5"));
+	}
+
+//------------------------------------------------------------------------------
+
+	@Test
+	public void testEvaluateEmbeddedExpressionsInString_singleAndMultiple()
+	{
+		String one = StringUtils.evaluateEmbeddedExpressionsInString("${1+2}");
+		assertTrue(NumberUtils.closeEnough(3.0, Double.parseDouble(one)));
+
+		String multi = StringUtils.evaluateEmbeddedExpressionsInString(
+				"a=${1+2};b=${3*4.0}");
+		assertEquals("a=3;b=12.0", multi);
+	}
+
+//------------------------------------------------------------------------------
+
+	@Test
+	public void testEvaluateEmbeddedExpressionsInString_formatExpression()
+	{
+		String s = StringUtils.evaluateEmbeddedExpressionsInString(
+				"${format('0.00000', 1+2)}");
+		assertEquals("3.00000", s);
+
+		s = StringUtils.evaluateEmbeddedExpressionsInString(
+			"${format('value is 0.00000', 1+2)}");
+		assertEquals("value is 3.00000", s);
+	}
+
+//------------------------------------------------------------------------------
+
+	@Test
+	public void testEvaluateEmbeddedExpressionsInString_nestedBracesInExpr()
+	{
+		String s = StringUtils.evaluateEmbeddedExpressionsInString(
+				"${sin(3.14159265358979323846/2)}");
+		assertTrue(NumberUtils.closeEnough(1.0, Double.parseDouble(s)));
+	}
+
+//------------------------------------------------------------------------------
+
+	@Test
+	public void testEvaluateEmbeddedExpressionsInString_unclosedThrows()
+	{
+		assertThrows(IllegalArgumentException.class,
+				() -> StringUtils.evaluateEmbeddedExpressionsInString("${1+2"));
+	}
     
 //------------------------------------------------------------------------------
 			

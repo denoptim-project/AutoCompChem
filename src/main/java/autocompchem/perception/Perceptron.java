@@ -34,7 +34,6 @@ import org.apache.logging.log4j.Logger;
 
 import autocompchem.perception.circumstance.ICircumstance;
 import autocompchem.perception.circumstance.IScoring;
-import autocompchem.perception.circumstance.MatchDirComponent;
 import autocompchem.perception.circumstance.MatchText;
 import autocompchem.perception.infochannel.InfoChannel;
 import autocompchem.perception.infochannel.InfoChannelBase;
@@ -289,6 +288,20 @@ public class Perceptron
         ArrayList<Situation> copy = new ArrayList<Situation>();
         copy.addAll(occurringSituations);
         return copy;
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Resets to start a new perception without changing
+     * the collection of known {@link Situation}s or the context-specific
+     * {@link InfoChannelBase}.
+     */
+    public void reset()
+    {
+        scoreCollector = new ScoreCollector();
+        occurringSituations = new ArrayList<Situation>();
+        iamaware = false;
     }
 
 //------------------------------------------------------------------------------

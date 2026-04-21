@@ -115,6 +115,7 @@ public class NWChemOutputReader extends ChemSoftOutputReader
                     
                 	//...and move on to next step.
         			stepId++;
+					buffRead.setStepId(stepId);
         			stepInitLineNum = lineNum;
         		}
         	}

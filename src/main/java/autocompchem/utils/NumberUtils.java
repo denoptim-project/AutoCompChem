@@ -570,14 +570,14 @@ public class NumberUtils
      * <code>${format('0.0E0', x * 100)}</code> will return <code>1.0E2</code>.
      * Rounding is also taken care of, for example, 
      * <code>${format('0.0', 12.89)}</code> will return <code>12.9</code>.
-     * @return the result of the expression as a double, 
+     * @return the result of the expression as an Object,
      * possibly adhering to the format pattern.
      */
     public static Object calculateValueOfExpression(String expr)
     {
         ACCExpressionLanguage accEL = ACCExpressionLanguage.getInstance();
   		Object result = accEL.processVariableLessExpression(
-            expr, Double.class);
+            expr, Object.class);
         if (result == null) 
         {
             throw new IllegalArgumentException("Evaluation of "

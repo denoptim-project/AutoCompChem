@@ -139,6 +139,7 @@ public class XTBOutputReader extends ChemSoftOutputReader
                     
                 	//...and move on to next step.
         			stepId++;
+					reader.setStepId(stepId);
         			stepInitLineNum = lineNum;
         		}
         	}

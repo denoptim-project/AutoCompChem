@@ -93,23 +93,15 @@ public class EvaluationJob extends ACCJob
      * job.
      * @return the innermost job considered responsible for the situation that 
      * this job perceived and that triggered the request for a reaction. 
+     * May be <code>null</code> if no reaction is triggered or if the 
+     * evaluation did not defined a job definition.
      */
   	public Job getReactionTriggeringJob()
   	{
-        // WARNING: assumption that it is always the last step that triggers!
-        // One day we may introduce per-step conditions that could make 
-        // intermediate, non-final steps trigger a reaction.
-  		if (exposedOutput.contains(JobEvaluator.NUMSTEPSKEY))
+  		if (exposedOutput.contains(JobEvaluator.REACTIONTRIGGERINGJOB))
   		{
-  			int idx = ((int) exposedOutput.getNamedData(
-  					JobEvaluator.NUMSTEPSKEY).getValue()) - 1;
-  			if (idx > -1)
-  			{
-  				if (jobBeingEvaluated.getNumberOfSteps() > 0)
-  				{
-  					return jobBeingEvaluated.steps.get(idx);
-  				}
-  			}
+  			return (Job) exposedOutput.getNamedData(
+  					JobEvaluator.REACTIONTRIGGERINGJOB).getValue();
   		}
   		return jobBeingEvaluated;
   	}

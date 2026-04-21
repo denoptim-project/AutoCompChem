@@ -287,73 +287,73 @@ public class NumberUtilsTest
     	// sin(0) = 0
     	String expression = "${sin(0)}";
     	assertTrue(NumberUtils.closeEnough(0.0, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    			Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// sin(π/2) ≈ 1
     	expression = "${sin(" + Math.PI/2 + ")}";
     	assertTrue(NumberUtils.closeEnough(1.0, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    			Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// sin(π) ≈ 0
     	expression = "${sin(" + Math.PI + ")}";
     	assertTrue(NumberUtils.closeEnough(0.0, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    			Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// sin(π/6) = 0.5
     	expression = "${sin(" + Math.PI/6 + ")}";
     	assertTrue(NumberUtils.closeEnough(0.5, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    			Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// Test cos function
     	// cos(0) = 1
     	expression = "${cos(0)}";
     	assertTrue(NumberUtils.closeEnough(1.0, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    			Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// cos(π/2) ≈ 0
     	expression = "${cos(" + Math.PI/2 + ")}";
     	assertTrue(NumberUtils.closeEnough(0.0, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    			Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// cos(π) ≈ -1
     	expression = "${cos(" + Math.PI + ")}";
     	assertTrue(NumberUtils.closeEnough(-1.0, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    			Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// cos(π/3) = 0.5
     	expression = "${cos(" + Math.PI/3 + ")}";
     	assertTrue(NumberUtils.closeEnough(0.5, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    			Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// Test tan function
     	// tan(0) = 0
     	expression = "${tan(0)}";
     	assertTrue(NumberUtils.closeEnough(0.0, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    			Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// tan(π/4) ≈ 1
     	expression = "${tan(" + Math.PI/4 + ")}";
     	assertTrue(NumberUtils.closeEnough(1.0, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    			Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// Test trigonometric functions with variables
     	// sin(x) where x = π/2
     	double oldVal = Math.PI / 2;
     	expression = "${sin(x)}";
     	assertTrue(NumberUtils.closeEnough(1.0, 
-    			(Double) NumberUtils.calculateNewValue(expression, oldVal)));
+    			Double.parseDouble(NumberUtils.calculateNewValue(expression, oldVal).toString())));
     	
     	// cos(x) where x = 0
     	oldVal = 0.0;
     	expression = "${cos(x)}";
     	assertTrue(NumberUtils.closeEnough(1.0, 
-    			(Double) NumberUtils.calculateNewValue(expression, oldVal)));
+    			Double.parseDouble(NumberUtils.calculateNewValue(expression, oldVal).toString())));
     	
     	// tan(x) where x = π/4
     	oldVal = Math.PI / 4;
     	expression = "${tan(x)}";
     	assertTrue(NumberUtils.closeEnough(1.0, 
-    			(Double) NumberUtils.calculateNewValue(expression, oldVal)));
+    			Double.parseDouble(NumberUtils.calculateNewValue(expression, oldVal).toString())));
     	
     	// Test combined expressions with trigonometric functions
     	// sin(x) + cos(x) where x = π/4, should be approximately √2 ≈ 1.414
@@ -361,288 +361,288 @@ public class NumberUtilsTest
     	expression = "${sin(x) + cos(x)}";
     	double expected = Math.sin(Math.PI/4) + Math.cos(Math.PI/4);
     	assertTrue(NumberUtils.closeEnough(expected, 
-    			(Double) NumberUtils.calculateNewValue(expression, oldVal)));
+    			Double.parseDouble(NumberUtils.calculateNewValue(expression, oldVal).toString())));
 
     	// Test inverse trigonometric functions
     	// asin(1) = π/2
     	expression = "${asin(1)}";
-    	assertTrue(NumberUtils.closeEnough(Math.PI/2, (Double)
-    			NumberUtils.calculateValueOfExpression(expression)));
+    	assertTrue(NumberUtils.closeEnough(Math.PI/2,
+    			Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// asin(0) = 0
     	expression = "${asin(0)}";
     	assertTrue(NumberUtils.closeEnough(0.0, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    			Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// acos(0) = π/2
     	expression = "${acos(0)}";
     	assertTrue(NumberUtils.closeEnough(Math.PI/2, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    			Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// acos(1) = 0
     	expression = "${acos(1)}";
     	assertTrue(NumberUtils.closeEnough(0.0, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    			Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// atan(1) = π/4
     	expression = "${atan(1)}";
     	assertTrue(NumberUtils.closeEnough(Math.PI/4, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    			Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// atan(0) = 0
     	expression = "${atan(0)}";
     	assertTrue(NumberUtils.closeEnough(0.0, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    			Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// atan2(1, 1) = π/4
     	expression = "${atan2(1, 1)}";
     	assertTrue(NumberUtils.closeEnough(Math.PI/4, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    			Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// atan2(0, 1) = 0
     	expression = "${atan2(0, 1)}";
     	assertTrue(NumberUtils.closeEnough(0.0, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    			Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// Test exponential and logarithmic functions
     	// exp(0) = 1
     	expression = "${exp(0)}";
     	assertTrue(NumberUtils.closeEnough(1.0, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    			Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// exp(1) ≈ e
     	expression = "${exp(1)}";
     	assertTrue(NumberUtils.closeEnough(Math.E, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    			Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// log(1) = 0 (natural logarithm)
     	expression = "${log(1)}";
     	assertTrue(NumberUtils.closeEnough(0.0, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    			Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// log(e) = 1
     	expression = "${log(" + Math.E + ")}";
     	assertTrue(NumberUtils.closeEnough(1.0, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    			Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// ln(e) = 1 (alias for log)
     	expression = "${ln(" + Math.E + ")}";
     	assertTrue(NumberUtils.closeEnough(1.0, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    			Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// log10(1) = 0
     	expression = "${log10(1)}";
     	assertTrue(NumberUtils.closeEnough(0.0, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    			Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// log10(10) = 1
     	expression = "${log10(10)}";
     	assertTrue(NumberUtils.closeEnough(1.0, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    			Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// log10(100) = 2
     	expression = "${log10(100)}";
     	assertTrue(NumberUtils.closeEnough(2.0, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    			Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// Test power functions
     	// sqrt(4) = 2
     	expression = "${sqrt(4)}";
     	assertTrue(NumberUtils.closeEnough(2.0, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    			Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// sqrt(0) = 0
     	expression = "${sqrt(0)}";
     	assertTrue(NumberUtils.closeEnough(0.0, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    			Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// sqrt(9) = 3
     	expression = "${sqrt(9)}";
     	assertTrue(NumberUtils.closeEnough(3.0, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    			Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// pow(2, 3) = 8
     	expression = "${pow(2, 3)}";
     	assertTrue(NumberUtils.closeEnough(8.0, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    			Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// pow(5, 2) = 25
     	expression = "${pow(5, 2)}";
     	assertTrue(NumberUtils.closeEnough(25.0, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    			Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// pow(10, 0) = 1
     	expression = "${pow(10, 0)}";
     	assertTrue(NumberUtils.closeEnough(1.0, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    			Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// Test hyperbolic functions
     	// sinh(0) = 0
     	expression = "${sinh(0)}";
     	assertTrue(NumberUtils.closeEnough(0.0, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    			Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// cosh(0) = 1
     	expression = "${cosh(0)}";
     	assertTrue(NumberUtils.closeEnough(1.0, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    			Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// tanh(0) = 0
     	expression = "${tanh(0)}";
     	assertTrue(NumberUtils.closeEnough(0.0, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    			Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// Test with known values for hyperbolic functions
     	double testVal = 1.0;
     	expression = "${sinh(" + testVal + ")}";
     	assertTrue(NumberUtils.closeEnough(Math.sinh(testVal), 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    			Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	expression = "${cosh(" + testVal + ")}";
     	assertTrue(NumberUtils.closeEnough(Math.cosh(testVal), 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    			Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	expression = "${tanh(" + testVal + ")}";
     	assertTrue(NumberUtils.closeEnough(Math.tanh(testVal), 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    			Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// Test rounding and absolute value functions
     	// abs(5) = 5
     	expression = "${abs(5)}";
     	assertTrue(NumberUtils.closeEnough(5.0, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    			Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// abs(-5) = 5
     	expression = "${abs(-5)}";
     	assertTrue(NumberUtils.closeEnough(5.0, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    			Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// abs(0) = 0
     	expression = "${abs(0)}";
     	assertTrue(NumberUtils.closeEnough(0.0, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    			Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// ceil(4.3) = 5
     	expression = "${ceil(4.3)}";
     	assertTrue(NumberUtils.closeEnough(5.0, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    			Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// ceil(-4.3) = -4
     	expression = "${ceil(-4.3)}";
     	assertTrue(NumberUtils.closeEnough(-4.0, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    			Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// ceil(4.0) = 4
     	expression = "${ceil(4.0)}";
     	assertTrue(NumberUtils.closeEnough(4.0, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    			Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// floor(4.7) = 4
     	expression = "${floor(4.7)}";
     	assertTrue(NumberUtils.closeEnough(4.0, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    			Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// floor(-4.7) = -5
     	expression = "${floor(-4.7)}";
     	assertTrue(NumberUtils.closeEnough(-5.0, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    			Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// floor(4.0) = 4
     	expression = "${floor(4.0)}";
     	assertTrue(NumberUtils.closeEnough(4.0, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    			Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// round(4.3) = 4
     	expression = "${round(4.3)}";
     	assertTrue(NumberUtils.closeEnough(4.0, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    			Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// round(4.7) = 5
     	expression = "${round(4.7)}";
     	assertTrue(NumberUtils.closeEnough(5.0, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    			Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// round(-4.3) = -4
     	expression = "${round(-4.3)}";
     	assertTrue(NumberUtils.closeEnough(-4.0, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    			Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// round(-4.7) = -5
     	expression = "${round(-4.7)}";
     	assertTrue(NumberUtils.closeEnough(-5.0, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    			Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// Test min/max functions
     	// max(5, 3) = 5
     	expression = "${max(5, 3)}";
     	assertTrue(NumberUtils.closeEnough(5.0, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    			Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// max(-5, -3) = -3
     	expression = "${max(-5, -3)}";
     	assertTrue(NumberUtils.closeEnough(-3.0, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    			Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// max(5, 5) = 5
     	expression = "${max(5, 5)}";
     	assertTrue(NumberUtils.closeEnough(5.0, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    			Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// min(5, 3) = 3
     	expression = "${min(5, 3)}";
     	assertTrue(NumberUtils.closeEnough(3.0, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    			Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// min(-5, -3) = -5
     	expression = "${min(-5, -3)}";
     	assertTrue(NumberUtils.closeEnough(-5.0, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    			Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// min(5, 5) = 5
     	expression = "${min(5, 5)}";
     	assertTrue(NumberUtils.closeEnough(5.0, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    			Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// sqrt(x) where x = 4
     	expression = "${sqrt(4.0)}";
     	assertTrue(NumberUtils.closeEnough(2.0, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    		    Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// exp(x) where x = 1
     	expression = "${exp(1.0)}";
     	assertTrue(NumberUtils.closeEnough(Math.E, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    		    Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// log(x) where x = e
     	expression = "${log(" + Math.E + ")}";
     	assertTrue(NumberUtils.closeEnough(1.0, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    		   	Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// abs(x) where x = -5
     	expression = "${abs(-5.0)}";
     	assertTrue(NumberUtils.closeEnough(5.0, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    		    Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// Test combined expressions with multiple functions
     	// sqrt(pow(3, 2)) = 3
     	expression = "${sqrt(pow(3, 2))}";
     	assertTrue(NumberUtils.closeEnough(3.0, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    		    Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// exp(log(5)) = 5
     	expression = "${exp(log(5))}";
     	assertTrue(NumberUtils.closeEnough(5.0, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    		    Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// abs(sin(π)) = 0
     	expression = "${abs(sin(" + Math.PI + "))}";
     	assertTrue(NumberUtils.closeEnough(0.0, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    		    Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     	
     	// max(sqrt(16), pow(2, 2)) = max(4, 4) = 4
     	expression = "${max(sqrt(16), pow(2, 2))}";
     	assertTrue(NumberUtils.closeEnough(4.0, 
-    			(Double) NumberUtils.calculateValueOfExpression(expression)));
+    		    Double.parseDouble(NumberUtils.calculateValueOfExpression(expression).toString())));
     }
     
 //------------------------------------------------------------------------------

@@ -49,7 +49,12 @@ import autocompchem.worker.Worker;
 
 /**
  * Core components of any reader and analyzer of software's output files. 
- * It is not meant to ever be chosen as the worker charged to perform a task.
+ * Assumes jobs are run by a single-level sequential driver, i.e., any output may be the result 
+ * of a single job, which may or may not be composed of multiple steps that are
+ * run in a series (i.e., sequential fashion), and assumes that each step
+ * does not contain any other jobs (i.e., single-level nesting).
+ * 
+ * This class is not meant to ever be chosen as the worker charged to perform a task.
  * It only provides general purpose functionality to purpose specific 
  * implementations.
  * 
@@ -118,9 +123,11 @@ public class OutputReader extends Worker
     /**
      * Collection of lines matching the text-based queries associated with 
      * perception and involving the parsing of a software log.
+     * The key is the step ID. The second key is the TxtQuery. 
+	 * The third key is the line number. The value is the line itself.
      */
-    protected Map<TxtQuery,List<String>> perceptionTQMatches = 
-    		new HashMap<TxtQuery,List<String>>();
+    protected Map<Integer,Map<TxtQuery,Map<Integer,String>>> perceptionTQMatches = 
+    		new HashMap<Integer,Map<TxtQuery,Map<Integer,String>>>();
     
 	/**
 	 * Name of data containing the matches to {@link TxtQuery}s involved in 
@@ -273,6 +280,8 @@ public class OutputReader extends Worker
 			for (Integer stepId : stepsData.keySet())
 			{
 				NamedDataCollector stepData = stepsData.get(stepId);
+				// The use of the string version of the integer step ID is an internal
+				// See also JobEvaluator.
 				allStepsData.putNamedData(new NamedData(stepId.toString(), stepData));
 			}
         	exposeOutputData(new NamedData(WIROConstants.JOBOUTPUTDATA, 
@@ -369,7 +378,7 @@ public class OutputReader extends Worker
         }
         
         numSteps = stepsData.size();
-        
+
         // We may have nullified the ref to logFile, if it does not exist.
         if (logHasBeenRead)
         {
@@ -486,17 +495,32 @@ public class OutputReader extends Worker
      */
     public class LogReader extends BufferedReader
     {
+		private int lineNumber = 0;
+
+		private int stepId = 0;
+		
 		public LogReader(Reader in) {
 			super(in);
+		}
+
+		/**
+		 * Sets the ID of the step/job/task that the line belongs to. The ID
+		 * is used to associate text matches to the steps.
+		 * @param stepId the ID of the step/job/task that the line belongs to.
+		 */
+		public void setStepId(int stepId)
+		{
+			this.stepId = stepId;
 		}
 		
 		@Override
 		public String readLine() throws IOException
 		{
 			String line = super.readLine();
+			lineNumber++;
 			if (line!=null)
 			{
-				parseLogLineForPerceptionRelevantQueries(line);
+				parseLogLineForPerceptionRelevantQueries(lineNumber, stepId, line);
 			}
 			return line;
 		}
@@ -525,19 +549,6 @@ public class OutputReader extends Worker
 		perceptionTxtQueriesForLog = new ArrayList<TxtQuery>(
 				sitsBase.getAllTxTQueriesForICT(InfoChannelType.LOGFEED, 
 						true));
-		for (TxtQuery tq : perceptionTxtQueriesForLog)
-			perceptionTQMatches.put(tq, new ArrayList<String>());
-		
-		//NB: the handling of the output is not yet implemented but will involve
-		// this definition of the TxtQueries.
-		/*
-		perceptionTxtQueriesForOut = new ArrayList<TxtQuery>(
-				sitsBase.getAllTxTQueriesForICT(InfoChannelType.OUTPUTFILE, 
-						true));
-						
-		for (TxtQuery tq : perceptionTxtQueriesForOut)
-			perceptionTQMatchesOut.put(tq, new ArrayList<String>());
-		*/
 	}
 
 //------------------------------------------------------------------------------
@@ -546,17 +557,27 @@ public class OutputReader extends Worker
      * Parses a single line looking for strings matching any of the 
      * {@link TxtQuery}s that are associated with perception tasks needed to 
      * analyze the log of a software.
+     * @param lineNumber the number of the line in the log file.
+	 * @param stepId the ID of the step/job/task that the line belongs to.
      * @param line the line of text to analyze.
      */
-    protected void parseLogLineForPerceptionRelevantQueries(String line)
+    private void parseLogLineForPerceptionRelevantQueries(int lineNumber, 
+		int stepId, String line)
     {
     	if (perceptionTxtQueriesForLog!=null)
     	{
+			// Initialize the map for the step, if not already done.
+			if (perceptionTQMatches.get(stepId)==null)
+			{
+				perceptionTQMatches.put(stepId, new HashMap<TxtQuery,Map<Integer,String>>());
+				for (TxtQuery tq : perceptionTxtQueriesForLog)
+					perceptionTQMatches.get(stepId).put(tq, new TreeMap<Integer,String>());
+			}
 			for (TxtQuery tq : perceptionTxtQueriesForLog)
 			{
 				if (line.matches(".*"+tq.query+".*"))
 				{
-					perceptionTQMatches.get(tq).add(line);
+					perceptionTQMatches.get(stepId).get(tq).put(lineNumber, line);
 				}
 			}
 		}

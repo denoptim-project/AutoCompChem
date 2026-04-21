@@ -121,6 +121,7 @@ public class GaussianOutputReader extends ChemSoftOutputReader
                     
                 	//...and move on to next step.
         			stepId++;
+					reader.setStepId(stepId);
         			stepInitLineNum = lineNum;
         		}
         	} else if (line.matches(".*" + GaussianConstants.LOGJOBSTEPEND 

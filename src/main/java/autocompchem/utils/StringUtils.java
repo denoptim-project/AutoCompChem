@@ -620,4 +620,93 @@ public class StringUtils
     
 //------------------------------------------------------------------------------
 
+    /**
+     * Finds every Expression Language fragment of the form {@code ${...}}
+     * (with balanced braces), evaluates each via
+     * {@link NumberUtils#calculateValueOfExpression(String)}, and returns a
+     * new string with those fragments replaced by their results. Non-{@link String}
+     * results are converted with {@link String#valueOf(Object)}.
+     *
+     * @param text input text, possibly containing zero or more {@code ${...}}
+     *     expressions
+     * @return a copy of {@code text} with expressions replaced, or {@code null}
+     *     if {@code text} is {@code null}
+     * @throws IllegalArgumentException if a {@code ${...}} fragment is
+     *     unclosed or {@link NumberUtils#calculateValueOfExpression(String)}
+     *     fails for a fragment
+     */
+    public static String evaluateEmbeddedExpressionsInString(String text)
+    {
+    	if (text == null)
+    	{
+    		return null;
+    	}
+    	if (!text.contains("${"))
+    	{
+    		return text;
+    	}
+    	StringBuilder out = new StringBuilder(text.length());
+    	int pos = 0;
+    	while (pos < text.length())
+    	{
+    		int elStart = text.indexOf("${", pos);
+    		if (elStart < 0)
+    		{
+    			out.append(text, pos, text.length());
+    			break;
+    		}
+    		out.append(text, pos, elStart);
+    		int openBrace = elStart + 1;
+    		int closeBrace = indexOfMatchingClosingBrace(text, openBrace);
+    		String exprToken = text.substring(elStart, closeBrace + 1);
+    		Object value = NumberUtils.calculateValueOfExpression(exprToken);
+    		if (value instanceof String)
+    		{
+    			out.append((String) value);
+    		} else
+    		{
+    			out.append(String.valueOf(value));
+    		}
+    		pos = closeBrace + 1;
+    	}
+    	return out.toString();
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * @param s          full string
+     * @param openBrace  index of {@code '{'} that opens an EL fragment (the
+     *                   brace immediately after {@code '$'} in {@code "${..."})
+     * @return index of the matching {@code '}'}
+     */
+    private static int indexOfMatchingClosingBrace(String s, int openBrace)
+    {
+    	if (openBrace < 0 || openBrace >= s.length() || s.charAt(openBrace) != '{')
+    	{
+    		throw new IllegalArgumentException(
+    				"Expected '{' at index " + openBrace);
+    	}
+    	int depth = 1;
+    	for (int i = openBrace + 1; i < s.length(); i++)
+    	{
+    		char c = s.charAt(i);
+    		if (c == '{')
+    		{
+    			depth++;
+    		} else if (c == '}')
+    		{
+    			depth--;
+    			if (depth == 0)
+    			{
+    				return i;
+    			}
+    		}
+    	}
+    	throw new IllegalArgumentException(
+    			"Unclosed '${' expression starting near index " + openBrace);
+    }
+    
+//------------------------------------------------------------------------------
+
 }
