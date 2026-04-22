@@ -68,6 +68,14 @@ public class DeleteJobParameter implements IJobEditingTask
 //------------------------------------------------------------------------------
 
 	@Override
+	public IJobEditingTask makeJobSpecificInstance(Job job)
+	{
+		return this;
+	}
+	
+//------------------------------------------------------------------------------
+
+	@Override
 	public String toString()
 	{
 		return task + " " + paramName;

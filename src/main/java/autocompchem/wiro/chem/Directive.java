@@ -60,7 +60,7 @@ import autocompchem.worker.WorkerFactory;
  * @author Marco Foscato
  */
 
-public class Directive implements IDirectiveComponent, Cloneable
+public class Directive implements IDirectiveComponent
 {
     /**
      * Directive name.

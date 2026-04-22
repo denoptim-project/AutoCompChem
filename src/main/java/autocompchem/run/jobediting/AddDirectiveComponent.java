@@ -153,6 +153,30 @@ public class AddDirectiveComponent implements IJobEditingTask
 		CompChemJob ccj = (CompChemJob) job;
 		ccj.addDirectiveComponent(path, content, false, true);
 	}
+
+//------------------------------------------------------------------------------
+
+	@Override
+	public IJobEditingTask makeJobSpecificInstance(Job job)
+	{
+		final IDirectiveComponent clonedContent;
+		try
+		{
+			clonedContent = content.clone();
+		} catch (CloneNotSupportedException e)
+		{
+			throw new RuntimeException(
+					"Could not clone directive component for job-specific "
+							+ this.getClass().getName() + ": " + content, e);
+		}
+		AddDirectiveComponent result = new AddDirectiveComponent(path.clone(),
+				clonedContent);
+		Job.fetchValuesFromJobsTreeForDirectiveComponent(job, result.content,
+			Job.GETACCJOBSDATA);
+		Job.fetchValuesFromJobsTreeForDirectiveComponent(job, result.content,
+			Job.GETACCJOBSRESULTS);
+		return result;
+	}
 	
 //------------------------------------------------------------------------------
 	

@@ -354,51 +354,18 @@ public class Action implements Cloneable
         for (int i = 0; i < jobSpecificAction.jobEditTasks.size(); i++)
         {
             jobSpecificAction.jobEditTasks.set(i,
-                    resolveJobEditingTaskFetch(job, 
-                        jobSpecificAction.jobEditTasks.get(i)));
+                jobSpecificAction.jobEditTasks.get(i).makeJobSpecificInstance(job));
         }
         for (int i = 0; i < jobSpecificAction.inputEditingTasks.size(); i++)
         {
             jobSpecificAction.inputEditingTasks.set(i,
-                    resolveJobEditingTaskFetch(job, 
-                        jobSpecificAction.inputEditingTasks.get(i)));
+                jobSpecificAction.inputEditingTasks.get(i).makeJobSpecificInstance(job));
         }
         for (Job prerefinementStep : jobSpecificAction.prerefinementSteps)
         {
             fetchJobSubtreeFromAnchorJob(job, prerefinementStep);
         }
         return jobSpecificAction;
-    }
-    
-//------------------------------------------------------------------------------
-
-    /**
-     * Resolves {@link Job#GETACCJOBSDATA} and {@link Job#GETACCJOBSRESULTS}
-     * placeholders in-place for directive components carried by the given task.
-     */
-    private static IJobEditingTask resolveJobEditingTaskFetch(Job anchorJob,
-            IJobEditingTask task)
-    {
-        //TODO-gg cover other types! Make it a method of IJobEditingTask
-        if (task instanceof SetJobParameter)
-        {
-            SetJobParameter sjp = (SetJobParameter) task;
-            NamedDataCollector ndc = new NamedDataCollector();
-            ndc.putNamedData(sjp.parameter);
-            Job.fetchValuesFromJobsTree(anchorJob, ndc, Job.GETACCJOBSDATA);
-            Job.fetchValuesFromJobsTree(anchorJob, ndc, Job.GETACCJOBSRESULTS);
-            return new SetJobParameter(ndc.getNamedData(sjp.parameter.getReference()));
-        }
-        if (task instanceof AddDirectiveComponent)
-        {
-            AddDirectiveComponent adc = (AddDirectiveComponent) task;
-            Job.fetchValuesFromJobsTreeForDirectiveComponent(anchorJob, adc.content,
-                    Job.GETACCJOBSDATA);
-            Job.fetchValuesFromJobsTreeForDirectiveComponent(anchorJob, adc.content,
-                    Job.GETACCJOBSRESULTS);
-            return task;
-        }
-        return task;
     }
     
 //------------------------------------------------------------------------------

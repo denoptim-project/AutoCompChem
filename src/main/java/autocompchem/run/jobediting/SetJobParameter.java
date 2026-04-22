@@ -4,6 +4,7 @@ package autocompchem.run.jobediting;
 import java.util.Objects;
 
 import autocompchem.datacollections.NamedData;
+import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.run.Job;
 import autocompchem.wiro.chem.CompChemJob;
 
@@ -72,6 +73,28 @@ public class SetJobParameter implements IJobEditingTask
 	public String toString()
 	{
 		return task + " " + parameter;
+	}
+
+//------------------------------------------------------------------------------
+
+	@Override
+	public IJobEditingTask makeJobSpecificInstance(Job job)
+	{
+		NamedDataCollector ndc = new NamedDataCollector();
+		final NamedData clonedParameter;
+		try
+		{
+			clonedParameter = this.parameter.clone();
+		} catch (CloneNotSupportedException e)
+		{
+			throw new RuntimeException(
+					"Could not clone parameter for job-specific "
+					+ this.getClass().getName() + ": " + this.parameter, e);
+		}
+		ndc.putNamedData(clonedParameter);
+		Job.fetchValuesFromJobsTree(job, ndc, Job.GETACCJOBSDATA);
+		Job.fetchValuesFromJobsTree(job, ndc, Job.GETACCJOBSRESULTS);
+		return new SetJobParameter(ndc.getNamedData(clonedParameter.getReference()));
 	}
 	
 //------------------------------------------------------------------------------

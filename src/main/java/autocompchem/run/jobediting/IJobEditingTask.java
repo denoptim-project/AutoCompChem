@@ -21,6 +21,18 @@ public interface IJobEditingTask
 	 * @param job the job to edit.
 	 */
 	public void applyChange(Job job);
+
+//------------------------------------------------------------------------------
+
+	/**
+	 * Makes this editing task job-specific by adjusting it to the data 
+	 * made available to ACC by anything reachable from the given job via the
+	 * data fetching mechanism triggered by {@link Job#GETACCJOBSDATA} and
+	 * {@link Job#GETACCJOBSRESULTS}.
+	 * @param job the job used as starting point (i.e., "#0)" for fetching data.
+	 * @return the job-specific editing task.
+	 */
+	public IJobEditingTask makeJobSpecificInstance(Job job);
 	
 //------------------------------------------------------------------------------
 	

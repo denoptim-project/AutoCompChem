@@ -18,11 +18,11 @@ package autocompchem.wiro.chem;
  */
 
 /**
- * 
- * @author Marco Foscato
+ * Interface for any directive component. It defines the basic methods to 
+ * access the name, type, and content of a directive component.
  */
 
-public interface IDirectiveComponent {
+public interface IDirectiveComponent extends Cloneable {
 
 //-----------------------------------------------------------------------------
 	
@@ -48,7 +48,15 @@ public interface IDirectiveComponent {
      */
     
     public boolean hasACCTask();
-    
+
 //-----------------------------------------------------------------------------
-    
+
+    /**
+     * Clones this directive component.
+     * @return a clone of this directive component.
+     * @throws CloneNotSupportedException if cloning is not supported for this type.
+     */
+    public IDirectiveComponent clone() throws CloneNotSupportedException;
+
+//-----------------------------------------------------------------------------
 }

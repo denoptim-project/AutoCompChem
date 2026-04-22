@@ -19,7 +19,6 @@ import autocompchem.wiro.chem.DirectiveData;
 import autocompchem.wiro.chem.IDirectiveComponent;
 import autocompchem.wiro.chem.IValueContainer;
 import autocompchem.wiro.chem.Keyword;
-import jakarta.el.ExpressionFactory;
 
 /**
  * Task setting a {@link IDirectiveComponent} somewhere in the 
@@ -154,6 +153,30 @@ public class SetDirectiveComponent extends AddDirectiveComponent
 	    		}
 	    	}
 		}
+	}
+
+//------------------------------------------------------------------------------
+
+	@Override
+	public IJobEditingTask makeJobSpecificInstance(Job job)
+	{
+		final IDirectiveComponent clonedContent;
+		try
+		{
+			clonedContent = content.clone();
+		} catch (CloneNotSupportedException e)
+		{
+			throw new RuntimeException(
+					"Could not clone directive component for job-specific "
+					+ this.getClass().getName() + ": " + content, e);
+		}
+		SetDirectiveComponent result = new SetDirectiveComponent(path.clone(),
+				clonedContent);
+		Job.fetchValuesFromJobsTreeForDirectiveComponent(job, result.content,
+			Job.GETACCJOBSDATA);
+		Job.fetchValuesFromJobsTreeForDirectiveComponent(job, result.content,
+			Job.GETACCJOBSRESULTS);
+		return result;
 	}
 	
 //------------------------------------------------------------------------------
