@@ -75,19 +75,15 @@ public class MatchDirComponentTest
     	
     	DirComponentAddress addrs_b = a.address.clone();
     	String value_b = a.value;
-    	int step_b = a.stepId;
     	boolean neg_b = a.negation;
     	
-    	b = new MatchDirComponent(addrs_c, value_b, step_b, neg_b);
+    	b = new MatchDirComponent(addrs_c, value_b, neg_b);
     	assertFalse(a.equals(b));
 
-    	b = new MatchDirComponent(addrs_b, value_b, step_b+2, neg_b);
-    	assertFalse(a.equals(b));
-
-    	b = new MatchDirComponent(addrs_b, "different", step_b, neg_b);
+    	b = new MatchDirComponent(addrs_b, "different", neg_b);
     	assertFalse(a.equals(b));
     	
-    	b = new MatchDirComponent(addrs_b, value_b, step_b, !neg_b);
+    	b = new MatchDirComponent(addrs_b, value_b, !neg_b);
     	assertFalse(a.equals(b));
     }
     

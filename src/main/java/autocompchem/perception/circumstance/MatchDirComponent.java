@@ -38,12 +38,6 @@ public class MatchDirComponent extends Circumstance implements IScoring
 	public final DirComponentAddress address;
 
     /**
-     * Index of the job's step to focus on, if any.
-     */
-    //TODO-gg remove
-    public final int stepId;
-
-    /**
      * String representation of the value, if any, of the component at the given 
      * address.
      */
@@ -133,7 +127,6 @@ public class MatchDirComponent extends Circumstance implements IScoring
     		int stepId, boolean negation)
     {
         super(InfoChannelType.JOBDETAILS);
-        this.stepId = stepId;
         this.address = address;
         this.value = value;
         this.negation = negation;
@@ -206,7 +199,6 @@ public class MatchDirComponent extends Circumstance implements IScoring
         StringBuilder sb = new StringBuilder();
         sb.append("MatchDirComponent [address:").append(address);
         sb.append("; value:").append(value);
-        sb.append("; stepId:").append(stepId);
         sb.append("; negation:").append(negation);
         sb.append("]]");
         return sb.toString();
@@ -222,7 +214,6 @@ public class MatchDirComponent extends Circumstance implements IScoring
 		map.putAll(super.getJsonMembers(context));
 		map.put("address", context.serialize(address));
 		map.put("value", context.serialize(value));
-		map.put("stepId", context.serialize(stepId));
 		if (negation)
 			map.put("negation", context.serialize(negation));
 		return map;
@@ -262,18 +253,13 @@ public class MatchDirComponent extends Circumstance implements IScoring
   	            value = jsonObject.get("value").getAsString();
 			}
   	        
-			int stepId = 0;
-			if (jsonObject.has("stepId"))
-			{
-				stepId = jsonObject.get("stepId").getAsInt();
-			}
 			boolean negation = false;
 			if (jsonObject.has("negation"))
 			{	
 				negation = context.deserialize(jsonObject.get("negation"),
 						Boolean.class);
 			}
-			return new MatchDirComponent(address, value, stepId, negation);
+			return new MatchDirComponent(address, value, negation);
   	    }
   	}
     
@@ -299,9 +285,6 @@ public class MatchDirComponent extends Circumstance implements IScoring
         if (this.value != null && other.value != null && !this.value.equals(other.value))
             return false;
         
-        if (this.stepId != other.stepId)
-            return false;
-
         if ((this.negation && !other.negation) 
         		|| (!this.negation && other.negation))
         	return false;
@@ -314,7 +297,7 @@ public class MatchDirComponent extends Circumstance implements IScoring
     @Override
     public int hashCode()
     {
-    	return Objects.hash(address, value, stepId, negation, super.hashCode());
+    	return Objects.hash(address, value, negation, super.hashCode());
     }
 
 //------------------------------------------------------------------------------
