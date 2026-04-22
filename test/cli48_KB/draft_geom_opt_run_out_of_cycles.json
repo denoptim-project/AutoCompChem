@@ -75,13 +75,13 @@
         "newName": "restart.densities"
       },
       {
-        "type": "rename_copy_last_sequential",
-        "pattern": "*_Compound_IDX.gbw",
+        "type": "rename_copy_basename_idx",
+        "pattern": "*_Compound_${IDX+1}.gbw",
         "newName": "restart.gbw"
       },
       {
-        "type": "rename_copy_last_sequential",
-        "pattern": "*_Compound_IDX.densities",
+        "type": "rename_copy_basename_idx",
+        "pattern": "*_Compound_${IDX+1}.densities",
         "newName": "restart.densities"
       }
     ],

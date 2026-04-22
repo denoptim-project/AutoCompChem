@@ -1,0 +1,39 @@
+#!/bin/bash
+
+function not_passed() {
+  echo "NOT Passed: check condition leading to line '$1' of '$0'"
+  exit -1
+}
+
+if [ ! -f cli48.log ] ; then not_passed $LINENO ; fi
+if [ ! -d cli48_wdir ] ; then not_passed $LINENO ; fi
+if [ ! -f cli48_wdir/cli48.out ] ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c -i "JobEvaluator: Situation perceived = draft_orca-e1.0_GeomOptRunOutOfCycles" cli48.log)
+if [ 4 != "$n" ] ; then not_passed $LINENO ; fi
+
+if [ ! -d "cli48_wdir/Job_#0.1_3" ] ; then not_passed $LINENO ; fi
+if [ ! -d "cli48_wdir/Job_#0.1_3/Job_#0.1_2" ] ; then not_passed $LINENO ; fi
+if [ ! -d "cli48_wdir/Job_#0.1_3/Job_#0.1_2/Job_#0.1_1" ] ; then not_passed $LINENO ; fi
+if [ ! -d "cli48_wdir/Job_#0.1_3/Job_#0.1_2/Job_#0.1_1/Job_#0.1_0" ] ; then not_passed $LINENO ; fi
+
+if [ ! -f "cli48_wdir/Job_#0.1_3/cli48.inp" ] ; then not_passed $LINENO ; fi
+if [ ! -f "cli48_wdir/Job_#0.1_3/Job_#0.1_2/cli48.inp" ] ; then not_passed $LINENO ; fi
+if [ ! -f "cli48_wdir/Job_#0.1_3/Job_#0.1_2/Job_#0.1_1/cli48.inp" ] ; then not_passed $LINENO ; fi
+if [ ! -f "cli48_wdir/Job_#0.1_3/Job_#0.1_2/Job_#0.1_1/Job_#0.1_0/cli48.inp" ] ; then not_passed $LINENO ; fi
+
+if [ ! -f cli48_wdir/restart.gbw ] ; then not_passed $LINENO ; fi
+if ! grep -q -i "this should remain" "cli48_wdir/restart.gbw" ; then not_passed $LINENO ; fi
+if ! grep -q -i "last attempt" "cli48_wdir/restart.gbw" ; then not_passed $LINENO ; fi
+
+if [ ! -f cli48_wdir/restart.densities ] ; then not_passed $LINENO ; fi
+if ! grep -q -i "this should remain" "cli48_wdir/restart.densities" ; then not_passed $LINENO ; fi
+if ! grep -q -i "last attempt" "cli48_wdir/restart.densities" ; then not_passed $LINENO ; fi
+
+if grep -q -i "The optimization did not converge but reached the maximum number" "cli48_wdir/cli48.out" ; then not_passed $LINENO ; fi
+if ! grep -q -i "*HURRAY*" "cli48_wdir/cli48.out" ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c -i "Termination status: 0" cli48.log)
+if [ 1 == "$n" ] ; then echo Passed ; exit 0 ; fi
+not_passed $LINENO
+exit -1

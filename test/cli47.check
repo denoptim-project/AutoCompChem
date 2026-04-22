@@ -33,15 +33,15 @@ if ! grep -q -i "second attempt" "cli47_wdir/restart.densities" ; then not_passe
 if [ ! -f "cli47_wdir/Job_#0.1_1/cli47.out" ] ; then not_passed $LINENO ; fi
 if ! grep -q -i "The optimization did not converge but reached the maximum number" "cli47_wdir/Job_#0.1_1/cli47.out" ; then not_passed $LINENO ; fi
 
-if [ -f cli47_wdir/Job_#0.1_1/restart.gbw ] ; then not_passed $LINENO ; fi # overwritten, so not archived
+if [ -f "cli47_wdir/Job_#0.1_1/restart.gbw" ] ; then not_passed $LINENO ; fi # overwritten, so not archived
 
-if [ ! -f cli47_wdir/Job_#0.1_1/cli47.gbw ] ; then not_passed $LINENO ; fi
+if [ ! -f "cli47_wdir/Job_#0.1_1/cli47.gbw" ] ; then not_passed $LINENO ; fi
 if ! grep -q -i "this should remain" "cli47_wdir/Job_#0.1_1/cli47.gbw" ; then not_passed $LINENO ; fi
 if ! grep -q -i "second attempt" "cli47_wdir/Job_#0.1_1/cli47.gbw" ; then not_passed $LINENO ; fi
 
-if [ -f cli47_wdir/Job_#0.1_1/restart.densities ] ; then not_passed $LINENO ; fi # overwritten, so not archived
+if [ -f "cli47_wdir/Job_#0.1_1/restart.densities" ] ; then not_passed $LINENO ; fi # overwritten, so not archived
 
-if [ ! -f cli47_wdir/Job_#0.1_1/cli47.densities ] ; then not_passed $LINENO ; fi
+if [ ! -f "cli47_wdir/Job_#0.1_1/cli47.densities" ] ; then not_passed $LINENO ; fi
 if ! grep -q -i "this should remain" "cli47_wdir/Job_#0.1_1/cli47.densities" ; then not_passed $LINENO ; fi
 if ! grep -q -i "second attempt" "cli47_wdir/Job_#0.1_1/cli47.densities" ; then not_passed $LINENO ; fi
 

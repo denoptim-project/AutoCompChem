@@ -295,6 +295,10 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
                     ((AtomContainerSet) geomParamValue).atomContainers().forEach(i -> inMols.add(i));
                 } else if (geomParamValue instanceof IAtomContainer) {
                     inMols.add((IAtomContainer) geomParamValue);
+                } else if (geomParamValue == null) {
+                    throw new IllegalArgumentException("Parameter '" + ChemSoftConstants.PARGEOM 
+                        + "' is expected to be an AtomContainerSet or IAtomContainer, "
+                        + "but is null.");
                 } else {
                     throw new IllegalArgumentException("Parameter '" + ChemSoftConstants.PARGEOM 
                         + "' is expected to be an AtomContainerSet or IAtomContainer, "

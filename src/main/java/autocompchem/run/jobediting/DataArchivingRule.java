@@ -27,7 +27,7 @@ public class DataArchivingRule
 	/*
 	 * Placeholder for the base name of the file.
 	 */
-	public static final String BASENAME_PLHLD = "BASENAME_PLHLD";
+	public static final String BASENAME_PLHLD = "BASENAME";
 
 	/**
 	 * Defines if a data archiving rule is meant for moving, copying or removing
@@ -116,8 +116,7 @@ public class DataArchivingRule
 	 * the pathname.
 	 * @param newName the new name for the file. Used only if the type is 
 	 * {@link ArchivingTaskType#RENAME_COPY_LAST_SEQUENTIAL} or
-	 * {@link ArchivingTaskType#RENAME_COPY_INDEXED}
-	 * or {@link ArchivingTaskType#RENAME_COPY_BASENAME_PLHLD}.
+	 * {@link ArchivingTaskType#RENAME_COPY_BASENAME_IDX}
 	 */
 	public DataArchivingRule(ArchivingTaskType type, String pattern, String newName)
 	{
