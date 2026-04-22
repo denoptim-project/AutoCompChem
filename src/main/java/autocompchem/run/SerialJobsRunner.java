@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -334,7 +333,7 @@ public class SerialJobsRunner extends JobsRunner
 	                break;
 	            } else if (allSubJobsCompleted())
 	            {
-	            	logger.info("All " + numSubmittedJobs
+	            	logger.info("Job " + master.getId() + ": All " + numSubmittedJobs
 	                    		+ " steps are completed. Serialized workflow "
 	                    		+ "completed.");
 	            	shutDownExecutionService();
