@@ -53,6 +53,7 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.google.gson.reflect.TypeToken;
 
+import autocompchem.datacollections.DataFetchingException;
 import autocompchem.datacollections.DiskSpillingNamedDataCollector;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedDataCollector;
@@ -1730,136 +1731,13 @@ public class Job implements Runnable
      */
     public static Object getExposedData(Job job, String[] pathIntoExposedData)
     {
-        Logger logger = LogManager.getLogger(Job.class);
-    	Set<String> availableKeys = job.getOutputRefSet();
-    	String contentName = pathIntoExposedData[0].stripLeading().stripTrailing();
-    	if (!availableKeys.contains(contentName))
-    	{
-            String taskInfo = "";
-            if (job.hasParameter(WorkerConstants.PARTASK))
-            {
-                taskInfo = " (" 
-                + job.getParameters().getParameter(WorkerConstants.PARTASK) 
-                + ")";
-            }
-            logger.warn("WARNING: the data '" + contentName 
-                + "' is not available in the output exposed by job " 
-                + job.getId() + taskInfo
-                + ". The job exposes only the following data names: " 
-                + availableKeys.toString() + ". Returning null.");
+        try {
+            return job.getOutputCollector().getNestedDataValue(pathIntoExposedData);
+        } catch (DataFetchingException e) {
+            Logger logger = LogManager.getLogger(Job.class);
+            logger.warn("WARNING: " + e.getMessage() + ". Returning null.");
             return null;
         }
-    	
-    	NamedData data = job.getOutput(contentName);
-    	Object value = data.getValue();
-    	
-    	for (int i=1; i<pathIntoExposedData.length; i++)
-    	{
-        	String nestedContentID = pathIntoExposedData[i].stripLeading().stripTrailing();
-        	Object nestedValue = null;
-        	if (value instanceof NamedData)
-        	{
-        		NamedData container = (NamedData) value;
-        		if (!container.getReference().equals(nestedContentID))
-        			return null;
-        		nestedValue = container.getValue();
-        	} else if (value instanceof NamedDataCollector)
-	    	{
-	    		NamedDataCollector container = (NamedDataCollector) value;
-                Set<String> keys = container.getAllNamedData().keySet();
-                List<String> sortedKeys = new ArrayList<String>(keys);
-                NumberAwareStringComparator comparator = new NumberAwareStringComparator();
-                Collections.sort(sortedKeys, comparator);
-                if ("LAST".equals(nestedContentID.toUpperCase())) {
-                    nestedValue = container.getNamedData(sortedKeys.get(sortedKeys.size() - 1)).getValue();
-                } else if ("FIRST".equals(nestedContentID.toUpperCase())) {
-                    nestedValue = container.getNamedData(sortedKeys.get(0)).getValue();
-                } else {
-                    if (!container.contains(nestedContentID))
-                    {
-                        String pathUpToHere = "";
-                        for (int j = 0; j < i; j++) {
-                            pathUpToHere += pathIntoExposedData[j] + ",";
-                        }
-                        logger.warn("WARNING: the data '" + pathUpToHere + nestedContentID 
-                            + "' is not available in the output exposed by job " 
-                            + job.getId()
-                            + ". The job exposes only the following data names: " 
-                            + container.getAllNamedData().keySet().toString() + ". Returning null.");
-                        return null;
-                    }
-                    nestedValue = container.getNamedData(nestedContentID).getValue();
-                }
-	    	} else if (value instanceof Map) 
-	    	{
-	    		Map<?,?> map = (Map<?, ?>) value;
-	    		nestedValue = null;
-	    		for (Object key : map.keySet()) 
-	    		{
-	    		    if (key instanceof String) 
-	    		    {
-	    		        String strKey = (String) key;
-	    		        if (strKey.equals(nestedContentID)) 
-	    		        {
-	    		        	nestedValue = map.get(key);
-	    		        	break;
-	    		        }
-	    		    } else if (key instanceof Integer 
-	    		    		&& NumberUtils.isParsableToInt(nestedContentID)) 
-	    		    {
-	    		        Integer intKey = (Integer) key;
-	    		        if (intKey == Integer.parseInt(nestedContentID)) 
-	    		        {
-	    		        	nestedValue = map.get(key);
-	    		        	break;
-	    		        }
-	    		    }
-	    		}
-	    	} else if (value instanceof List) 
-	    	{
-                List<?> list = (List<?>) value;
-                if (NumberUtils.isParsableToInt(nestedContentID))
-	    		{
-	    		    nestedValue = list.get(Integer.parseInt(nestedContentID));
-                } else {
-                    if ("LAST".equals(nestedContentID.toUpperCase())) {
-                        nestedValue = list.get(list.size() - 1);
-                    } else if ("FIRST".equals(nestedContentID.toUpperCase())) {
-                        nestedValue = list.get(0);
-                    } else {
-                        logger.warn("WARNING: unexpected fetching request  pointing "
-                            + "list item '" + nestedContentID + "'. Returning null.");
-                        nestedValue = null;
-                    }
-                }
-            } else if (value instanceof AtomContainerSet) 
-            {
-                AtomContainerSet acs = (AtomContainerSet) value;
-                if (NumberUtils.isParsableToInt(nestedContentID))
-                {
-                    nestedValue = acs.getAtomContainer(Integer.parseInt(nestedContentID));
-                } else {
-                    if ("LAST".equals(nestedContentID.toUpperCase())) {
-                        nestedValue = acs.getAtomContainer(acs.getAtomContainerCount() - 1);
-                    } else if ("FIRST".equals(nestedContentID.toUpperCase())) {
-                        nestedValue = acs.getAtomContainer(0);
-                    } else {
-                        logger.warn("WARNING: unexpected fetching request  pointing "
-                            + "atom container '" + nestedContentID + "'. Returning null.");
-                        nestedValue = null;
-                    }
-                }
-	    	} else {
-	    		logger.warn("WARNING: unexpected data type '" 
-                    + value.getClass().getSimpleName() 
-                    + "' for data fetching request '"
-                    + StringUtils.mergeListToString(Arrays.asList(pathIntoExposedData),
-                            ".", true) + "'. Returning null.");
-                return null;
-	    	}
-        	value = nestedValue;
-    	}
-    	return value;
     }
 
 //------------------------------------------------------------------------------
@@ -2456,7 +2334,7 @@ public class Job implements Runnable
             return data;
         }
 
-        // CompChemJob do not run themselfs in ACC so we their runtime is not available
+        // CompChemJob do not run them selfs in ACC so we their runtime is not available
         // for fetching data. Thus, we need to process the directives of the CompChemJob.
         if (dataValue instanceof CompChemJob)
         {

@@ -2,7 +2,9 @@ package autocompchem.datacollections;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import com.google.gson.JsonDeserializationContext;
@@ -12,6 +14,10 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.google.gson.reflect.TypeToken;
+
+import autocompchem.utils.NumberAwareStringComparator;
+import autocompchem.utils.NumberUtils;
+import autocompchem.utils.StringUtils;
 
 /*
  *   Copyright (C) 2016  Marco Foscato
@@ -32,7 +38,12 @@ import com.google.gson.reflect.TypeToken;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.MissingResourceException;
 import java.util.Objects;
+import java.util.Set;
+
+import org.apache.logging.log4j.Logger;
+import org.openscience.cdk.AtomContainerSet;
 
 
 /**
@@ -319,6 +330,142 @@ public class NamedDataCollector implements Cloneable
   	{
   		allData.clear();
   	}
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Extracts the value of any data stored inside this {@link NamedDataCollector}.
+     * @param pathIntoExposedData the array of names/integers that allow navigating 
+     * the data structure. Names (or integers reported as strings)
+     * are interpreted as keys for data containers that are
+     * {@link NamedData}, {@link NamedDataCollector}, or {@link Map}s. 
+     * Strings representations of integers are needed for 
+     * {@link List}s and {@link Map}s with integers as keys. 
+     * Special keys like <code>LAST</code> or <code>FIRST</code> are supported for 
+     * {@link List}s and {@link Map}s where the ordering of the keys is
+     * defined by the {@link NumberAwareStringComparator}.
+     * @return the content of the requested data, whcih may be null if the data 
+     * stored in this collector is null.
+     * @throws DataFetchingException if the data fetching request cannot be satisfied.
+     */
+    public Object getNestedDataValue(String[] pathIntoExposedData) 
+       throws DataFetchingException
+    {	
+        Object value = this;
+    	for (int i=0; i<pathIntoExposedData.length; i++)
+    	{
+        	String nestedContentID = pathIntoExposedData[i].stripLeading().stripTrailing();
+        	Object nestedValue = null;
+        	if (value instanceof NamedData)
+        	{
+        		NamedData container = (NamedData) value;
+        		if (!container.getReference().equals(nestedContentID))
+        			return null;
+        		nestedValue = container.getValue();
+        	} else if (value instanceof NamedDataCollector)
+	    	{
+	    		NamedDataCollector container = (NamedDataCollector) value;
+                Set<String> keys = container.getAllNamedData().keySet();
+                List<String> sortedKeys = new ArrayList<String>(keys);
+                NumberAwareStringComparator comparator = new NumberAwareStringComparator();
+                Collections.sort(sortedKeys, comparator);
+                if ("LAST".equals(nestedContentID.toUpperCase())) {
+                    nestedValue = container.getNamedData(sortedKeys.get(sortedKeys.size() - 1)).getValue();
+                } else if ("FIRST".equals(nestedContentID.toUpperCase())) {
+                    nestedValue = container.getNamedData(sortedKeys.get(0)).getValue();
+                } else {
+                    if (!container.contains(nestedContentID))
+                    {
+                        String pathUpToHere = "";
+                        for (int j = 0; j < i; j++) {
+                            pathUpToHere += pathIntoExposedData[j] + ",";
+                        }
+                        throw new DataFetchingException("The data '" 
+                            + pathUpToHere + nestedContentID 
+                            + "' is not available in this " 
+                            + this.getClass().getSimpleName() 
+                            + ". Available references: " 
+                            + container.getAllNamedData().keySet().toString() + ".");
+                    }
+                    nestedValue = container.getNamedData(nestedContentID).getValue();
+                }
+	    	} else if (value instanceof Map) 
+	    	{
+	    		Map<?,?> map = (Map<?, ?>) value;
+	    		nestedValue = null;
+	    		for (Object key : map.keySet()) 
+	    		{
+	    		    if (key instanceof String) 
+	    		    {
+	    		        String strKey = (String) key;
+	    		        if (strKey.equals(nestedContentID)) 
+	    		        {
+	    		        	nestedValue = map.get(key);
+	    		        	break;
+	    		        }
+	    		    } else if (key instanceof Integer 
+	    		    		&& NumberUtils.isParsableToInt(nestedContentID)) 
+	    		    {
+	    		        Integer intKey = (Integer) key;
+	    		        if (intKey == Integer.parseInt(nestedContentID)) 
+	    		        {
+	    		        	nestedValue = map.get(key);
+	    		        	break;
+	    		        }
+	    		    }
+	    		}
+	    	} else if (value instanceof List) 
+	    	{
+                List<?> list = (List<?>) value;
+                if (NumberUtils.isParsableToInt(nestedContentID))
+	    		{
+	    		    nestedValue = list.get(Integer.parseInt(nestedContentID));
+                } else {
+                    if ("LAST".equals(nestedContentID.toUpperCase())) {
+                        nestedValue = list.get(list.size() - 1);
+                    } else if ("FIRST".equals(nestedContentID.toUpperCase())) {
+                        nestedValue = list.get(0);
+                    } else {
+                        throw new DataFetchingException(
+                            "Reference name '" + nestedContentID 
+                            + "' is not valid for a list. "
+                            + "Use index or special keys LAST and FIRST.");
+                    }
+                }
+            } else if (value instanceof AtomContainerSet) 
+            {
+                AtomContainerSet acs = (AtomContainerSet) value;
+                if (NumberUtils.isParsableToInt(nestedContentID))
+                {
+                    nestedValue = acs.getAtomContainer(Integer.parseInt(nestedContentID));
+                } else {
+                    if ("LAST".equals(nestedContentID.toUpperCase())) {
+                        nestedValue = acs.getAtomContainer(acs.getAtomContainerCount() - 1);
+                    } else if ("FIRST".equals(nestedContentID.toUpperCase())) {
+                        nestedValue = acs.getAtomContainer(0);
+                    } else {
+                        throw new DataFetchingException(
+                            "Reference name '" + nestedContentID 
+                            + "' is not valid for an atom container set. "
+                            + "Use index or special keys LAST and FIRST.");
+                    }
+                }
+	    	} else if (value == null) {
+                throw new DataFetchingException(
+                    "Null data in the data fetching request '"
+                    + StringUtils.mergeListToString(Arrays.asList(pathIntoExposedData),
+                            ".", true) + "' does not allow further navigation.");
+            } else {
+                throw new DataFetchingException(
+                    "Data type '" + value.getClass().getSimpleName() 
+                    + "' is not valid for data fetching request '"
+                    + StringUtils.mergeListToString(Arrays.asList(pathIntoExposedData),
+                            ".", true) + "'.");
+	    	}
+        	value = nestedValue;
+    	}
+        return value;
+    }
 
 //------------------------------------------------------------------------------
 

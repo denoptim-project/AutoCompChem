@@ -2,6 +2,10 @@ package autocompchem.datacollections;
 
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /*   
@@ -23,6 +27,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.vecmath.Point3d;
 
@@ -34,6 +43,7 @@ import com.google.gson.Gson;
 import autocompchem.io.ACCJson;
 import org.openscience.cdk.Atom;
 import org.openscience.cdk.AtomContainer;
+import org.openscience.cdk.AtomContainerSet;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.molecule.vibrations.NormalMode;
@@ -146,6 +156,143 @@ public class NamedDataCollectorTest
     	NamedDataCollector back = r.fromJson(json, NamedDataCollector.class);
     	assertEquals(1, back.size());
     	assertEquals("data", back.getNamedData("spilled").getValue());
+    }
+
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testGetNestedDataValue_emptyPathReturnsRoot() throws Exception
+    {
+    	NamedDataCollector root = new NamedDataCollector();
+    	root.putNamedData(new NamedData("k", 1));
+    	assertSame(root, root.getNestedDataValue(new String[0]));
+    }
+
+    @Test
+    public void testGetNestedDataValue_singleLeaf() throws Exception
+    {
+    	NamedDataCollector root = new NamedDataCollector();
+    	root.putNamedData(new NamedData("x", "leaf"));
+    	assertEquals("leaf", root.getNestedDataValue(new String[] { "x" }));
+    }
+
+    @Test
+    public void testGetNestedDataValue_nestedCollector() throws Exception
+    {
+    	NamedDataCollector inner = new NamedDataCollector();
+    	inner.putNamedData(new NamedData("innerKey", 99));
+    	NamedDataCollector root = new NamedDataCollector();
+    	root.putNamedData(new NamedData("outer", inner));
+    	assertEquals(99,
+    			root.getNestedDataValue(new String[] { "outer", "innerKey" }));
+    }
+
+    @Test
+    public void testGetNestedDataValue_namedDataUnwrapByReference() throws Exception
+    {
+    	NamedData innerNd = new NamedData("innerRef", "payload");
+    	NamedDataCollector root = new NamedDataCollector();
+    	root.putNamedData(new NamedData("wrap", innerNd));
+    	assertEquals("payload",
+    			root.getNestedDataValue(new String[] { "wrap", "innerRef" }));
+    }
+
+    @Test
+    public void testGetNestedDataValue_namedDataRefMismatchReturnsNull()
+    		throws Exception
+    {
+    	NamedData innerNd = new NamedData("innerRef", "payload");
+    	NamedDataCollector root = new NamedDataCollector();
+    	root.putNamedData(new NamedData("wrap", innerNd));
+    	assertNull(root.getNestedDataValue(new String[] { "wrap", "wrongRef" }));
+    }
+
+    @Test
+    public void testGetNestedDataValue_listIndexFirstLast() throws Exception
+    {
+    	List<String> lst = new ArrayList<>(Arrays.asList("a", "b", "c"));
+    	NamedDataCollector root = new NamedDataCollector();
+    	root.putNamedData(new NamedData("L", lst));
+    	assertEquals("a", root.getNestedDataValue(new String[] { "L", "0" }));
+    	assertEquals("c", root.getNestedDataValue(new String[] { "L", "LAST" }));
+    	assertEquals("a", root.getNestedDataValue(new String[] { "L", "first" }));
+    }
+
+    @Test
+    public void testGetNestedDataValue_mapStringAndIntegerKeys() throws Exception
+    {
+    	Map<String, Integer> strMap = new HashMap<>();
+    	strMap.put("alpha", 10);
+    	NamedDataCollector root = new NamedDataCollector();
+    	root.putNamedData(new NamedData("M", strMap));
+    	assertEquals(10,
+    			root.getNestedDataValue(new String[] { "M", "alpha" }));
+
+    	Map<Integer, String> intMap = new HashMap<>();
+    	intMap.put(2, "two");
+    	root.putNamedData(new NamedData("Mi", intMap));
+    	assertEquals("two",
+    			root.getNestedDataValue(new String[] { "Mi", "2" }));
+    }
+
+    @Test
+    public void testGetNestedDataValue_collectorFirstLast() throws Exception
+    {
+    	NamedDataCollector root = new NamedDataCollector();
+    	root.putNamedData(new NamedData("2", "second"));
+    	root.putNamedData(new NamedData("10", "tenth"));
+    	assertEquals("second",
+    			root.getNestedDataValue(new String[] { "FIRST" }));
+    	assertEquals("tenth",
+    			root.getNestedDataValue(new String[] { "last" }));
+    }
+
+    @Test
+    public void testGetNestedDataValue_atomContainerSetIndex() throws Exception
+    {
+    	AtomContainer first = new AtomContainer();
+    	first.addAtom(new Atom("C"));
+    	AtomContainer second = new AtomContainer();
+    	second.addAtom(new Atom("O"));
+    	AtomContainerSet acs = new AtomContainerSet();
+    	acs.addAtomContainer(first);
+    	acs.addAtomContainer(second);
+    	NamedDataCollector root = new NamedDataCollector();
+    	root.putNamedData(new NamedData("geoms", acs));
+    	Object at0 = root.getNestedDataValue(new String[] { "geoms", "0" });
+    	assertInstanceOf(IAtomContainer.class, at0);
+    	assertEquals(1, ((IAtomContainer) at0).getAtomCount());
+    	Object atLast = root.getNestedDataValue(new String[] { "geoms", "LAST" });
+    	assertEquals(1, ((IAtomContainer) atLast).getAtomCount());
+    }
+
+    @Test
+    public void testGetNestedDataValue_missingKeyThrowsDataFetchingException()
+    {
+    	NamedDataCollector root = new NamedDataCollector();
+    	root.putNamedData(new NamedData("only", 1));
+    	assertThrows(DataFetchingException.class,
+    			() -> root.getNestedDataValue(new String[] { "missing" }));
+    }
+
+    @Test
+    public void testGetNestedDataValue_listBadTokenThrows() throws Exception
+    {
+    	List<String> lst = new ArrayList<>(List.of("x"));
+    	NamedDataCollector root = new NamedDataCollector();
+    	root.putNamedData(new NamedData("L", lst));
+    	assertThrows(DataFetchingException.class,
+    			() -> root.getNestedDataValue(new String[] { "L", "notAnIndex" }));
+    }
+
+    @Test
+    public void testGetNestedDataValue_nullValueThenNavigateThrows()
+    		throws Exception
+    {
+    	NamedDataCollector root = new NamedDataCollector();
+    	root.putNamedData(new NamedData("n", null));
+    	assertThrows(DataFetchingException.class,
+    			() -> root.getNestedDataValue(new String[] { "n", "more" }));
     }
 
 //------------------------------------------------------------------------------
