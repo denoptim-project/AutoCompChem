@@ -27,6 +27,9 @@ import autocompchem.io.jsonableatomcontainer.AtomContainerSetDeserializer;
 import autocompchem.io.jsonableatomcontainer.AtomContainerSetSerializer;
 import autocompchem.io.jsonableatomcontainer.IAtomContainerDeserializer;
 import autocompchem.io.jsonableatomcontainer.IAtomContainerSerializer;
+import autocompchem.perception.circumstance.AssessData;
+import autocompchem.perception.circumstance.AssessData.AssessDataDeserializer;
+import autocompchem.perception.circumstance.AssessData.AssessDataSerializer;
 import autocompchem.perception.circumstance.CountTextMatches;
 import autocompchem.perception.circumstance.CountTextMatches.CountTextMatchesDeserializer;
 import autocompchem.perception.circumstance.CountTextMatches.CountTextMatchesSerializer;
@@ -230,6 +233,8 @@ public class ACCJson
     	        		new MatchDirComponentSerializer())
     	        .registerTypeAdapter(CountTextMatches.class, 
     	        		new CountTextMatchesSerializer())
+    	        .registerTypeAdapter(AssessData.class,
+    	        		new AssessDataSerializer())
     	        .registerTypeHierarchyAdapter(IAtomContainer.class, 
     	        		new IAtomContainerSerializer())
     	        .registerTypeHierarchyAdapter(AtomContainerSet.class, 
@@ -279,6 +284,8 @@ public class ACCJson
     	        		new CountTextMatchesDeserializer())
     	        .registerTypeAdapter(MatchDirComponent.class, 
     	        		new MatchDirComponentDeserializer())
+    	        .registerTypeAdapter(AssessData.class,
+    	        		new AssessDataDeserializer())
     	        .registerTypeAdapter(AddDirectiveComponent.class, 
     	        		new AddDirectiveComponentDeserializer())
     	        .registerTypeAdapter(SetDirectiveComponent.class, 

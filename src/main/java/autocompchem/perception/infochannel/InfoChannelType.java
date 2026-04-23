@@ -58,6 +58,9 @@ public enum InfoChannelType
         /** Environment */
         ENVIRONMENT,
 
+        /** Generally processable data */
+        DATA,
+
         /** Real life time */
         WALLTIME;
     

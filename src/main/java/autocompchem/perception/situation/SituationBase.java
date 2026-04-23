@@ -467,6 +467,24 @@ public class SituationBase implements Cloneable
 //------------------------------------------------------------------------------
 
     /**
+     * Returns the list of data paths that are needed to evaluate any of the 
+     * situations contained in this situation base.
+     * @return the list of data paths that are needed to evaluate any of the 
+     * situations contained in this situation base.
+     */
+    public List<String> getAllDataPathsNeeds()
+    {
+        List<String> dataPathsNeeded = new ArrayList<String>();
+        for (Situation s : allSituations)
+        {
+            dataPathsNeeded.addAll(s.getDataPathsNeeds());
+        }
+        return dataPathsNeeded;
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
      * Return a string describing this knowledge
      * @return a human readable description of the knowledge
      */

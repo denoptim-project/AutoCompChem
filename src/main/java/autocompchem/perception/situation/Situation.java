@@ -19,6 +19,7 @@ package autocompchem.perception.situation;
  */
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -26,6 +27,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import autocompchem.io.ACCJson;
+import autocompchem.perception.circumstance.AssessData;
 import autocompchem.perception.circumstance.ICircumstance;
 import autocompchem.perception.concept.Concept;
 import autocompchem.perception.infochannel.InfoChannelType;
@@ -255,6 +257,26 @@ public class Situation extends Concept implements Cloneable
             allIct.add(ic.getChannelType());
         }
         return allIct;
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Returns the list of data paths that are needed to evaluate this situation.
+     * @return the list of data paths that are needed to evaluate this situation.
+     */
+    public List<String> getDataPathsNeeds() 
+    {
+        List<String> dataPathsNeeded = new ArrayList<String>();
+        for (ICircumstance ic : context)
+        {
+            if (ic instanceof AssessData)
+            {
+                AssessData ad = (AssessData) ic;
+                dataPathsNeeded.add(ad.getDataPath());
+            }
+        }
+        return dataPathsNeeded;
     }
 
 //------------------------------------------------------------------------------

@@ -28,8 +28,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
+import autocompchem.datacollections.DataFetchingException;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.datacollections.ParameterConstants;
@@ -43,6 +43,7 @@ import autocompchem.perception.infochannel.InfoChannel;
 import autocompchem.perception.infochannel.InfoChannelBase;
 import autocompchem.perception.infochannel.InfoChannelType;
 import autocompchem.perception.infochannel.JobDetailsAsSource;
+import autocompchem.perception.infochannel.DataAsSource;
 import autocompchem.perception.situation.Situation;
 import autocompchem.perception.situation.SituationBase;
 import autocompchem.run.jobediting.Action;
@@ -546,6 +547,10 @@ public class JobEvaluator extends Worker
 			}
 		}
 
+		// Get the list of data sources that might be needed to evaluate the situations
+		List<String> dataPathsNeeded = sitsDB.getAllDataPathsNeeds();
+
+		// Perception is done on a per-step basis.
 		for (int iStep=0; iStep<numberOfSteps; iStep++) 
 		{
 			logger.info("Perception for step " + iStep);
@@ -569,10 +574,38 @@ public class JobEvaluator extends Worker
 				addedStepDetails = true;
 			}
 
-			//TODO-gg add job output data as IC
+			// Fetch data-like parsed from the job log/output files as info channels,
+			// restricting to the step considered now. For example, this is how we deal with
+			// numerical data produced by the job.
+			Set<InfoChannel> stepSpecificDataICs = new HashSet<>();
+			if (!dataPathsNeeded.isEmpty() 
+				&& exposedOutputCollector != null 
+				&& exposedOutputCollector.contains(WIROConstants.JOBOUTPUTDATA))
+			{
+				// NB: we do not use the Job's step data because the Job may not be defined
+				// even if we can define the parsed data. Instead, we take the data from
+				// whatever was exposed by the output reader.
+				NamedDataCollector allStepsData = (NamedDataCollector) 
+					exposedOutputCollector.getNamedData(
+						WIROConstants.JOBOUTPUTDATA).getValue();
+				if (allStepsData != null && allStepsData.contains(iStep+""))
+				{
+					NamedDataCollector stepData = (NamedDataCollector) allStepsData.getNamedData(
+						iStep+"").getValue();
+					
+					for (String dataPath : dataPathsNeeded)
+					{
+						DataAsSource dataIC = new DataAsSource(dataPath);
+						dataIC.fetchDataFromSource(stepData);
+						stepSpecificDataICs.add(dataIC);
+						p.getContextSpecificICB().addChannel(dataIC);
+					}	
+				}
+			}
 
-			// Recover information from previously-read LOG/OUTPUT info channels, 
-			// restraining to the step considered now.
+			// Recover non-data information from previously-read LOG/OUTPUT info channels, 
+			// restraining to the step considered now. For example, this is how we deal with matches
+			// or error messages from a job log.
 			if (exposedOutputCollector != null 
 				&& exposedOutputCollector.contains(
 					OutputReader.MATCHESTOTEXTQRYSFORPERCEPTION))
@@ -638,6 +671,10 @@ public class JobEvaluator extends Worker
 			if (addedStepDetails)
 			{
 				p.getContextSpecificICB().removeChannel(stepDetails);
+			}
+			for (InfoChannel dataIC : stepSpecificDataICs)
+			{
+				p.getContextSpecificICB().removeChannel(dataIC);
 			}
 	    }
 	}

@@ -12,7 +12,8 @@ public enum InfoChannelImplementation {
 	FILEASSOURCE,
 	SHORTTEXTASSOURCE,
 	ENVIRONMENTASSOURCE,
-	JOBDETAILSASSOURCE;
+	JOBDETAILSASSOURCE,
+	DATAASSOURCE;
 	
 //--------------------------------------------------------------------------
 

@@ -338,7 +338,7 @@ public class InfoChannelBase
 //------------------------------------------------------------------------------
 
     /**
-     * Returns a new InfoChannelBase where each channel containing a query 
+     * Returns a new {@link InfoChannelBase} where each channel containing a query 
      * (e.g., a REGEX) is replaced with one or more channels with 
      * the actual value upon applying the query to the context where this
      * is called (i.e., work directory and environment).
@@ -352,16 +352,21 @@ public class InfoChannelBase
       	InfoChannelBase specificICB = new InfoChannelBase();
         for (InfoChannel ic : this.allInfoChannels)
         {
-        	List<InfoChannel> newICs = ic.getSpecific(wdir);
-        	for (InfoChannel specIC : newICs)
-        	{
-        		if (!specificICB.contains(specIC))
-        			specificICB.addChannel(specIC);
-        	}
-        	if (newICs.size()==0)
-        	{
-        		lostICs.add(ic);
-        	}
+            if (ic instanceof FileAsSource)
+            {
+                List<InfoChannel> newICs = ((FileAsSource) ic).getSpecific(wdir);
+                for (InfoChannel specIC : newICs)
+                {
+                    if (!specificICB.contains(specIC))
+                        specificICB.addChannel(specIC);
+                }
+                if (newICs.size()==0)
+                {
+                    lostICs.add(ic);
+                }
+            } else {
+                specificICB.addChannel(ic);
+            }
         }
         return specificICB;
     }

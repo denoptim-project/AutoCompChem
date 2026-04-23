@@ -31,9 +31,15 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import autocompchem.datacollections.ListOfDoubles;
+import autocompchem.datacollections.ListOfIntegers;
+import autocompchem.datacollections.NamedData;
+import autocompchem.datacollections.NamedDataCollector;
+import autocompchem.perception.circumstance.AssessData;
 import autocompchem.perception.circumstance.CountTextMatches;
 import autocompchem.perception.circumstance.MatchDirComponent;
 import autocompchem.perception.circumstance.MatchText;
+import autocompchem.perception.infochannel.DataAsSource;
 import autocompchem.perception.infochannel.EnvironmentAsSource;
 import autocompchem.perception.infochannel.FileAsSource;
 import autocompchem.perception.infochannel.InfoChannel;
@@ -586,6 +592,65 @@ public class PerceptronTest
         assertEquals(refName, prc.getOccurringSituations().get(0).getRefName());
     }
     
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testPerceptionFromData() throws Exception
+    {
+        NamedDataCollector barCollector = new NamedDataCollector();
+        barCollector.putNamedData(new NamedData("value", Double.valueOf(1.0)));
+        barCollector.putNamedData(new NamedData("other", Double.valueOf(-1.0)));
+        NamedDataCollector fooCollector = new NamedDataCollector();
+        fooCollector.putNamedData(new NamedData("bar", barCollector));
+        fooCollector.putNamedData(new NamedData("other", Double.valueOf(-2.0)));
+        NamedDataCollector lstsCollector = new NamedDataCollector();
+        lstsCollector.putNamedData(new NamedData("ints", 
+            new ListOfIntegers(Arrays.asList(1,2,3))));
+            lstsCollector.putNamedData(new NamedData("doubles", 
+            new ListOfDoubles(Arrays.asList(11.1,22.2,33.3))));
+        fooCollector.putNamedData(new NamedData("lsts", lstsCollector));
+        NamedDataCollector masterCollector = new NamedDataCollector();
+        masterCollector.putNamedData(new NamedData("foo", fooCollector));
+        masterCollector.putNamedData(new NamedData("other", Double.valueOf(-3.0)));
+        
+        InfoChannelBase icb = new InfoChannelBase();
+
+        DataAsSource dataIC = new DataAsSource("foo,bar,value");
+        dataIC.fetchDataFromSource(masterCollector);
+        icb.addChannel(dataIC);
+
+        SituationBase sb = new SituationBase();
+
+        String refName = "PositiveDataAssesment";
+        Situation sit1 = new Situation("case", refName);
+        sit1.addCircumstance(new AssessData("foo,bar,value", "${DATA > 0}"));
+        sb.addSituation(sit1);
+
+        Situation sit2 = new Situation("case", "Other");
+        sit2.addCircumstance(new AssessData("something,else", "${DATA > 0}"));
+        sb.addSituation(sit2);
+
+        Perceptron prc = new Perceptron(sb, icb);
+        prc.perceive();
+
+        assertEquals(true, prc.isAware());
+        assertEquals(refName, prc.getOccurringSituations().get(0).getRefName());
+
+
+        sb = new SituationBase();
+
+        String refName2 = "NegativeDataAssesment";
+        Situation sit3 = new Situation("case", refName2);
+        sit3.addCircumstance(new AssessData("foo,bar,value", "${DATA < 0}", true));
+        sb.addSituation(sit3);
+
+        prc = new Perceptron(sb, icb);
+        prc.perceive();
+
+        assertEquals(true, prc.isAware());
+        assertEquals(refName2, prc.getOccurringSituations().get(0).getRefName());
+    }
+
 //------------------------------------------------------------------------------
 
 }

@@ -19,6 +19,7 @@ package autocompchem.perception.situation;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
@@ -38,6 +39,7 @@ import com.google.gson.JsonSerializationContext;
 import autocompchem.io.ACCJson;
 import autocompchem.perception.SCPair;
 import autocompchem.perception.TxtQuery;
+import autocompchem.perception.circumstance.AssessData;
 import autocompchem.perception.circumstance.CountTextMatches;
 import autocompchem.perception.circumstance.ICircumstance;
 import autocompchem.perception.circumstance.MatchText;
@@ -98,11 +100,79 @@ public class SituationBaseTest
 						new MatchText("txtQuery3C", true, 
 								InfoChannelType.ANY))), 
 				new Action(ActionType.STOP, ActionObject.PARALLELJOB)));
+
+		sb.addSituation(new Situation("Sit", "D",
+				new ArrayList<ICircumstance>(Arrays.asList(
+						new AssessData("step,energy", "x > 0"),
+						new MatchText("pat", InfoChannelType.NOTDEFINED))),
+				new Action(ActionType.SKIP, ActionObject.FOCUSJOB)));
 		
 		return sb;
 	}
 	
 //-----------------------------------------------------------------------------
+
+	@Test
+	public void testGetAllDataPathsNeeds_emptyBase()
+	{
+		assertTrue(new SituationBase().getAllDataPathsNeeds().isEmpty());
+	}
+
+//------------------------------------------------------------------------------
+
+	@Test
+	public void testGetAllDataPathsNeeds_onlyNonAssessDataCircumstances()
+	{
+		SituationBase sb = new SituationBase();
+		sb.addSituation(new Situation("Sit", "A", 
+				new ArrayList<ICircumstance>(Arrays.asList(
+						new MatchText("txtQuery1",
+								InfoChannelType.NOTDEFINED),
+						new CountTextMatches("counterB", 10, 
+								InfoChannelType.OUTPUTFILE))), 
+				new Action(ActionType.SKIP, ActionObject.FOCUSJOB)));
+
+		sb.addSituation(new Situation("Sit", "B", 
+				new ArrayList<ICircumstance>(Arrays.asList(
+						new MatchText("txtQuery1B",
+								InfoChannelType.NOTDEFINED),
+						new MatchText("txtQuery3", true, 
+								InfoChannelType.ANY))), 
+				new Action(ActionType.STOP, ActionObject.PARALLELJOB)));
+		
+		sb.addSituation(new Situation("Sit", "C", 
+				new ArrayList<ICircumstance>(Arrays.asList(
+						new MatchText("txtQuery1",
+								InfoChannelType.NOTDEFINED),
+						new MatchText("txtQuery3C", true, 
+								InfoChannelType.ANY))), 
+				new Action(ActionType.STOP, ActionObject.PARALLELJOB)));
+
+		assertTrue(sb.getAllDataPathsNeeds().isEmpty());
+	}
+
+//------------------------------------------------------------------------------
+
+	@Test
+	public void testGetAllDataPathsNeeds_multipleSituationsAndAssessData()
+	{
+		SituationBase sb = new SituationBase();
+		sb.addSituation(new Situation("Sit", "S1",
+				new ArrayList<ICircumstance>(Arrays.asList(
+						new AssessData("step,energy", "x > 0"),
+						new MatchText("pat", InfoChannelType.LOGFEED))),
+				new Action(ActionType.SKIP, ActionObject.FOCUSJOB)));
+		sb.addSituation(new Situation("Sit", "S2",
+				new ArrayList<ICircumstance>(Arrays.asList(
+						new AssessData("geom,final", "y == 1"))),
+				new Action(ActionType.STOP, ActionObject.PARALLELJOB)));
+
+		assertIterableEquals(
+				Arrays.asList("step,energy", "geom,final"),
+				sb.getAllDataPathsNeeds());
+	}
+
+//------------------------------------------------------------------------------
 
 	@Test
 	public void testGetAllTxTQueriesForICT() throws Exception

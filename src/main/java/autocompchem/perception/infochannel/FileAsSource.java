@@ -255,7 +255,6 @@ public class FileAsSource extends ReadableIC
 
 //-----------------------------------------------------------------------------
       
-	@Override
 	public List<InfoChannel> getSpecific(Path wdir)
 	{
 		List<InfoChannel>  results = new ArrayList<InfoChannel>();

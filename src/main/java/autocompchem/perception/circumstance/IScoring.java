@@ -21,9 +21,9 @@ import autocompchem.perception.infochannel.InfoChannel;
 
 
 /**
- * Interface for circumstance that are able to score
- *
- * @author Marco Foscato
+ * Interface for {@link ICircumstance} that are able to score an {@link InfoChannel} 
+ * directly, i.e., without relying on preliminary processing of the i
+ * {@link InfoChannel}.
  */
 
 public abstract interface IScoring

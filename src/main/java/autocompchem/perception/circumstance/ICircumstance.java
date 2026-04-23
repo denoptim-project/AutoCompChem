@@ -125,6 +125,10 @@ public interface ICircumstance
   			case "MatchDirComponent":
   				result = context.deserialize(jsonObject, MatchDirComponent.class);
   				break;
+
+			case "AssessData":
+				result = context.deserialize(jsonObject, AssessData.class);
+				break;
   				
   			//TODO: this needs to include all the classes implementing this interface
   			// or search for class in classpath.

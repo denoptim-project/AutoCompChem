@@ -1,8 +1,6 @@
 package autocompchem.perception.infochannel;
 
 import java.lang.reflect.Type;
-import java.nio.file.Path;
-import java.util.List;
 import java.util.Objects;
 
 import com.google.gson.JsonDeserializationContext;
@@ -14,7 +12,7 @@ import com.google.gson.JsonParseException;
 import autocompchem.io.ACCJson;
 
 /*
- *   Copyright (C) 2018  Marco Foscato
+ *   Copyright (C) 2026  Marco Foscato
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Affero General Public License as published by
@@ -131,6 +129,10 @@ public abstract class InfoChannel implements Cloneable
                 	ic = context.deserialize(jsonObject, ShortTextAsSource.class);
 					break;
 
+                case DATAASSOURCE:
+                	ic = context.deserialize(jsonObject, DataAsSource.class);
+					break;
+
 				default:
 					throw new IllegalArgumentException("InfoChannel "
 							+ "implementation '" + impl + "' is not known. "
@@ -139,19 +141,6 @@ public abstract class InfoChannel implements Cloneable
         	return ic;
         }
     }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Returns one or more new {@link InfoChannel}s resulting by applying
-     * any wildcard-based query defined in this channel (if any) to the context 
-     * where this method is called (i.e., work directory and environment). 
-     * For example, taking actual filename instead of filename queries.
-     * @return the edited channels, or the original one if there is no wildcard
-     * to be replaced. The result can be empty, if the query does not have 
-     * any match.
-     */
-    public abstract List<InfoChannel> getSpecific(Path wdir);
 
 //------------------------------------------------------------------------------
 

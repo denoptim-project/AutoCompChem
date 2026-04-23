@@ -168,17 +168,6 @@ public class EnvironmentAsSource extends ReadableIC
         }
     }
 
-//-----------------------------------------------------------------------------
-
-    // This implementation does not get specific
-  	@Override
-  	public List<InfoChannel> getSpecific(Path wdir)
-  	{
-  		List<InfoChannel> results = new ArrayList<InfoChannel>();
-  		results.add(this);
-  		return results;
-  	}
-
 //------------------------------------------------------------------------------
 
     /**
