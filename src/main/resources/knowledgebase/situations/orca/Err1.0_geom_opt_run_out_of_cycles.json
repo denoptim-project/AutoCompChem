@@ -1,0 +1,91 @@
+{
+  "type": "ERROR",
+  "refName": "orca-e1.0_GeomOptRunOutOfCycles",
+  "description": "Geometry optimization reached max number of cycles before converging",
+  "context": [
+    {
+      "circumstance": "MatchText",
+      "channel": "LOGFEED",
+      "pattern": "The optimization did not converge but reached the maximum number of"
+    },
+    {
+      "circumstance": "MatchText",
+      "channel": "LOGFEED",
+      "pattern": "The optimization has not yet converged - more geometry cycles are needed"
+    }
+  ],
+  "reaction": {
+    "type": "REDO",
+    "object": "assistedJob",
+    "jobEditTasks": [
+      {
+        "task": "SET_JOB_PARAMETER",
+        "parameter": {"reference": "inputGeometries", "value": "getACCJobsData(#0,GEOMETRIES,LAST)"}
+      },
+      {
+        "task": "SET_KEYWORD",
+        "path": "Dir:moinp",
+        "content": {
+            "reference": "filename",
+            "value": "\"restart.gbw\"",
+            "isLoud": false
+        }
+      },
+      {
+        "task": "SET_KEYWORD",
+        "path": "Dir:!",
+        "content": {
+          "reference": "inputMO",
+          "value": "MOREAD",
+          "isLoud": false
+        }
+      }
+    ],
+    "inputEditingTasks": [
+      {
+        "task": "REMOVE_JOB_PARAMETER",
+        "paramName": "infile"
+      },
+      {
+        "task": "REMOVE_JOB_PARAMETER",
+        "paramName": "INPUTGEOMETRIES"
+      },
+      {
+        "task": "REMOVE_JOB_PARAMETER",
+        "paramName": "INPUTGEOMETRIESFILE"
+      }
+    ],
+    "jobArchivingRules": [
+      {
+        "type": "move",
+        "pattern": "[!.]*"
+      },
+      {
+        "type": "copy",
+        "pattern": "*.sdf"
+      },
+      {
+        "type": "rename_copy_basename_idx",
+        "pattern": "BASENAME.gbw",
+        "newName": "restart.gbw"
+      },
+      {
+        "type": "rename_copy_basename_idx",
+        "pattern": "BASENAME.densities",
+        "newName": "restart.densities"
+      },
+      {
+        "type": "rename_copy_basename_idx",
+        "pattern": "*_Compound_${IDX+1}.gbw",
+        "newName": "restart.gbw"
+      },
+      {
+        "type": "rename_copy_basename_idx",
+        "pattern": "*_Compound_${IDX+1}.densities",
+        "newName": "restart.densities"
+      }
+    ],
+    "preRefinementSteps": [],
+    "inheritedSettings": []
+  }
+}
