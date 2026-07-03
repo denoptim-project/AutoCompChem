@@ -28,6 +28,10 @@
     {
       "reference": "requireNormalTermination",
       "value": "true"
+    },
+    {
+      "reference": "GETENERGY",
+      "value": "getEnergy"
     }
   ]
 }

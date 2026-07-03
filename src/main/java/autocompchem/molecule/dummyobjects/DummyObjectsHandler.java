@@ -1,6 +1,7 @@
 package autocompchem.molecule.dummyobjects;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -240,12 +241,18 @@ public class DummyObjectsHandler extends AtomContainerInputProcessor
             this.tmplFile = getNewFile(
             		params.getParameter("TEMPLATE").getValueAsString());
             FileUtils.foundAndPermissions(this.inFile,true,false,false);
-            List<IAtomContainer> inTmpls = IOtools.readSDF(this.tmplFile);
+            List<IAtomContainer> inTmpls = null;
+            try {
+                inTmpls = IOtools.readMultiMolFiles(this.tmplFile);
+            } catch (IOException e) {
+                throw new IllegalArgumentException("Cannot read template file " + this.tmplFile, e);
+            }
             if (inTmpls.size() != 1)
             {
-                throw new IllegalArgumentException("Can only accept a single "
-                                + "template for adding dummy atoms. Check '"
-                                + this.tmplFile + "'.");
+                throw new IllegalArgumentException(this.getClass().getName()
+                        + " requires a file with one template connectivity in "
+                        + "TEMPLATE. "
+                        + "Check file " + this.tmplFile);
             }
             this.template = inTmpls.get(0);
         }

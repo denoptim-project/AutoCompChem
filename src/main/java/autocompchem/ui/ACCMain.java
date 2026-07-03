@@ -21,10 +21,7 @@ package autocompchem.ui;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.AbstractMap.SimpleImmutableEntry;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
@@ -57,7 +54,7 @@ import autocompchem.worker.WorkerFactory;
 public class ACCMain
 {
     //Software version number
-    private static final String version = "3.5.0";
+    private static final String version = "3.6.0";
     
     // System.spec line separator
     private static final String NL = System.getProperty("line.separator");

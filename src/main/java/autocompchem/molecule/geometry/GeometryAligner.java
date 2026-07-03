@@ -19,6 +19,7 @@ package autocompchem.molecule.geometry;
  */
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -147,7 +148,12 @@ public class GeometryAligner extends AtomContainerInputProcessor
 	        File refFile = getNewFile(
 	        		params.getParameter("REFERENCE").getValueAsString());
 	        FileUtils.foundAndPermissions(refFile,true,false,false);
-	        List<IAtomContainer> lst = IOtools.readMultiMolFiles(refFile);
+	        List<IAtomContainer> lst = null;
+	        try {
+	            lst = IOtools.readMultiMolFiles(refFile);
+	        } catch (IOException e) {
+	            throw new IllegalArgumentException("Cannot read reference file " + refFile, e);
+	        }
 	        if (lst.size()>1)
             {
                 logger.warn("WARNING: Found " + lst.size() 

@@ -32,7 +32,7 @@ import autocompchem.molecule.MolecularUtils;
  * SDF file one by one, without storing them into memory. Suitable for huge
  * SDF file.
  * In addition this tool returns a pre-treated IAtomContainer where properties
- * line molecule title are already defined.
+ * like molecule title are already defined.
  * 
  * @author Marco Foscato
  */
@@ -56,8 +56,7 @@ public class SDFIterator extends IteratingSDFReader
 
     public SDFIterator(File inFile) throws Throwable
     {
-        super(new FileInputStream(inFile), 
-                                        DefaultChemObjectBuilder.getInstance());
+        super(new FileInputStream(inFile), DefaultChemObjectBuilder.getInstance());
         this.nnn = 0;
         this.separator = "\\s+";
     }

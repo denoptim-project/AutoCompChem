@@ -1,6 +1,7 @@
 package autocompchem.molecule.geometry;
 
 import java.io.File;
+import java.io.IOException;
 
 /*
  *   Copyright (C) 2016  Marco Foscato
@@ -540,12 +541,18 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
             		params.getParameter("REFERENCESUBSTRUCTUREFILE")
             		.getValueAsString());
             FileUtils.foundAndPermissions(this.refFile,true,false,false);
-            List<IAtomContainer> refMols = IOtools.readSDF(this.refFile);
+            List<IAtomContainer> refMols = null;
+            try {
+                refMols = IOtools.readMultiMolFiles(this.refFile);
+            } catch (IOException e) {
+                throw new IllegalArgumentException("Cannot read reference sub structure file " + this.refFile, e);
+            }
             if (refMols.size() != 1)
             {
-                throw new IllegalArgumentException("MoleculeGeometryEditor "
-                        + "requires SDF files with one reference structure. "
-                        + "Check file " + refFile);
+                throw new IllegalArgumentException(this.getClass().getName()
+                        + " requires a file with one reference sub structure in "
+                        + "REFERENCESUBSTRUCTUREFILE. "
+                        + "Check file " + this.refFile);
             }
             this.refMol = refMols.get(0);
         }

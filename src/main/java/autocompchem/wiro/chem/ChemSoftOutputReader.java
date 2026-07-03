@@ -18,6 +18,7 @@ package autocompchem.wiro.chem;
  */
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -225,8 +226,20 @@ public abstract class ChemSoftOutputReader extends OutputReader
             String[] p = val.split("\\s+");
             File fileWithTplt = getNewFile(p[0]);
             FileUtils.foundAndPermissions(fileWithTplt,true,false,false);
-            //NB: assumption: only one atom container as template.
-            this.connectivityTemplate = IOtools.readSDF(fileWithTplt).get(0);
+            List<IAtomContainer> tmplCTs = null;
+            try {
+                tmplCTs = IOtools.readMultiMolFiles(fileWithTplt);
+            } catch (IOException e) {
+                throw new IllegalArgumentException("Cannot read template connectivity file " + fileWithTplt, e);
+            }
+            if (tmplCTs.size() != 1)
+            {
+                throw new IllegalArgumentException(this.getClass().getName()
+                        + " requires a file with one template connectivity in "
+                        + "PARTEMPLATECONNECTIVITY. "
+                        + "Check file " + fileWithTplt);
+            }
+            this.connectivityTemplate = tmplCTs.get(0);
             
             ParameterStorage ps = new ParameterStorage();
             for (int i=1; i<(p.length); i++)

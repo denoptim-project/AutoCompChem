@@ -1,6 +1,7 @@
 package autocompchem.molecule.connectivity;
 
 import java.io.File;
+import java.io.IOException;
 
 /*
  *   Copyright (C) 2016  Marco Foscato
@@ -483,7 +484,12 @@ public class ConnectivityGenerator extends AtomContainerInputProcessor
     
     private void imposeConnectionTable(IAtomContainer iac)
     {
-        List<IAtomContainer> tmpl = IOtools.readMultiMolFiles(templatePathName);
+        List<IAtomContainer> tmpl = null;
+        try {
+            tmpl = IOtools.readMultiMolFiles(templatePathName);
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Cannot read template file " + templatePathName, e);
+        }
         //TODO: what to do when there is more than one template?
         ConnectivityUtils.importConnectivityFromReference(iac, tmpl.get(0));
     }

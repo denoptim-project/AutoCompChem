@@ -18,6 +18,7 @@ package autocompchem.molecule;
  */
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -428,7 +429,12 @@ public class AtomContainerInputProcessor extends Worker
         inFile = getNewFile(pathname);
         FileUtils.foundAndPermissions(inFile,true,false,false);
         
-        List<IAtomContainer> iacs = IOtools.readMultiMolFiles(inFile, format);
+        List<IAtomContainer> iacs = null;
+        try {
+            iacs = IOtools.readMultiMolFiles(inFile, format);
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Cannot read input file " + inFile, e);
+        }
         inMols = new ArrayList<IAtomContainer>();
         if (words.length > 1)
         {

@@ -35,18 +35,20 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Deque;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang3.EnumUtils;
 import org.openscience.cdk.AtomContainerSet;
 import org.openscience.cdk.CDKConstants;
 import org.openscience.cdk.ChemFile;
 import org.openscience.cdk.ChemObject;
+import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IAtomContainerSet;
+import org.openscience.cdk.interfaces.IChemObjectBuilder;
 import org.openscience.cdk.io.MDLV2000Reader;
+import org.openscience.cdk.io.MDLV3000Reader;
 import org.openscience.cdk.io.SDFWriter;
 import org.openscience.cdk.io.XYZReader;
 import org.openscience.cdk.io.XYZWriter;
@@ -518,22 +520,26 @@ public class IOtools
      * ) and returns all the molecules as an array.
      * @param file the SDF file to be read
      * @return all the chemical objects into an list.
+     * @throws IOException 
      */
 
-    public static List<IAtomContainer> readSDF(File file)
+    public static List<IAtomContainer> readSDF(File file) throws IOException
     {
-        MDLV2000Reader mdlreader = null;
         List<IAtomContainer> lstContainers = new ArrayList<IAtomContainer>();
+        SDFIterator sdfIterator = null;
         try {
-            mdlreader = new MDLV2000Reader(new FileReader(file));
-            ChemFile chemFile = (ChemFile) mdlreader.read((ChemObject) 
-                                                                new ChemFile());
-            lstContainers.addAll(ChemFileManipulator.getAllAtomContainers(
-                                                                     chemFile));
+            sdfIterator = new SDFIterator(file);
+            while (sdfIterator.hasNext()) {
+                lstContainers.add(sdfIterator.next());
+            }
         } catch (Throwable t2) {
-            throw new RuntimeException("Failure in reading SDF: " + t2, t2);
+            throw new RuntimeException("Failure in creating SDF iterator for file " 
+                + file + ": " + t2.getMessage(), t2);
+        } finally {
+            if (sdfIterator != null) {
+                sdfIterator.close();
+            }
         }
-
         return lstContainers;
     }
 
@@ -621,9 +627,10 @@ public class IOtools
      * ) and returns all the molecules as an array.
      * @param filename XYZ file to be read
      * @return all the chemical objects into an <code>List</code>
+     * @throws IOException 
      */
 
-    public static List<IAtomContainer> readXYZ(File file)
+    public static List<IAtomContainer> readXYZ(File file) throws IOException
     {
         XYZReader reader = null;
         List<IAtomContainer> lstContainers = new ArrayList<IAtomContainer>();
@@ -635,6 +642,10 @@ public class IOtools
                                                                      chemFile));
         } catch (Throwable t2) {
             throw new RuntimeException("Failure in reading XYZ: " + t2, t2);
+        } finally {
+            if (reader != null) {
+                reader.close();
+            }
         }
 
         return lstContainers;
@@ -648,8 +659,9 @@ public class IOtools
      * any registered implementation of {@link ChemSoftOutputReader}.
      * @param file file to be read
      * @return all the chemical objects into an <code>ArrayList</code>
+     * @throws IOException 
      */
-    public static List<IAtomContainer> readMultiMolFiles(File file)
+    public static List<IAtomContainer> readMultiMolFiles(File file) throws IOException
     {
         return readMultiMolFiles(file, null);
     }
@@ -664,8 +676,10 @@ public class IOtools
      * @param format the format of the file irrespectivly on its extension.
      * If <code>format</code> is <code>null</code>, we infer it from the extension.
      * @return all the chemical objects into an <code>ArrayList</code>
+     * @throws IOException 
      */
-    public static List<IAtomContainer> readMultiMolFiles(File file, String format)
+    public static List<IAtomContainer> readMultiMolFiles(File file, String format) 
+        throws IOException
     {
 		ReaderWriterFactory builder = 
 				ReaderWriterFactory.getInstance();
