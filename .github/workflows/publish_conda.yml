@@ -29,13 +29,19 @@ jobs:
         echo ${GITHUB_REF#refs/tags/v}
 
     - name: Setup Miniconda
-      uses: conda-incubator/setup-miniconda@v3
+      uses: conda-incubator/setup-miniconda@v3.1.0
       with:
         miniconda-version: "latest"
         auto-update-conda: true
-        auto-activate-base: false
-        activate-environment: anaconda-client-env
-        environment-file: conda/environment.yml
+        channels: conda-forge
+        channel-priority: strict
+        conda-remove-defaults: true
+        auto-activate-base: true
+        conda-build-version: "*"
+        conda-solver: libmamba
+
+    - name: Install anaconda-client
+      run: conda install -n base -c conda-forge anaconda-client -y
 
     - name: Build package and publish
       run: |
