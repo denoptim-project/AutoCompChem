@@ -13,7 +13,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, macos-15-intel, windows-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
     defaults:
       run:
         shell: bash -l {0}
@@ -49,4 +49,44 @@ jobs:
         conda build -c conda-forge  .
       env:
         AUTOCOMPCHEM_VERSION: ${{ steps.get_version.outputs.VERSION }}
+
+  build-and-publish-noarch:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@master
+
+    - name: Get version identifier
+      id: get_version
+      run: |
+        echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/v}
+        echo ${GITHUB_REF#refs/tags/v}
+
+    - name: Setup Miniconda
+      uses: conda-incubator/setup-miniconda@v3.1.0
+      with:
+        miniconda-version: "latest"
+        auto-update-conda: true
+        channels: conda-forge
+        channel-priority: strict
+        conda-remove-defaults: true
+        auto-activate-base: true
+        conda-build-version: "*"
+        conda-solver: libmamba
+
+    - name: Install anaconda-client
+      run: conda install -n base -c conda-forge anaconda-client -y
+
+    - name: Build package and publish
+      run: |
+        conda config --set anaconda_upload yes
+        conda build -c conda-forge  . --variants "{'arch': 'noarch'}"
+      env:
+        AUTOCOMPCHEM_VERSION: ${{ steps.get_version.outputs.VERSION }}
+
+
 
