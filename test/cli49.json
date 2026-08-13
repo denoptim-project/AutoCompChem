@@ -1,0 +1,81 @@
+{
+  "jobType": "ACCJob",
+  "params": [
+    {
+      "reference": "VERBOSITY",
+      "value": "4"
+    }
+  ],
+  "steps": [
+    {
+      "jobType": "ACCJob",
+      "params": [
+        {
+          "reference": "TASK",
+          "value": "AnalyseOrcaOutput"
+        },
+        {
+          "reference": "VERBOSITY",
+          "value": "4"
+        },
+        {
+          "reference": "SAVELASTGEOMETRY",
+          "value": "SDF cli49_refined.sdf"
+        },
+        {
+          "reference": "TEMPLATECONNECTIVITY",
+          "value": "../cli49_data/cli49.sdf"
+        },
+        {
+          "reference": "JOBOUTPUTFILE",
+          "value": "../cli49_data/cli49.out"
+        },
+        {
+          "reference": "GETENERGY",
+          "value": "getEnergy"
+        },
+        {
+          "reference": "detectKindOfCriticalPoint"
+        }
+      ]
+    },
+    {
+      "jobType": "ACCJob",
+      "params": [
+        {
+          "reference": "TASK",
+          "value": "listJobData"
+        },
+        {
+          "reference": "jobPointer",
+          "value": "#-1.0"
+        }
+      ]
+    },
+    {
+      "jobType": "ACCJob",
+      "params": [
+        {
+          "reference": "TASK",
+          "value": "readAtomContainers"
+        },
+        {
+          "reference": "jobPointer",
+          "value": "#-1.0"
+        },
+        {
+          "reference": "inFile",
+          "value": "cli49_refined.sdf"
+        },
+        {
+          "reference": "setProperties",
+          "value": "SCF_FROM_REFINEMENT: getACCJobsData(#-1.0,JOBOUTPUTDATA,LAST,FINALSCFENERGY)\nGIBBS_FREE_ENERGY_FROM_REFINEMENT: getACCJobsData(#-1.0,JOBOUTPUTDATA,LAST,GIBBSFREEENERGY)\nTHREMOCHEM_CORRECTION_FROM_REFINEMENT: ${getACCJobsData(#-1.0,JOBOUTPUTDATA,LAST,GIBBSFREEENERGY) - getACCJobsData(#-1.0,JOBOUTPUTDATA,LAST,FINALSCFENERGY)}\nFormattedThermochem: ${format('0.000000', getACCJobsData(#-1.0,JOBOUTPUTDATA,LAST,GIBBSFREEENERGY) - getACCJobsData(#-1.0,JOBOUTPUTDATA,LAST,FINALSCFENERGY))}\nMIXED_TEXT_EL: the value I want is getACCJobsData(#-1.0,JOBOUTPUTDATA,LAST,ENTROPY_VIB) + getACCJobsData(#-1.0,JOBOUTPUTDATA,LAST,ENTROPY_TRN) = ${format('0.000000',getACCJobsData(#-1.0,JOBOUTPUTDATA,LAST,ENTROPY_VIB) + getACCJobsData(#-1.0,JOBOUTPUTDATA,LAST,ENTROPY_TRN))}"
+        },
+        {
+          "reference": "outFile",
+          "value": "cli49_results.sdf"
+        }
+      ]
+    }
+  ]
+}

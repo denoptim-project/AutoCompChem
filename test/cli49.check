@@ -1,0 +1,28 @@
+#!/bin/bash
+
+function not_passed() {
+  echo "NOT Passed: check condition leading to line '$1' of '$0'"
+  exit -1
+}
+
+if [ ! -f "cli49.log" ] ; then not_passed $LINENO ; fi
+
+if [ ! -f "cli49_refined.sdf" ] ; then not_passed $LINENO ; fi
+
+if ! grep -q -i "<SCF_ENERGY>" "cli49_refined.sdf" ; then not_passed $LINENO ; fi
+if ! grep -q -i "<GIBBS_FREE_ENERGY>" "cli49_refined.sdf" ; then not_passed $LINENO ; fi
+
+if [ ! -f "cli49_results.sdf" ] ; then not_passed $LINENO ; fi
+
+if ! grep -A1 -i "<SCF_FROM_REFINEMENT>" "cli49_results.sdf" | grep -q -i "^\-309\.6218303" ; then not_passed $LINENO ; fi
+if ! grep -A1 -i "<THREMOCHEM_CORRECTION_FROM_REFINEMENT>" "cli49_results.sdf" | grep -q -i "^0\.1076683" ; then not_passed $LINENO ; fi
+if ! grep -A1 -i "<FormattedThermochem>" "cli49_results.sdf" | grep -q -i "^0\.107668$" ; then not_passed $LINENO ; fi
+if ! grep -A1 -i "<MIXED_TEXT_EL>" "cli49_results.sdf" | grep -q -i "^the value I want is 0\.00490194 + 0\.0132431 = 0\.018145" ; then not_passed $LINENO ; fi
+
+if grep -q -i "<SCF_ENERGY>" "cli49_results.sdf" ; then not_passed $LINENO ; fi
+if grep -q -i "<GIBBS_FREE_ENERGY>" "cli49_results.sdf" ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c -i "Termination status: 0" "cli49.log")
+if [ 1 == "$n" ] ; then echo Passed ; exit 0 ; fi
+not_passed $LINENO
+exit -1

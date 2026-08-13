@@ -394,25 +394,28 @@ public class AtomContainerInputProcessor extends Worker
         			propertyValue = nameValueParts[1].stripLeading().stripTrailing();
             	}
         	}
-        	iacPropertiesToAdd.put(propertyName, propertyValue);
+
+            // Try to process an EL formulation that may be contained in the value
+            if (propertyValue.contains("${") && propertyValue.contains("}"))
+            {
+                Object result = NumberUtils.calculateValueOfExpression(propertyValue);
+                if (result instanceof Double)
+                {
+                    propertyValue = Double.toString((Double) result);
+                } else if (result instanceof Integer)
+                {
+                    propertyValue = Integer.toString((Integer) result);
+                } else if (result instanceof String) {
+                    propertyValue = (String) result;
+                } else {
+                    logger.warn("WARNING: unable to evaluate expression '" 
+                        + propertyValue + "' in property '" + propertyName 
+                        + "'. Will keep the original value.");
+                }
+            }
+            iacPropertiesToAdd.put(propertyName, propertyValue);
         }
     }
-	
-//-----------------------------------------------------------------------------
-	
-	/**
-	 * Processes the input file parameter reading chemical structures from the 
-	 * file. NB: if we are reading a huge file, this code will cause problems, 
-	 * but we can assume no huge file will be read here.
-	 * @param value the value of the parameter.
-	 */
-
-	protected void processInputFileParameter(String value)
-	{
-		processInputFileParameter(value, null);
-	}
-
-//-----------------------------------------------------------------------------
     
 	/**
 	 * Processes the input file parameter reading chemical structures from the 

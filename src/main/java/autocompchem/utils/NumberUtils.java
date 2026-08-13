@@ -560,7 +560,7 @@ public class NumberUtils
         
     /**
      * Use a given expression to calculate a numerical value.
-  	 * @param expr the expression defining how to calculate the result The
+  	 * @param expr the expression defining how to calculate the result. The
      * format of the result can be controlled by using the <code>format</code> 
      * function. The syntax of the format function is <code>format(pattern, value)</code>
      * where the pattern adheres to the syntax of the {@link DecimalFormat} class.
