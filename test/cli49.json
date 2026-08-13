@@ -72,6 +72,10 @@
           "value": "SCF_FROM_REFINEMENT: getACCJobsData(#-1.0,JOBOUTPUTDATA,LAST,FINALSCFENERGY)\nGIBBS_FREE_ENERGY_FROM_REFINEMENT: getACCJobsData(#-1.0,JOBOUTPUTDATA,LAST,GIBBSFREEENERGY)\nTHREMOCHEM_CORRECTION_FROM_REFINEMENT: ${getACCJobsData(#-1.0,JOBOUTPUTDATA,LAST,GIBBSFREEENERGY) - getACCJobsData(#-1.0,JOBOUTPUTDATA,LAST,FINALSCFENERGY)}\nFormattedThermochem: ${format('0.000000', getACCJobsData(#-1.0,JOBOUTPUTDATA,LAST,GIBBSFREEENERGY) - getACCJobsData(#-1.0,JOBOUTPUTDATA,LAST,FINALSCFENERGY))}\nMIXED_TEXT_EL: the value I want is getACCJobsData(#-1.0,JOBOUTPUTDATA,LAST,ENTROPY_VIB) + getACCJobsData(#-1.0,JOBOUTPUTDATA,LAST,ENTROPY_TRN) = ${format('0.000000',getACCJobsData(#-1.0,JOBOUTPUTDATA,LAST,ENTROPY_VIB) + getACCJobsData(#-1.0,JOBOUTPUTDATA,LAST,ENTROPY_TRN))}"
         },
         {
+          "reference": "unsetProperties",
+          "value": " otherToRemove, SCF_ENERGY , GIBBS_FREE_ENERGY"
+        },
+        {
           "reference": "outFile",
           "value": "cli49_results.sdf"
         }

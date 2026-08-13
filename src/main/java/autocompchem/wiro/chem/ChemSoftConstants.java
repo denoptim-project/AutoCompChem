@@ -513,4 +513,9 @@ public class ChemSoftConstants
 	 */
 	public static final String PARSETIACPROPERTIES = "SETPROPERTIES";
 	
+	/**
+	 * Key for parameter requesting to unset properties from atom containers
+	 */
+	public static final String PARUNSETIACPROPERTIES = "UNSETPROPERTIES";
+	
 }

@@ -100,6 +100,11 @@ public class AtomContainerInputProcessor extends Worker
      * and then when saving the results.
      */
     protected Map<String,String> iacPropertiesToAdd = new HashMap<String,String>();
+
+    /**
+     * List of properties to unset from the processed atom containers.
+     */
+    protected Set<String> iacPropertiesToUnset = new HashSet<String>();
     
     /**
      * The list of resulting data
@@ -285,6 +290,13 @@ public class AtomContainerInputProcessor extends Worker
         			ChemSoftConstants.PARSETIACPROPERTIES).getValueAsString();
         	parsePropertiesToSet(text);
         }
+
+        if (params.contains(ChemSoftConstants.PARUNSETIACPROPERTIES))
+        {
+            String text = params.getParameter(
+                    ChemSoftConstants.PARUNSETIACPROPERTIES).getValueAsString();
+            parsePropertiesToUnset(text);
+        }
         
         if (params.contains(WorkerConstants.PAROUTFILE))
         {
@@ -352,6 +364,10 @@ public class AtomContainerInputProcessor extends Worker
         		{
         			iac.setProperty(e.getKey(), e.getValue());
         		}
+                for (String propertyName : iacPropertiesToUnset)
+                {
+                    iac.removeProperty(propertyName);
+                }
         	}
         }
     }
@@ -417,6 +433,48 @@ public class AtomContainerInputProcessor extends Worker
         }
     }
     
+//------------------------------------------------------------------------------
+
+    /**
+     * Parses the formatted text defining what properties to unset from the 
+     * atom containers.
+     * @param text the text (i.e., multiple lines) to be parsed.
+     */
+
+    protected void parsePropertiesToUnset(String text)
+    {
+    	// NB: the REGEX makes this compatible with either new-line character
+        String[] arr = text.split("\\r?\\n|\\r");
+        parsePropertiesToUnset(new ArrayList<String>(Arrays.asList(arr)));
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Parses the formatted text defining what properties to unset from the 
+     * atom containers.
+     * @param lines the lines of text to be parsed.
+     */
+
+    protected void parsePropertiesToUnset(List<String> lines)
+    {
+        for (String line : lines)
+        {
+        	String[] nameValueParts = line.split(",");
+            for (String propertyName : nameValueParts)
+            {
+                propertyName = propertyName.stripLeading().stripTrailing();
+                if (propertyName.isEmpty())
+                {
+                    continue;
+                }
+                iacPropertiesToUnset.add(propertyName);
+            }
+        }
+    }
+    
+//------------------------------------------------------------------------------
+
 	/**
 	 * Processes the input file parameter reading chemical structures from the 
 	 * file. NB: if we are reading a huge file, this code will cause problems, 

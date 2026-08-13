@@ -11,6 +11,7 @@ if [ ! -f "cli49_refined.sdf" ] ; then not_passed $LINENO ; fi
 
 if ! grep -q -i "<SCF_ENERGY>" "cli49_refined.sdf" ; then not_passed $LINENO ; fi
 if ! grep -q -i "<GIBBS_FREE_ENERGY>" "cli49_refined.sdf" ; then not_passed $LINENO ; fi
+if ! grep -q -i "<KIND>" "cli49_refined.sdf" ; then not_passed $LINENO ; fi
 
 if [ ! -f "cli49_results.sdf" ] ; then not_passed $LINENO ; fi
 
@@ -21,6 +22,7 @@ if ! grep -A1 -i "<MIXED_TEXT_EL>" "cli49_results.sdf" | grep -q -i "^the value 
 
 if grep -q -i "<SCF_ENERGY>" "cli49_results.sdf" ; then not_passed $LINENO ; fi
 if grep -q -i "<GIBBS_FREE_ENERGY>" "cli49_results.sdf" ; then not_passed $LINENO ; fi
+if ! grep -q -i "<KIND>" "cli49_results.sdf" ; then not_passed $LINENO ; fi
 
 n=0; n=$(grep -c -i "Termination status: 0" "cli49.log")
 if [ 1 == "$n" ] ; then echo Passed ; exit 0 ; fi
