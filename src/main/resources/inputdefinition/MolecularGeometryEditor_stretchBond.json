@@ -21,7 +21,7 @@
     "key": "TERMINATIONCRITERIA",
     "casedKey": "terminationCriteria",
     "type": "<string> <String>",
-    "doc": "The termination criteria to use. The syntax is <kind> <threshold>. Acceptable kinds are:\n -> 'minInterfragmentDist': the minimum distance between the fragments resulting by removing the stretched bond must be greater than the threshold. The threshold can be either a double value or an expression. If the given string is parsable to a double, then it is used as the value. Otherwise, the string is interpreted as an expression defining the value (e.g., '${sin(0.2)}' would be evaluated to the value of the sine of 0.2)."
+    "doc": "The termination criteria to use. The syntax is <kind> <threshold>. Acceptable kinds are:\n -> 'minInterfragmentDist': the minimum distance between the fragments resulting from removing the stretched bond must be greater than the threshold. The threshold can be either a double value or an expression. If the given string is parsable to a double, then it is used as the value. Otherwise, the string is interpreted as an expression defining the value (e.g., '${sin(0.2)}' would be evaluated to the value of the sine of 0.2)."
   },
   {
     "embeddedWorker": "autocompchem.molecule.intcoords.zmatrix.ZMatrixHandler",
