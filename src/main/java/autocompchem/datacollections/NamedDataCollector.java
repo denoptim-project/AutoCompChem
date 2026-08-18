@@ -38,11 +38,9 @@ import autocompchem.utils.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.MissingResourceException;
 import java.util.Objects;
 import java.util.Set;
 
-import org.apache.logging.log4j.Logger;
 import org.openscience.cdk.AtomContainerSet;
 
 
@@ -354,7 +352,7 @@ public class NamedDataCollector implements Cloneable
         Object value = this;
     	for (int i=0; i<pathIntoExposedData.length; i++)
     	{
-        	String nestedContentID = pathIntoExposedData[i].stripLeading().stripTrailing();
+        	String nestedContentID = pathIntoExposedData[i].strip();
         	Object nestedValue = null;
         	if (value instanceof NamedData)
         	{

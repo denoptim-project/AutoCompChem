@@ -1,0 +1,28 @@
+#!/bin/bash
+
+function not_passed() {
+  echo "NOT Passed: check condition leading to line '$1' of '$0'"
+  exit -1
+}
+
+if [ ! -f "cli50.log" ] ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c -i "EXPOSEDIACPROPS, ., Prop_C" "cli50.log")
+if [ 4 == "$n" ] ; then echo Passed ; exit 0 ; fi
+
+n=0; n=$(grep -c -i "EXPOSEDIACPROPS, ., Prop_B" "cli50.log")
+if [ 2 == "$n" ] ; then echo Passed ; exit 0 ; fi
+
+if [ ! -f "cli50_results.sdf" ] ; then not_passed $LINENO ; fi
+
+if ! grep -A1 -i "<DERIVED_from_A_and_C>" "cli50_results.sdf" | grep -q -i "^2311" ; then not_passed $LINENO ; fi
+n=0; n=$(grep -c -i "<DERIVED_from_A_and_C>" "cli50_results.sdf")
+if [ 2 == "$n" ] ; then echo Passed ; exit 0 ; fi
+
+n=0; n=$(grep -c -i "^2311" "cli50_results.sdf")
+if [ 2 == "$n" ] ; then echo Passed ; exit 0 ; fi
+
+n=0; n=$(grep -c -i "Termination status: 0" "cli50.log")
+if [ 1 == "$n" ] ; then echo Passed ; exit 0 ; fi
+not_passed $LINENO
+exit -1

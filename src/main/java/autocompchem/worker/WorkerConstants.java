@@ -86,4 +86,9 @@ public class WorkerConstants
 	 */
     public static final String PARRANDOMSEED = "RANDOMSEED";
 
+    /**
+     * Key of parameter defining the properties to expose upon reading a atom containers.
+     */
+    public static final String PAREXPOSEIACPROPS = "EXPOSEATOMCONTAINERPROPERTIES";
+
 }

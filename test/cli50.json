@@ -1,0 +1,92 @@
+{
+  "jobType": "ACCJob",
+  "params": [
+    {
+      "reference": "VERBOSITY",
+      "value": "4"
+    }
+  ],
+  "steps": [
+    {
+        "jobType": "ACCJob",
+        "params": [
+          {
+            "reference": "TASK",
+            "value": "readAtomContainers"
+          },
+          {
+            "reference": "inFile",
+            "value": "../cli50.sdf"
+          },
+          {
+            "reference": "exposeAtomContainerProperties",
+            "value": "Prop A,Prop_C, Other"
+          }
+        ]
+    },
+    {
+      "jobType": "ACCJob",
+      "params": [
+        {
+          "reference": "TASK",
+          "value": "listJobData"
+        },
+        {
+          "reference": "jobPointer",
+          "value": "#-1.0"
+        }
+      ]
+    },
+    {
+        "jobType": "ACCJob",
+        "params": [
+          {
+            "reference": "TASK",
+            "value": "readAtomContainers"
+          },
+          {
+            "reference": "inFile",
+            "value": "../cli50.sdf"
+          },
+          {
+            "reference": "exposeAtomContainerProperties",
+            "value": "all"
+          }
+        ]
+    },
+    {
+      "jobType": "ACCJob",
+      "params": [
+        {
+          "reference": "TASK",
+          "value": "listJobData"
+        },
+        {
+          "reference": "jobPointer",
+          "value": "#-1.2"
+        }
+      ]
+    },
+    {
+      "jobType": "ACCJob",
+      "params": [
+        {
+          "reference": "TASK",
+          "value": "readAtomContainers"
+        },
+        {
+          "reference": "inFile",
+          "value": "../cli50.sdf"
+        },
+        {
+          "reference": "setProperties",
+          "value": "DERIVED from A and C: ${getACCJobsData(#-1.0,EXPOSEDIACPROPS,0,Prop A) + getACCJobsData(#-1.0,EXPOSEDIACPROPS,1,Prop_C)}"
+        },
+        {
+          "reference": "outFile",
+          "value": "cli50_results.sdf"
+        }
+      ]
+    }
+  ]
+}

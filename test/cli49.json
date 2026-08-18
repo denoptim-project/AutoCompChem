@@ -60,10 +60,6 @@
           "value": "readAtomContainers"
         },
         {
-          "reference": "jobPointer",
-          "value": "#-1.0"
-        },
-        {
           "reference": "inFile",
           "value": "cli49_refined.sdf"
         },

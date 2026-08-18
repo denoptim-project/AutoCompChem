@@ -42,6 +42,7 @@ import autocompchem.io.IOtools;
 import autocompchem.io.IOtools.IACOutFormat;
 import autocompchem.run.Job;
 import autocompchem.utils.NumberUtils;
+import autocompchem.utils.StringUtils;
 import autocompchem.wiro.chem.ChemSoftConstants;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
@@ -139,6 +140,11 @@ public class AtomContainerInputProcessor extends Worker
     static {
     	READIACSTASK = Task.make(READIACSTASKNAME);
     }
+
+    /**
+     * Name of exposed data collecting the properties exposed upon reading a atom containers.
+     */
+    public static final String EXPOSEDIACPROPS = "EXPOSEDIACPROPS";
     
 //------------------------------------------------------------------------------
 
@@ -370,6 +376,49 @@ public class AtomContainerInputProcessor extends Worker
                 }
         	}
         }
+
+        if (params.contains(WorkerConstants.PAREXPOSEIACPROPS))
+        {
+            Set<Object> propsToExpose = new HashSet<Object>();
+            String text = params.getParameter(
+                    WorkerConstants.PAREXPOSEIACPROPS).getValueAsString().strip();
+            // Get list of properties to expose
+            String[] arr = text.split(",");
+            for (String propertyName : arr)
+            {
+                propsToExpose.add(propertyName.strip());
+            }
+            // Or expose all
+            boolean exposeAll = false;
+            if (text.toUpperCase().strip().equals("ALL"))
+            {
+                exposeAll = true;
+            }
+
+            NamedDataCollector exposedPropsCollector = new NamedDataCollector();
+
+            for (int i=0; i<inMols.size(); i++)
+            {
+                IAtomContainer iac = inMols.get(i);
+                NamedDataCollector iacPropsCollector = new NamedDataCollector();
+                if (exposeAll)
+                {
+                    iac.getProperties().keySet().forEach(propName -> {
+                        propsToExpose.add(propName);
+                    });
+                }
+                for (Object propKey : propsToExpose)
+                {
+                    Object propValue = iac.getProperty(propKey.toString());
+                    if (propValue != null)
+                    {
+                        iacPropsCollector.putNamedData(new NamedData(propKey.toString(), propValue));
+                    }
+                }
+                exposedPropsCollector.putNamedData(new NamedData(Integer.toString(i), iacPropsCollector));
+            }
+            exposeOutputData(new NamedData(EXPOSEDIACPROPS, exposedPropsCollector));
+        }
     }
 	
 //------------------------------------------------------------------------------
@@ -400,14 +449,14 @@ public class AtomContainerInputProcessor extends Worker
         for (String line : lines)
         {
         	String[] nameValueParts = line.split(":", 2);
-    		String propertyName = line.stripLeading().stripTrailing();
+    		String propertyName = line.strip();
     		String propertyValue = "";
         	if (nameValueParts.length>0)
         	{
-        		propertyName = nameValueParts[0].stripLeading().stripTrailing();
+        		propertyName = nameValueParts[0].strip();
         		if (nameValueParts.length>1)
             	{
-        			propertyValue = nameValueParts[1].stripLeading().stripTrailing();
+        			propertyValue = nameValueParts[1].strip();
             	}
         	}
 
@@ -415,14 +464,10 @@ public class AtomContainerInputProcessor extends Worker
             if (propertyValue.contains("${") && propertyValue.contains("}"))
             {
                 Object result = NumberUtils.calculateValueOfExpression(propertyValue);
-                if (result instanceof Double)
+                if (result instanceof Double || result instanceof Integer
+                        || result instanceof Long || result instanceof String)
                 {
-                    propertyValue = Double.toString((Double) result);
-                } else if (result instanceof Integer)
-                {
-                    propertyValue = Integer.toString((Integer) result);
-                } else if (result instanceof String) {
-                    propertyValue = (String) result;
+                    propertyValue = StringUtils.expressionResultToString(result);
                 } else {
                     logger.warn("WARNING: unable to evaluate expression '" 
                         + propertyValue + "' in property '" + propertyName 
@@ -463,7 +508,7 @@ public class AtomContainerInputProcessor extends Worker
         	String[] nameValueParts = line.split(",");
             for (String propertyName : nameValueParts)
             {
-                propertyName = propertyName.stripLeading().stripTrailing();
+                propertyName = propertyName.strip();
                 if (propertyName.isEmpty())
                 {
                     continue;

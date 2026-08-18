@@ -621,6 +621,23 @@ public class StringUtils
 //------------------------------------------------------------------------------
 
     /**
+     * Converts the result of an Expression Language evaluation to a
+     * {@link String}. {@link String} results are returned as-is; all other
+     * types (e.g. {@link Double}, {@link Integer}, {@link Long}) are converted
+     * with {@link String#valueOf(Object)}.
+     * @param result the object returned by an EL evaluation.
+     * @return the string representation of the result.
+     */
+    public static String expressionResultToString(Object result)
+    {
+    	if (result instanceof String s)
+    		return s;
+    	return String.valueOf(result);
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
      * Finds every Expression Language fragment of the form {@code ${...}}
      * (with balanced braces), evaluates each via
      * {@link NumberUtils#calculateValueOfExpression(String)}, and returns a
@@ -660,13 +677,7 @@ public class StringUtils
     		int closeBrace = indexOfMatchingClosingBrace(text, openBrace);
     		String exprToken = text.substring(elStart, closeBrace + 1);
     		Object value = NumberUtils.calculateValueOfExpression(exprToken);
-    		if (value instanceof String)
-    		{
-    			out.append((String) value);
-    		} else
-    		{
-    			out.append(String.valueOf(value));
-    		}
+    		out.append(expressionResultToString(value));
     		pos = closeBrace + 1;
     	}
     	return out.toString();

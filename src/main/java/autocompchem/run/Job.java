@@ -1634,7 +1634,7 @@ public class Job implements Runnable
     	String[] parts = pathToOtherJob.split("\\.");
     	int[] pathAsInts = new int[parts.length];
         for (int i = 0; i < parts.length; i++) {
-        	pathAsInts[i] = Integer.parseInt(parts[i].stripLeading().stripTrailing());
+        	pathAsInts[i] = Integer.parseInt(parts[i].strip());
         }
         return navigateToJob(job, pathAsInts);
     }
@@ -2039,7 +2039,7 @@ public class Job implements Runnable
                             String[] pathIntoExposedData = args;
                             if (args.length > 0 && args[0].stripLeading().startsWith("#"))
                             {
-                                pathToOtherJob = args[0].stripLeading().stripTrailing();
+                                pathToOtherJob = args[0].strip();
                                 pathIntoExposedData = Arrays.copyOfRange(args, 1, args.length);
                             }
                             
@@ -2383,7 +2383,7 @@ public class Job implements Runnable
             String[] pathIntoExposedData = args;
             if (args.length > 0 && args[0].stripLeading().startsWith("#"))
             {
-                pathToOtherJob = args[0].stripLeading().stripTrailing();
+                pathToOtherJob = args[0].strip();
                 pathIntoExposedData = Arrays.copyOfRange(args, 1, args.length);
             }
 
