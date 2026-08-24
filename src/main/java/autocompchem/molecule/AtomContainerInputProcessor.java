@@ -552,7 +552,7 @@ public class AtomContainerInputProcessor extends Worker
         			int id = Integer.parseInt(idStr);
         			if (id>-1 && id < iacs.size())
         			{
-        				this.inMols.add(iacs.get(iacs.size()-1));
+        				this.inMols.add(iacs.get(id));
         			} else {
                     	throw new IllegalArgumentException("Found request "
                     			+ "to take geometry " + id + " from '"

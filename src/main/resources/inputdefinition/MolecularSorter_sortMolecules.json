@@ -3,7 +3,7 @@
     "key": "SDFPROPERTY",
     "casedKey": "SDFProperty",
     "type": "<String>",
-    "doc": "The name of the SDF property to use for sorting molecules in ascending order. Used only by the 'sortMolecules' task."
+    "doc": "The name of the SDF property to use for sorting molecules in ascending order."
   },
   {
     "embeddedWorker": "autocompchem.molecule.AtomContainerInputProcessor",

@@ -1,0 +1,39 @@
+{
+    "jobType": "ACCJob",
+    "steps": [
+    {
+        "jobType": "ACCJob",
+        "params": [
+        {
+        "reference": "TASK",
+        "value": "reverseMolecules"
+        },
+        {
+        "reference": "INFILE",
+        "value": "../cli52.sdf"
+        },
+        {
+        "reference": "outFile",
+        "value": "cli52_results.sdf"
+        }
+        ]
+    },
+    {
+        "jobType": "ACCJob",
+        "params": [
+        {
+        "reference": "TASK",
+        "value": "reverseMolecules"
+        },
+        {
+        "reference": "INFILE",
+        "value": "../cli52.xyz"
+        },
+        {
+        "reference": "outFile",
+        "value": "cli52_results.xyz"
+        }
+        ]
+    }
+    ]
+}

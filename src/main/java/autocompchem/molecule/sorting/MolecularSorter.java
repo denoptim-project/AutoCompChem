@@ -33,7 +33,7 @@ import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 
 /**
- * Tool to sorting molecules.
+ * Tool to sort or reverse the order of molecules in multi-structure input.
  * 
  * @author Marco Foscato
  */
@@ -59,6 +59,19 @@ public class MolecularSorter extends AtomContainerInputProcessor
     	SORTMOLECULESTASK = Task.make(SORTMOLECULESTASKNAME);
     }
 
+    /**
+     * String defining the task of reversing molecule order
+     */
+    public static final String REVERSEMOLECULESTASKNAME = "reverseMolecules";
+
+    /**
+     * Task about reversing molecule order
+     */
+    public static final Task REVERSEMOLECULESTASK;
+    static {
+    	REVERSEMOLECULESTASK = Task.make(REVERSEMOLECULESTASKNAME);
+    }
+
 //-----------------------------------------------------------------------------
     
     /**
@@ -72,7 +85,7 @@ public class MolecularSorter extends AtomContainerInputProcessor
     @Override
     public Set<Task> getCapabilities() {
         return Collections.unmodifiableSet(new HashSet<Task>(
-             Arrays.asList(SORTMOLECULESTASK)));
+             Arrays.asList(SORTMOLECULESTASK, REVERSEMOLECULESTASK)));
     }
 
 //------------------------------------------------------------------------------
@@ -100,8 +113,11 @@ public class MolecularSorter extends AtomContainerInputProcessor
     {
     	super.initialize();
 
-        this.propertyName = params.getParameter("SDFPROPERTY")
-        		.getValueAsString();
+        if (task.equals(SORTMOLECULESTASK))
+        {
+            this.propertyName = params.getParameter("SDFPROPERTY")
+                    .getValueAsString();
+        }
     }
 
 //-----------------------------------------------------------------------------
@@ -132,8 +148,26 @@ public class MolecularSorter extends AtomContainerInputProcessor
 	@Override
 	public List<IAtomContainer> processAllAtomContainer(List<IAtomContainer> iacs) 
 	{
+        if (task.equals(REVERSEMOLECULESTASK))
+        {
+            return reverse(iacs);
+        }
         return sort(iacs, propertyName);
     }
+	
+//-----------------------------------------------------------------------------
+	
+	/**
+	 * Reverse the order of the given atom containers.
+	 * @param iacs the containers to reverse.
+	 * @return a new list with molecules in reverse order.
+	 */
+	public static List<IAtomContainer> reverse(List<IAtomContainer> iacs)
+	{
+		List<IAtomContainer> result = new ArrayList<IAtomContainer>(iacs);
+		Collections.reverse(result);
+		return result;
+	}
 	
 //-----------------------------------------------------------------------------
 	
