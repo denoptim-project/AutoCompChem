@@ -8,23 +8,22 @@ function not_passed() {
 if [ ! -f "cli51.inp" ] ; then not_passed $LINENO ; fi
 
 n=0; n=$(grep -c -i "Read_Geom(2);" "cli51.inp")
-if [ 1 == "$n" ] ; then echo Passed ; exit 0 ; fi
+if [ 1 != "$n" ] ; then not_passed $LINENO ; fi
 
 n=0; n=$(grep -c -i "Geometry myGeom;" "cli51.inp")
-if [ 1 == "$n" ] ; then echo Passed ; exit 0 ; fi
+if [ 1 != "$n" ] ; then not_passed $LINENO ; fi
 
 n=0; n=$(grep -i -A2 "Geometry myGeom;" "cli51.inp" | grep -c -i "Variable scfGradX, scfGradY;")
-if [ 1 == "$n" ] ; then echo Passed ; exit 0 ; fi
+if [ 1 != "$n" ] ; then not_passed $LINENO ; fi
 
 n=0; n=$(grep -c -i "myGeom.WriteXYZFile(filename=\"something.xyz\");" "cli51.inp")
-if [ 1 == "$n" ] ; then echo Passed ; exit 0 ; fi
+if [ 1 != "$n" ] ; then not_passed $LINENO ; fi
 
 n=0; n=$(grep -c -i "New_Step" "cli51.inp")
-if [ 4 == "$n" ] ; then echo Passed ; exit 0 ; fi
+if [ 4 != "$n" ] ; then not_passed $LINENO ; fi
 
 n=0; n=$(grep -c -i "Step_end" "cli51.inp")
-if [ 4 == "$n" ] ; then echo Passed ; exit 0 ; fi
-
+if [ 4 != "$n" ] ; then not_passed $LINENO ; fi
 
 if [ ! -f "cli51.log" ] ; then not_passed $LINENO ; fi
 
