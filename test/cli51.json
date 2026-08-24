@@ -1,0 +1,455 @@
+    {
+      "jobType": "ACCJob",
+      "params": [
+        {
+          "reference": "TASK",
+          "value": "PrepareInputOrca"
+        },
+        {
+          "reference": "VERBOSITY",
+          "value": "4"
+        },
+        {
+          "reference": "INFILE",
+          "value": "../cli51.sdf"
+        },
+        {
+          "reference": "JOBDETAILS",
+          "type": "JOB",
+          "value": {
+            "jobType": "CompChemJob",
+            "directives": [
+              {
+                "name": "*",
+                "keywords": [
+                  {
+                    "reference": "coordtype",
+                    "value": "xyz",
+                    "isLoud": false
+                  }
+                ],
+                "dirData": [
+                  {
+                    "accTaskParams": [
+                      {
+                        "reference": "TASK",
+                        "value": "getMolecularGeometry"
+                      },
+                      {
+                        "reference": "useGeomAtIndex",
+                        "value": "0"
+                      }
+                    ],
+                    "reference": "geometry"
+                  }
+                ]
+              }
+            ],
+            "steps": [  
+              {
+                "jobType": "CompChemJob",
+                "directives": [
+                  {
+                    "name": "COMPOUND_SCRIPT_CODE",
+                    "dirData": [
+                      {
+                          "reference": "value",
+                          "type": "TEXTBLOCK",
+                          "value": [
+                            "#Define some variables",
+                            "Geometry myGeom;",
+                            "Variable scfGradX, scfGradY;"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "jobType": "CompChemJob",
+                "directives": [
+                  {
+                    "name": "!",
+                    "keywords": [
+                      {
+                        "reference": "method",
+                        "value": "XTB",
+                        "isLoud": false
+                      },
+                      {
+                        "reference": "jobType",
+                        "value": "Freq",
+                        "isLoud": false
+                      }
+                    ]
+                  },
+                  {
+                    "name": "xtb",
+                    "subDirectives": [
+                      {
+                        "name": "XTBINPUTSTRING",
+                        "keywords": [
+                          {
+                            "reference": "gxtbFlag",
+                            "value": "\"--gxtb\"",
+                            "isLoud": false
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "jobType": "CompChemJob",
+                "directives": [
+                  {
+                    "name": "!",
+                    "keywords": [
+                      {
+                        "reference": "method",
+                        "value": "XTB",
+                        "isLoud": false
+                      },
+                      {
+                        "reference": "jobType",
+                        "value": "Opt Freq",
+                        "isLoud": false
+                      }
+                    ]
+                  },
+                  {
+                    "name": "geom",
+                    "subDirectives": [
+                      {
+                        "name": "maxiter",
+                        "keywords": [
+                          {
+                            "reference": "value",
+                            "value": "600",
+                            "isLoud": false
+                          }
+                        ]
+                      },
+                      {
+                        "name": "InHess",
+                        "keywords": [
+                          {
+                            "reference": "hessSource",
+                            "value": "Read",
+                            "isLoud": false
+                          }
+                        ]
+                      },
+                      {
+                        "name": "InHessName",
+                        "keywords": [
+                          {
+                            "reference": "filename",
+                            "isLoud": false,
+                            "value": "\"cli51_Compound_1.hess\""
+                          }
+                        ]
+                      },
+                      {
+                        "name": "constraints",
+                        "dirData": [
+                          {
+                            "reference": "constraints",
+                            "accTaskParams": [
+                              {
+                                "reference": "SMARTS",
+                                "value": "[#44] [$([#8]1~[#6]~[#6]~[#6]~[#44]~1)] onlybonded value=3.430\n[$([#6;X4]1([#1])([#1])~[#6;X4]([#1])~[#44]~1)] [#44] onlybonded value=2.8149\n[$([#6;X4]1([#1])([#6])~[#6;X4]([#1])([#1])~[#44]~1)] [#44] onlybonded value=3.3848"
+                              },
+                              {
+                                "reference": "TASK",
+                                "value": "GenerateConstraints"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "xtb",
+                    "subDirectives": [
+                      {
+                        "name": "XTBINPUTSTRING",
+                        "keywords": [
+                          {
+                            "reference": "gxtbFlag",
+                            "value": "\"--gxtb\"",
+                            "isLoud": false
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "jobType": "CompChemJob",
+                "directives": [
+                  {
+                    "name": "!",
+                    "keywords": [
+                      {
+                        "reference": "method",
+                        "value": "XTB",
+                        "isLoud": false
+                      },
+                      {
+                        "reference": "jobType",
+                        "value": "Opt",
+                        "isLoud": false
+                      }
+                    ]
+                  },
+                  {
+                    "name": "geom",
+                    "subDirectives": [
+                      {
+                        "name": "maxiter",
+                        "keywords": [
+                          {
+                            "reference": "value",
+                            "value": "600",
+                            "isLoud": false
+                          }
+                        ]
+                      },
+                      {
+                        "name": "InHess",
+                        "keywords": [
+                          {
+                            "reference": "hessSource",
+                            "value": "Read",
+                            "isLoud": false
+                          }
+                        ]
+                      },
+                      {
+                        "name": "InHessName",
+                        "keywords": [
+                          {
+                            "reference": "filename",
+                            "isLoud": false,
+                            "value": "\"cli51_Compound_2.hess\""
+                          }
+                        ]
+                      },
+                      {
+                        "name": "scan",
+                        "dirData": [
+                          {
+                            "reference": "scan_coords",
+                            "accTaskParams": [
+                              {
+                                "reference": "SMARTS",
+                                "value": "[#44] [$([#8]1~[#6]~[#6]~[#6]~[#44]~1)] onlybonded getAtomLabels prefix: B suffix: = 3.430, 2.5, 15\n[$([#6;X4]1([#1])([#1])~[#6;X4]([#1])~[#44]~1)] [#44] onlybonded getAtomLabels prefix: B suffix: = 2.8149, 4.0, 15"
+                              },
+                              {
+                                "reference": "idSeparator",
+                                "value": " "
+                              },
+                              {
+                                "reference": "fieldSeparator",
+                                "value": " "
+                              },
+                              {
+                                "reference": "LABELTYPE",
+                                "value": "IndexOnly"
+                              },
+                              {
+                                "reference": "zeroBased",
+                                "value": "true"
+                              },
+                              {
+                                "reference": "TASK",
+                                "value": "getAtomSpecificString"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "name": "Simul_Scan",
+                        "keywords": [
+                          {
+                            "reference": "value",
+                            "isLoud": false,
+                            "value": "true"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "xtb",
+                    "subDirectives": [
+                      {
+                        "name": "XTBINPUTSTRING",
+                        "keywords": [
+                          {
+                            "reference": "gxtbFlag",
+                            "value": "\"--gxtb\"",
+                            "isLoud": false
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "jobType": "CompChemJob",
+                "directives": [
+                  {
+                    "name": "COMPOUND_SCRIPT_CODE",
+                    "dirData": [
+                      {
+                        "reference": "value",
+                        "value": "Read_Geom(2);"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "jobType": "CompChemJob",
+                "directives": [
+                  {
+                    "name": "!",
+                    "keywords": [
+                      {
+                        "reference": "method",
+                        "value": "XTB",
+                        "isLoud": false
+                      },
+                      {
+                        "reference": "jobType",
+                        "value": "Opt",
+                        "isLoud": false
+                      }
+                    ]
+                  },
+                  {
+                    "name": "geom",
+                    "subDirectives": [
+                      {
+                        "name": "maxiter",
+                        "keywords": [
+                          {
+                            "reference": "value",
+                            "value": "600",
+                            "isLoud": false
+                          }
+                        ]
+                      },
+                      {
+                        "name": "InHess",
+                        "keywords": [
+                          {
+                            "reference": "hessSource",
+                            "value": "Read",
+                            "isLoud": false
+                          }
+                        ]
+                      },
+                      {
+                        "name": "InHessName",
+                        "keywords": [
+                          {
+                            "reference": "filename",
+                            "isLoud": false,
+                            "value": "\"cli51_Compound_2.hess\""
+                          }
+                        ]
+                      },
+                      {
+                        "name": "scan",
+                        "dirData": [
+                          {
+                            "reference": "scan_coords",
+                            "accTaskParams": [
+                              {
+                                "reference": "SMARTS",
+                                "value": "[#44] [$([#8]1~[#6]~[#6]~[#6]~[#44]~1)] onlybonded getAtomLabels prefix: B suffix: = 3.430, 6.0, 15\n[$([#6;X4]1([#1])([#1])~[#6;X4]([#1])~[#44]~1)] [#44] onlybonded getAtomLabels prefix: B suffix: = 2.8149, 2.0, 15"
+                              },
+                              {
+                                "reference": "idSeparator",
+                                "value": " "
+                              },
+                              {
+                                "reference": "fieldSeparator",
+                                "value": " "
+                              },
+                              {
+                                "reference": "LABELTYPE",
+                                "value": "IndexOnly"
+                              },
+                              {
+                                "reference": "zeroBased",
+                                "value": "true"
+                              },
+                              {
+                                "reference": "TASK",
+                                "value": "getAtomSpecificString"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "name": "Simul_Scan",
+                        "keywords": [
+                          {
+                            "reference": "value",
+                            "isLoud": false,
+                            "value": "true"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "xtb",
+                    "subDirectives": [
+                      {
+                        "name": "XTBINPUTSTRING",
+                        "keywords": [
+                          {
+                            "reference": "gxtbFlag",
+                            "value": "\"--gxtb\"",
+                            "isLoud": false
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "jobType": "CompChemJob",
+                "directives": [
+                  {
+                    "name": "COMPOUND_SCRIPT_CODE",
+                    "dirData": [
+                      {
+                        "reference": "value",
+                        "type": "TEXTBLOCK",
+                        "value": [
+                            "#Compound script ends with writing of a file",
+                            "myGeom.WriteXYZFile(filename=\"something.xyz\");"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }

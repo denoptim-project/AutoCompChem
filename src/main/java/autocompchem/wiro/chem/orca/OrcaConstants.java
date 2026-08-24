@@ -234,6 +234,11 @@ public class OrcaConstants
 	/**
 	 * Name of the {@link Directive} defining the basis set.
 	 */
-	public static final String BASISSETDIRNAME = "BASIS";	
+	public static final String BASISSETDIRNAME = "BASIS";
+
+    /**
+     * Name of the {@link Directive} defining the compound script code.
+     */
+    public static final String COMPOUNDSCRIPTCODE = "COMPOUND_SCRIPT_CODE";	
 
 }

@@ -54,7 +54,7 @@ import autocompchem.worker.WorkerFactory;
 public class ACCMain
 {
     //Software version number
-    private static final String version = "3.6.2";
+    private static final String version = "3.6.3";
     
     // System.spec line separator
     private static final String NL = System.getProperty("line.separator");

@@ -62,6 +62,18 @@ import autocompchem.worker.Worker;
 
 /**
  * Writes input files for software ORCA.
+ * 
+ * Orca input files can contain scripts under the %Compound block, but 
+ * these script can embed job definitions (i.e., New_Step blocks) in
+ * loops and if blocks, thus breaking the serial workflow logic. 
+ * As a result, while compound script code can be manipulated as
+ * any other directive comntent, as long as it is identified by
+ * a specific directive name, i.e., {@link OrcaConstants#COMPOUNDSCRIPTCODE},
+ * the code contained within a single one of such directives is not expected
+ * to be a self-standing block of code, but may likely be a part of a larger 
+ * structure that may be completely defined only by the collective content
+ * of multiple {@link CompChemJob}s mixing compound-code job and regular
+ * job definitions.
  *
  * @author Marco Foscato
  */
@@ -271,6 +283,26 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 				lines.addAll(getTextForBasisSetDirective(d));
 				break;
 			}
+
+            case (OrcaConstants.COMPOUNDSCRIPTCODE):
+            {
+                // Internal convention: compound script code is contained in
+                // directive data blocks, not keywords or sub directives.
+                if (d.getAllSubDirectives().size()>0 || d.getAllKeywords().size()>0)
+				{
+					throw new IllegalStateException("Compound script must be " 
+                        + "contained in directive data blocks, not keywords or "
+                        + "sub directives");
+				}
+                for (DirectiveData dd : d.getAllDirectiveDataBlocks())
+                {
+                    for (String innerLine : dd.getLines())
+                    {
+                        lines.add(innerLine);
+                    }
+                }
+                break;
+            }
 			
 			default:
 			{
@@ -916,10 +948,16 @@ public class OrcaInputWriter extends ChemSoftInputWriter
     			sb.append("%" + OrcaConstants.COMPOUNDDIRNAME).append(NL);
     			for (int i=0; i<job.getNumberOfSteps(); i++)
 				{
-        			sb.append(OrcaConstants.INDENT ).append(
-        					OrcaConstants.COMPOUNDSTEPSTART).append(NL);
-					CompChemJob step = (CompChemJob) job.getStep(i);
-					
+                    CompChemJob step = (CompChemJob) job.getStep(i);
+                    boolean isCompoundsScriptStep = isCompoundsScriptStep(step);
+                    if (isCompoundsScriptStep)
+                    {
+                        sb.append(OrcaConstants.INDENT).append(NL);
+                    } else {
+                        sb.append(OrcaConstants.INDENT).append(
+                                OrcaConstants.COMPOUNDSTEPSTART).append(NL);
+                    }
+
 		    		preProcessingJob(step);
 		    		
 					Iterator<Directive> it = step.directiveIterator();
@@ -931,8 +969,14 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 							sb.append(OrcaConstants.INDENT).append(line).append(NL);
 						}
 					}
-	    			sb.append(OrcaConstants.INDENT).append(
-        					OrcaConstants.COMPOUNDSTEPEND).append(NL);
+
+                    if (isCompoundsScriptStep)
+                    {
+                        sb.append(OrcaConstants.INDENT).append(NL);
+                    } else {
+                        sb.append(OrcaConstants.INDENT).append(
+                                OrcaConstants.COMPOUNDSTEPEND).append(NL);
+                    }
 				}
     			sb.append(OrcaConstants.COMPOUNDEND).append(NL);
     		}
@@ -972,6 +1016,18 @@ public class OrcaInputWriter extends ChemSoftInputWriter
     	}
     	return sb;
 	}
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Checks if the given step is a compound script step, i.e., a "fake step"
+     * created to contain compound script code, but not expected to be a 
+     * standalone Orca job.
+     */
+    private boolean isCompoundsScriptStep(CompChemJob step)
+    {
+        return step.getDirective(OrcaConstants.COMPOUNDSCRIPTCODE)!=null;
+    }
 	
 //------------------------------------------------------------------------------
 	
