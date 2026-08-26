@@ -3,13 +3,19 @@
     "key": "INFILE",
     "casedKey": "inFile",
     "type": "<String> [<int> ...] [<String>]",
-    "doc": "Shortcut for 'INPUTGEOMETRIESFILE'. The pathname to the file containing the geometries of the chemical system/s given as input (Acceptable formats are SDF, XYZ, ZMAT, and any output file that can be analyzed by any registered implementation of ChemSoftOutputReader). Optionally, a set of integers can be used to select which geometries from a multigeometry input (0-based index). Optionally, the string 'last' can be used to retain only the last geometry from a multigeometry input. Takes priority over other parameters 'inputGeometries' and 'INPUTGEOMETRIESFILE'."
+    "doc": "Shortcut for 'INPUTGEOMETRIESFILE'. The pathname to the file containing the geometries of the chemical system/s given as input (Acceptable formats are SDF, XYZ, ZMAT, and any output file that can be analyzed by any registered implementation of ChemSoftOutputReader). Optionally, a set of integers can be used to select which geometries from a multigeometry input (0-based index). Optionally, the string 'last' can be used to retain only the last geometry from a multigeometry input. Takes priority over other parameters 'inputGeometries' and 'INPUTGEOMETRIESFILE'. Ignored if parameter 'inFiles' is present."
+  },
+  {
+    "key": "INFILES",
+    "casedKey": "inFiles",
+    "type": "<String> [<String> ...]",
+    "doc": "Space- and/or newline-separated list of pathnames to files containing geometries of the chemical system/s given as input (Acceptable formats are SDF, XYZ, ZMAT, and any output file that can be analyzed by any registered implementation of ChemSoftOutputReader). Each file may contain one or more atom containers. All containers are collected in the order of the listed files (and, within each file, in the order they appear). Takes priority over 'inFile', 'inputGeometriesFile', and 'inputGeometries'."
   },
   {
     "key": "INPUTGEOMETRIESFILE",
     "casedKey": "inputGeometriesFile",
     "type": "<String> [<int> ...] [<String>]",
-    "doc": "The pathname to the file containing the geometries of the chemical system/s given as input. Acceptable formats are SDF, XYZ, ZMAT, and any output file that can be analyzed by any registered implementation of ChemSoftOutputReader. Optionally, a set of integers can be used to select which geometries from a multigeometry input (0-based index). Optionally, the string 'last' can be used to retain only the last geometry from a multigeometry input. Ignored if parameter 'inFile' is present."
+    "doc": "The pathname to the file containing the geometries of the chemical system/s given as input. Acceptable formats are SDF, XYZ, ZMAT, and any output file that can be analyzed by any registered implementation of ChemSoftOutputReader. Optionally, a set of integers can be used to select which geometries from a multigeometry input (0-based index). Optionally, the string 'last' can be used to retain only the last geometry from a multigeometry input. Ignored if parameter 'inFile' or 'inFiles' is present."
   },
   {
     "key": "INFORMAT",
@@ -21,7 +27,7 @@
     "key": "INPUTGEOMETRIES",
     "casedKey": "inputGeometries",
     "type": "List<IAtomContainer>",
-    "doc": "Parameter holding the list of CDK definition of chemical systems to process. Ignored if parameter 'inFile' is present."
+    "doc": "Parameter holding the list of CDK definition of chemical systems to process. Ignored if parameter 'inFile' or 'inFiles' is present."
   },
   {
     "key": "MULTIGEOMMODE",

@@ -915,6 +915,10 @@ public class IOtools
 	  		case "XYZ":
 				writeXYZAppend(file, ac, append);
 				break;
+
+            case "ORCATRAJECTORY":
+                writeOrcaTrj(file, ac, append);
+                break;
 			
 			case "SDF":
 				writeSDFAppend(file, ac, append);
@@ -1019,10 +1023,29 @@ public class IOtools
 //------------------------------------------------------------------------------
     
     /**
-     * Writes on a new file with Orca's trajectory format (i.e., multi-molecule
+     * Writes on a file with Orca's trajectory format (i.e., multi-molecule
      * XYZ file where each molecule is separated by the next one by a &gt; 
      * symbol.
-     * @param file target XYZ file (new or existing)
+     * @param file target XYZ file
+     * @param ac atom container to be written on the XYZ file
+     * @param append <code>true</code> to append to existing file,
+     * otherwise we overwrite.
+     */
+    public static void writeOrcaTrj(File file, IAtomContainer ac,
+            boolean append)
+    {
+        IAtomContainerSet acs = new AtomContainerSet();
+        acs.addAtomContainer(ac);
+        writeOrcaTrj(file, acs, append);
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Writes on a file with Orca's trajectory format (i.e., multi-molecule
+     * XYZ file where each molecule is separated by the next one by a &gt; 
+     * symbol.
+     * @param file target XYZ file
      * @param acs set of atom containers to be written on the XYZ file
      * @param append <code>true</code> to append to existing file,
      * otherwise we overwrite.

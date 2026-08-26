@@ -199,12 +199,18 @@ public class AtomContainerInputProcessor extends Worker
                         + geomValue.getClass().getName());
             }
            
-            if (params.contains(WorkerConstants.PARINFILE) || params.contains(ChemSoftConstants.PARGEOMFILE))
+            if (params.contains(WorkerConstants.PARINFILE) 
+            		|| params.contains(WorkerConstants.PARMANYINFILE)
+            		|| params.contains(ChemSoftConstants.PARGEOMFILE))
             {
 				String existing = "";
 				if (params.contains(WorkerConstants.PARINFILE))
 				{
 					existing = WorkerConstants.PARINFILE;
+				}
+				if (params.contains(WorkerConstants.PARMANYINFILE))
+				{
+					existing = WorkerConstants.PARMANYINFILE;
 				}
 				if (params.contains(ChemSoftConstants.PARGEOMFILE))
 				{
@@ -253,6 +259,32 @@ public class AtomContainerInputProcessor extends Worker
 						+ ChemSoftConstants.PARGEOMFILE + " as input for "
 						+ this.getClass().getSimpleName() + ".");
 				this.inFile = null;
+			}
+		}
+
+		if (params.contains(WorkerConstants.PARMANYINFILE))
+		{
+			String value = params.getParameter(WorkerConstants.PARMANYINFILE)
+					.getValueAsString();
+			String format = null;
+			if (params.contains(WorkerConstants.PARINFORMAT))
+			{	
+				format = params.getParameter(WorkerConstants.PARINFORMAT)
+						.getValueAsString();
+			}
+			processManyInputFilesParameter(value, format);
+
+			if (params.contains(WorkerConstants.PARINFILE) 
+					|| params.contains(ChemSoftConstants.PARGEOMFILE))
+			{
+				String other = params.contains(ChemSoftConstants.PARGEOMFILE)
+						? ChemSoftConstants.PARGEOMFILE
+						: WorkerConstants.PARINFILE;
+				logger.warn("WARNING: found both "
+						+ other + " and "
+						+ WorkerConstants.PARMANYINFILE + ". Using geometries from "
+						+ WorkerConstants.PARMANYINFILE + " as input for "
+						+ this.getClass().getSimpleName() + ".");
 			}
 		}
         
@@ -572,6 +604,53 @@ public class AtomContainerInputProcessor extends Worker
         	this.inMols = iacs;
         }
 	}
+
+//------------------------------------------------------------------------------
+
+	/**
+	 * Processes the multi-file input parameter reading chemical structures from
+	 * each listed file in order. Each file may contain one or more atom
+	 * containers; all containers are appended to {@link #inMols} following the
+	 * order of the given pathnames.
+	 * @param value the value of the parameter: a space- and/or newline-separated
+	 * list of pathnames.
+	 * @param format the format of the files to be read. If <code>null</code>,
+	 * we infer it from each file's extension.
+	 */
+	protected void processManyInputFilesParameter(String value, String format)
+	{
+		String[] pathnames = value.trim().split("\\s+");
+		if (pathnames.length == 0 || (pathnames.length == 1 && pathnames[0].isEmpty()))
+		{
+			throw new IllegalArgumentException("Parameter "
+					+ WorkerConstants.PARMANYINFILE
+					+ " must list at least one pathname. Check your input.");
+		}
+
+		inMols = new ArrayList<IAtomContainer>();
+		for (String pathname : pathnames)
+		{
+			if (pathname.isEmpty())
+			{
+				continue;
+			}
+			File file = getNewFile(pathname);
+			FileUtils.foundAndPermissions(file, true, false, false);
+			try {
+				inMols.addAll(IOtools.readMultiMolFiles(file, format));
+			} catch (IOException e) {
+				throw new IllegalArgumentException("Cannot read input file "
+						+ file, e);
+			}
+			inFile = file;
+		}
+		if (inMols.isEmpty())
+		{
+			throw new IllegalArgumentException("No atom containers found in "
+					+ "files listed by " + WorkerConstants.PARMANYINFILE
+					+ ". Check your input.");
+		}
+	}
     
 //-----------------------------------------------------------------------------
 
@@ -593,7 +672,10 @@ public class AtomContainerInputProcessor extends Worker
         {
             throw new IllegalArgumentException("Missing parameter defining the "
             		+ "input geometries (" + ChemSoftConstants.PARGEOM + ") or "
-            		+ "an input file to read geometries from. "
+            		+ "an input file to read geometries from ("
+            		+ WorkerConstants.PARINFILE + " / "
+            		+ WorkerConstants.PARMANYINFILE + " / "
+            		+ ChemSoftConstants.PARGEOMFILE + "). "
             		+ "No input to task " + task + " from "
             		+ this.getClass().getSimpleName() + ".");
         }

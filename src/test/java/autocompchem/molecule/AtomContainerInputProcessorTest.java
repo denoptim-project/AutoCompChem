@@ -2,10 +2,12 @@ package autocompchem.molecule;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.openscience.cdk.Atom;
 import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.PseudoAtom;
@@ -16,6 +18,7 @@ import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
+import autocompchem.io.IOtools;
 import autocompchem.molecule.AtomContainerInputProcessor.MultiGeomMode;
 import autocompchem.wiro.chem.ChemSoftConstants;
 import autocompchem.worker.Worker;
@@ -33,6 +36,11 @@ public class AtomContainerInputProcessorTest
 
 	private static IChemObjectBuilder chemBuilder = 
     		DefaultChemObjectBuilder.getInstance();
+
+	private final String SEP = System.getProperty("file.separator");
+
+	@TempDir
+	File tempDir;
 	
 //------------------------------------------------------------------------------
 	
@@ -131,6 +139,47 @@ public class AtomContainerInputProcessorTest
     	assertEquals(2, results.size());
     	assertEquals(2, ((IAtomContainer)
     			results.getNamedData(taskId+1).getValue()).getAtomCount());
+	}
+
+//------------------------------------------------------------------------------
+
+	@Test
+	public void testProcessManyInputFilesParameter() throws Exception
+	{
+		IAtomContainer molA = chemBuilder.newAtomContainer();
+		molA.setTitle("mol_A");
+		molA.addAtom(new Atom("H"));
+
+		IAtomContainer molB = chemBuilder.newAtomContainer();
+		molB.setTitle("mol_B");
+		molB.addAtom(new Atom("C"));
+		molB.addAtom(new Atom("O"));
+
+		IAtomContainer molC = chemBuilder.newAtomContainer();
+		molC.setTitle("mol_C");
+		molC.addAtom(new Atom("N"));
+
+		File file1 = new File(tempDir.getAbsolutePath() + SEP + "file1.xyz");
+		File file2 = new File(tempDir.getAbsolutePath() + SEP + "file2.xyz");
+		IOtools.writeXYZAppend(file1, molA, false);
+		IOtools.writeXYZAppend(file1, molB, true);
+		IOtools.writeXYZAppend(file2, molC, false);
+
+		ParameterStorage ps = new ParameterStorage();
+		ps.setParameter(WorkerConstants.PARTASK,
+				AtomContainerInputProcessor.READIACSTASK.ID);
+		ps.setParameter(WorkerConstants.PARMANYINFILE,
+				file1.getAbsolutePath() + " " + file2.getAbsolutePath());
+		ps.setParameter(ChemSoftConstants.PARMULTIGEOMMODE,
+				MultiGeomMode.ALLINONEJOB.toString());
+		ps.setParameter(ParameterConstants.VERBOSITY, 0);
+
+		AtomContainerInputProcessor worker =
+				(AtomContainerInputProcessor) WorkerFactory.createWorker(ps, null);
+		assertEquals(3, worker.inMols.size());
+		assertEquals("mol_A", worker.inMols.get(0).getTitle());
+		assertEquals("mol_B", worker.inMols.get(1).getTitle());
+		assertEquals("mol_C", worker.inMols.get(2).getTitle());
 	}
 
 //------------------------------------------------------------------------------

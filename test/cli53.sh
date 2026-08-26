@@ -1,0 +1,1 @@
+"$javaDir/java" -jar "$ACCHome/target/autocompchem-$accVersion-jar-with-dependencies.jar" -t readatomcontainers --infiles "../cli53_a.xyz ../cli53_b.sdf ../cli53_c.xyz ../cli53_d.sdf" --outfile cli53_results.trj --outFormat ORCATRAJECTORY > cli53.log

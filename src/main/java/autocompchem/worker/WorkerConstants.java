@@ -37,6 +37,13 @@ public class WorkerConstants
 	public static final String PARINFILE = "INFILE";
 
 	/**
+	 * Key for parameter defining a list of pathnames to input files.
+	 * Each file may contain one or more atom containers; containers are
+	 * collected following the order of the listed files.
+	 */
+	public static final String PARMANYINFILE = "INFILES";
+
+	/**
 	 * Key for parameter defining the format of the input file.
 	 * Usially not needed, but gives the change to specify the format of the input file
 	 * irrespectivly on its extension.
