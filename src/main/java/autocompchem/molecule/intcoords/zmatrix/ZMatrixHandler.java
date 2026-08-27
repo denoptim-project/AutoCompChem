@@ -406,7 +406,8 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
 //------------------------------------------------------------------------------
 
     /**
-     * Creates the Z-Matrix and the corresponding atom index map.
+     * Creates the Z-Matrix keeping the order of the atoms in the given
+     * atom container.
      * @return the resulting ZMatrix
      * @throws NoReferenceAtomException if a reference atom cannot be chosen for 
      * any atom in the molecule, meaning we cannot generate a ZMatrix representation.

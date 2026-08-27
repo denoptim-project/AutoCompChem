@@ -371,30 +371,39 @@ public class ConformersGenerator extends AtomContainerInputProcessor
             {
         		double step = steps.get(i);
         		// Torsions may be defined by two or four atoms
-
-        		int atmA;
-        		int atmB;
+        		int ccAtmA = -1; // the first in the 4-tupla defining the torsion
+        		int ccAtmB;
+        		int ccAtmC;
+        		int ccAtmD = -1; // the last in the 4-tupla defining the torsion
         		if (coord.getNumberOfIDs()==2)
         		{
-            		atmA = coord.getAtomIDs().get(0);
-            		atmB = coord.getAtomIDs().get(1);
+            		ccAtmB = coord.getAtomIDs().get(0);
+            		ccAtmC = coord.getAtomIDs().get(1);
         		} else if (coord.getNumberOfIDs()==4) 
         		{
-            		atmA = coord.getAtomIDs().get(1);
-            		atmB = coord.getAtomIDs().get(2);
+            		ccAtmA = coord.getAtomIDs().get(0);
+            		ccAtmB = coord.getAtomIDs().get(1);
+            		ccAtmC = coord.getAtomIDs().get(2);
+            		ccAtmD = coord.getAtomIDs().get(3);
         		} else {
 	        		throw new IllegalArgumentException("Expecting torsional "
 	        				+ "degrees of freedom defined by either two or "
 	        				+ "four atoms, but found " + coord.getNumberOfIDs() 
 	        				+ " atoms.");
         		}
-        		for (ZMatrixAtom za : editedZMat.findAllTorsions(atmA, atmB))
+        		for (ZMatrixAtom za : editedZMat.findAllTorsions(ccAtmB, ccAtmC))
         		{
-        			za.getIC(2).setValue(za.getIC(2).getValue() + step);
+                    applyTorsionChange(za, iac, ccAtmA, ccAtmB, ccAtmC, ccAtmD, step,
+                            coord.hasValuedAttribute(ConformationalCoordDefinition.KEYVALUES)
+                                    && ccAtmA != -1 && ccAtmD != -1,
+                            false, false);
         		}
-        		for (ZMatrixAtom za : editedZMat.findAllTorsions(atmB, atmA))
+        		for (ZMatrixAtom za : editedZMat.findAllTorsions(ccAtmC, ccAtmB))
         		{
-        			za.getIC(2).setValue(za.getIC(2).getValue() + step);
+                    applyTorsionChange(za, iac, ccAtmA, ccAtmB, ccAtmC, ccAtmD, step,
+                            coord.hasValuedAttribute(ConformationalCoordDefinition.KEYVALUES)
+                                    && ccAtmA != -1 && ccAtmD != -1,
+                            true, true);
         		}
         		i++;
             }
@@ -416,6 +425,97 @@ public class ConformersGenerator extends AtomContainerInputProcessor
         
 		return conformers;
 	}
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Applies a torsion change to one {@link ZMatrixAtom}, either as an absolute
+     * target dihedral ({@link ConformationalCoordDefinition#KEYVALUES}) or as a
+     * relative increment (fold/steps exploration).
+     * @param za the Z-matrix atom whose torsion IC is modified
+     * @param iac the molecular geometry used to measure dihedrals
+     * @param ccAtmA first atom defining the conf-coordinate torsion, or -1 for
+     *        two-atom coordinates
+     * @param ccAtmB second atom defining the conf-coordinate torsion
+     * @param ccAtmC third atom defining the conf-coordinate torsion
+     * @param ccAtmD fourth atom defining the conf-coordinate torsion, or -1 for
+     *        two-atom coordinates
+     * @param step the target value or relative increment (degrees)
+     * @param useAbsoluteConfTarget <code>true</code> for {@code Values=[...]}
+     * @param readZmIdsReversedForConfFrame <code>true</code> when the native
+     *        Z-matrix IC is defined in the opposite bond sense (C→B)
+     * @param subtractRelativeStep <code>true</code> to subtract {@code step} in
+     *        relative mode (C→B loop), <code>false</code> to add it (B→C loop)
+     */
+    private static void applyTorsionChange(ZMatrixAtom za, IAtomContainer iac,
+            int ccAtmA, int ccAtmB, int ccAtmC, int ccAtmD, double step,
+            boolean useAbsoluteConfTarget, boolean readZmIdsReversedForConfFrame,
+            boolean subtractRelativeStep)
+    {
+        if (useAbsoluteConfTarget)
+        {
+            int[] zmAtms = torsionAtomIDsInConfFrame(za,
+                    readZmIdsReversedForConfFrame);
+            za.getIC(2).setValue(absoluteTorsionICForConfTarget(iac,
+                    ccAtmA, ccAtmB, ccAtmC, ccAtmD,
+                    zmAtms[0], zmAtms[1], zmAtms[2], zmAtms[3], step));
+        } else {
+            double increment = subtractRelativeStep ? -step : step;
+            za.getIC(2).setValue(za.getIC(2).getValue() + increment);
+        }
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Reads the four atoms of a Z-matrix torsion IC in the same bond sense as
+     * the conformational coordinate (A–B–C–D along B→C).
+     */
+    private static int[] torsionAtomIDsInConfFrame(ZMatrixAtom za,
+            boolean reverseNativeIds)
+    {
+        if (reverseNativeIds)
+        {
+            return new int[] {
+                za.getIC(2).getIDs().get(3),
+                za.getIC(2).getIDs().get(2),
+                za.getIC(2).getIDs().get(1),
+                za.getIC(2).getIDs().get(0)
+            };
+        }
+        return new int[] {
+            za.getIC(2).getIDs().get(0),
+            za.getIC(2).getIDs().get(1),
+            za.getIC(2).getIDs().get(2),
+            za.getIC(2).getIDs().get(3)
+        };
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Returns the Z-matrix torsion IC value that achieves {@code targetConfDihedral}
+     * on the conf-coordinate atom tuple when terminal atoms differ between the
+     * coordinate definition and the Z-matrix IC.
+     */
+    private static double absoluteTorsionICForConfTarget(IAtomContainer iac,
+            int ccAtmA, int ccAtmB, int ccAtmC, int ccAtmD,
+            int zmAtmA, int zmAtmB, int zmAtmC, int zmAtmD,
+            double targetConfDihedral)
+    {
+        if (zmAtmA == ccAtmA && zmAtmD == ccAtmD)
+        {
+            return targetConfDihedral;
+        }
+        double originalDihConfCoordAtoms = MolecularUtils.calculateTorsionAngle(
+                iac.getAtom(ccAtmA), iac.getAtom(ccAtmB),
+                iac.getAtom(ccAtmC), iac.getAtom(ccAtmD));
+        double dihChangeOnCoordAtoms = targetConfDihedral - originalDihConfCoordAtoms;
+        double originalDihZMatCoordAtoms = MolecularUtils.calculateTorsionAngle(
+                iac.getAtom(zmAtmA), iac.getAtom(zmAtmB),
+                iac.getAtom(zmAtmC), iac.getAtom(zmAtmD));
+        return originalDihZMatCoordAtoms + dihChangeOnCoordAtoms;
+    }
 
 //------------------------------------------------------------------------------
 

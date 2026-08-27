@@ -545,13 +545,28 @@ public class MolecularUtils
 //------------------------------------------------------------------------------
 
     /**
-     * Calculate the dihedral angle A-B-C-D given the atoms
+     * Calculate the signed dihedral (torsion) angle A-B-C-D in degrees.
+     * <p>
+     * The angle is the oriented angle between planes ABC and BCD, looking along
+     * the central bond from B to C (right-handed positive). This matches the
+     * usual computational chemistry {@code atan2} convention, for which:
+     * </p>
+     * <ul>
+     * <li>{@code φ(A,B,C,D) = φ(D,C,B,A)} (full reverse keeps the sign)</li>
+     * <li>{@code φ(A,B,C,D) = -φ(D,B,C,A)} (swap terminal atoms only)</li>
+     * <li>{@code φ(A,B,C,D) = -φ(A,C,B,D)} (swap the two central atoms)</li>
+     * </ul>
+     * <p>
+     * Note: some popular references claim that a full reverse negates the
+     * angle; that is not this convention (nor the one used by common
+     * {@code atan2}-based implementations).
+     * </p>
      *
      * @param atmA atom in position A
      * @param atmB atom in position B
      * @param atmC atom in position C
      * @param atmD atom in position D
-     * @return the dihedral angle
+     * @return the signed dihedral angle in degrees, in (-180, 180]
      */
     public static double calculateTorsionAngle(IAtom atmA, IAtom atmB, 
                                                         IAtom atmC, IAtom atmD)
@@ -561,41 +576,37 @@ public class MolecularUtils
         Point3d pC = AtomUtils.getCoords3d(atmC);
         Point3d pD = AtomUtils.getCoords3d(atmD);
 
-        double[] A = new double[] {pA.x,pA.y,pA.z};
-        double[] B = new double[] {pB.x,pB.y,pB.z};
-        double[] C = new double[] {pC.x,pC.y,pC.z};
-        double[] D = new double[] {pD.x,pD.y,pD.z};
-        double angle = 0.0D;
-        double xba = B[0] - A[0];
-        double yba = B[1] - A[1];
-        double zba = B[2] - A[2];
-        double xcb = C[0] - B[0];
-        double ycb = C[1] - B[1];
-        double zcb = C[2] - B[2];
-        double xdc = D[0] - C[0];
-        double ydc = D[1] - C[1];
-        double zdc = D[2] - C[2];
+        // Bond vectors: ba = B-A, cb = C-B, dc = D-C
+        double xba = pB.x - pA.x;
+        double yba = pB.y - pA.y;
+        double zba = pB.z - pA.z;
+        double xcb = pC.x - pB.x;
+        double ycb = pC.y - pB.y;
+        double zcb = pC.z - pB.z;
+        double xdc = pD.x - pC.x;
+        double ydc = pD.y - pC.y;
+        double zdc = pD.z - pC.z;
+
+        // Plane normals: n1 = ba × cb, n2 = cb × dc
         double xt = yba * zcb - ycb * zba;
         double yt = xcb * zba - xba * zcb;
         double zt = xba * ycb - xcb * yba;
         double xu = ycb * zdc - ydc * zcb;
         double yu = xdc * zcb - xcb * zdc;
         double zu = xcb * ydc - xdc * ycb;
-        double rt2 = xt * xt + yt * yt + zt * zt;
-        double ru2 = xu * xu + yu * yu + zu * zu;
-        double rtru = Math.sqrt(rt2 * ru2);
-        if (rtru != 0.0)
+
+        double cbLen = Math.sqrt(xcb * xcb + ycb * ycb + zcb * zcb);
+        if (cbLen == 0.0)
         {
-            double cosine = (xt * xu + yt * yu + zt * zu) / rtru;
-            cosine = Math.min(1.0, Math.max(-1.0, cosine));
-            angle = 57.29577951308232088 * Math.acos(cosine);
-            double sign = xba * xu + yba * yu + zba * zu;
-            if (sign < 0.0)
-            {
-                angle = -angle;
-            }
+            return 0.0;
         }
-        return angle;
+
+        // cos ~ n1·n2 ; sin ~ (n1 × n2)·û_cb
+        double cosArg = xt * xu + yt * yu + zt * zu;
+        double sinArg = ((yt * zu - zt * yu) * xcb
+                + (zt * xu - xt * zu) * ycb
+                + (xt * yu - yt * xu) * zcb) / cbLen;
+        return Math.toDegrees(Math.atan2(sinArg, cosArg));
     }
 
 //-----------------------------------------------------------------------------

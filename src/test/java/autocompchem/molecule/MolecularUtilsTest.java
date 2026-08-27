@@ -362,6 +362,30 @@ public class MolecularUtilsTest
 //------------------------------------------------------------------------------
 
     @Test
+    public void testCalculateTorsionAngle_signedConventionAndIdentities()
+    {
+        IAtom a = new Atom("C", new Point3d(0.0, 0.0, 0.0));
+        IAtom b = new Atom("C", new Point3d(1.0, 0.0, 0.0));
+        IAtom c = new Atom("C", new Point3d(1.0, 1.0, 0.0));
+        IAtom d = new Atom("C", new Point3d(1.0, 1.0, 1.0));
+
+        double abcd = MolecularUtils.calculateTorsionAngle(a, b, c, d);
+        double dcba = MolecularUtils.calculateTorsionAngle(d, c, b, a);
+        double dbca = MolecularUtils.calculateTorsionAngle(d, b, c, a);
+        double acbd = MolecularUtils.calculateTorsionAngle(a, c, b, d);
+
+        double tol = 1e-10;
+        assertEquals(90.0, abcd, tol);
+        // Full reverse keeps the sign (computational atan2 convention)
+        assertEquals(abcd, dcba, tol);
+        // Swapping only the terminals, or only the central bond atoms, negates
+        assertEquals(-abcd, dbca, tol);
+        assertEquals(-abcd, acbd, tol);
+    }
+
+//------------------------------------------------------------------------------
+
+    @Test
     public void testCalculateAtomPosition_distanceICMissingIdsThrows()
     {
         IAtom[] ref = new IAtom[] { new Atom("C", new Point3d(0, 0, 0)) };

@@ -1,0 +1,62 @@
+#!/bin/bash
+
+function not_passed() {
+  echo "NOT Passed: check condition leading to line '$1' of '$0'"
+  exit -1
+}
+
+if [ ! -f "cli54.log" ] ; then not_passed $LINENO ; fi
+
+#if ! grep -q -i "(#Conformers = 4)" "cli54.log" ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c -i "Dih.desiredTorsion H14:C12:C9:H11" "cli54.log")
+if [ 4 != "$n" ] ; then not_passed $LINENO ; fi
+
+# Expected VALUES: 20, 6, 170, -90 (tolerate 1e-2)
+grep -i "Dih.desiredTorsion H14:C12:C9:H11" "cli54.log" | awk 'NR==1 {exit !(($NF-20)*($NF-20) <= 1e-4)}' \
+  || not_passed $LINENO
+grep -i "Dih.desiredTorsion H14:C12:C9:H11" "cli54.log" | awk 'NR==2 {exit !(($NF-6)*($NF-6) <= 1e-4)}' \
+  || not_passed $LINENO
+grep -i "Dih.desiredTorsion H14:C12:C9:H11" "cli54.log" | awk 'NR==3 {exit !(($NF-170)*($NF-170) <= 1e-4)}' \
+  || not_passed $LINENO
+grep -i "Dih.desiredTorsion H14:C12:C9:H11" "cli54.log" | awk 'NR==4 {exit !(($NF-(-90))*($NF-(-90)) <= 1e-4)}' \
+  || not_passed $LINENO
+
+if [ ! -f "cli54_conformers.sdf" ] ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c -i "\$\$\$\$" "cli54_conformers.sdf")
+if [ 4 != "$n" ] ; then not_passed $LINENO ; fi
+
+# Reversed SMARTS swaps B and C in the 4-tuple (C->B conf sense vs B->C above)
+n=0; n=$(grep -c -i "Dih.desiredTorsion2 H11:C9:C12:H14" "cli54.log")
+if [ 4 != "$n" ] ; then not_passed $LINENO ; fi
+
+grep -i "Dih.desiredTorsion2 H11:C9:C12:H14" "cli54.log" | awk 'NR==1 {exit !(($NF-20)*($NF-20) <= 1e-4)}' \
+  || not_passed $LINENO
+grep -i "Dih.desiredTorsion2 H11:C9:C12:H14" "cli54.log" | awk 'NR==2 {exit !(($NF-6)*($NF-6) <= 1e-4)}' \
+  || not_passed $LINENO
+grep -i "Dih.desiredTorsion2 H11:C9:C12:H14" "cli54.log" | awk 'NR==3 {exit !(($NF-170)*($NF-170) <= 1e-4)}' \
+  || not_passed $LINENO
+grep -i "Dih.desiredTorsion2 H11:C9:C12:H14" "cli54.log" | awk 'NR==4 {exit !(($NF-(-90))*($NF-(-90)) <= 1e-4)}' \
+  || not_passed $LINENO
+
+if [ ! -f "cli54_conformers2.sdf" ] ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c -i "\$\$\$\$" "cli54_conformers2.sdf")
+if [ 4 != "$n" ] ; then not_passed $LINENO ; fi
+
+# Absolute target -20 on H11:C9:C12:H14 (same SMARTS order as desiredTorsion2)
+n=0; n=$(grep -c -i "Dih.negatedTorsion H11:C9:C12:H14" "cli54.log")
+if [ 1 != "$n" ] ; then not_passed $LINENO ; fi
+
+grep -i "Dih.negatedTorsion H11:C9:C12:H14" "cli54.log" | awk 'NR==1 {exit !(($NF-(-20))*($NF-(-20)) <= 1e-4)}' \
+  || not_passed $LINENO
+
+if [ ! -f "cli54_conformers3.sdf" ] ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c -i "\$\$\$\$" "cli54_conformers3.sdf")
+if [ 1 != "$n" ] ; then not_passed $LINENO ; fi
+
+if grep -q 'Termination status: 0' "cli54.log" ; then echo Passed ; exit 0 ; fi
+not_passed $LINENO
+exit -1

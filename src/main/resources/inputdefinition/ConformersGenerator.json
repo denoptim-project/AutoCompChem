@@ -7,7 +7,7 @@
   },
   {
     "embeddedWorker": "autocompchem.molecule.conformation.ConformationalSpaceGenerator",
-    "tag": "the definition of the conformational space",
+    "tag": "the definition of the conformational space. When generating conformers, torsions are edited in a Z-matrix: 'Fold'/'Steps' add relative angle increments along the Z-matrix bond sense (and subtract them for the opposite sense), while 'Values' set absolute target dihedral angles for four-atom torsional coordinates, with correction when Z-matrix IC atoms differ from the coordinate atoms and negation for opposite-sense torsions",
     "ignorableItems": [
       "outFile",
       "onlyLastStructure",

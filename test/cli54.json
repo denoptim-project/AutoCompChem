@@ -1,0 +1,132 @@
+{
+  "jobType": "ACCJob",
+  "steps": [
+    {
+      "jobType": "ACCJob",
+      "params": [
+        {
+          "reference": "TASK",
+          "value": "GenerateConformers"
+        },
+        {
+          "reference": "INPUTGEOMETRIESFILE",
+          "value": "../cli54.sdf"
+        },
+        {
+          "reference": "VERBOSITY",
+          "value": "4"
+        },
+        {
+          "reference": "SMARTS",
+          "value": "[#1][$(CN)]-[$(CO)][#1] values:[20, 6, 170.0, -90]"
+        },
+        {
+          "reference": "outFile",
+          "value": "cli54_conformers.sdf"
+        }
+      ]
+    },
+    {
+      "jobType": "ACCJob",
+      "params": [
+        {
+          "reference": "TASK",
+          "value": "MeasureGeomDescriptors"
+        },
+        {
+          "reference": "infile",
+          "value": "cli54_conformers.sdf"
+        },
+        {
+          "reference": "SMARTS",
+          "value": "[#1][$(CN)]-[$(CO)][#1] name=desiredTorsion"
+        }
+      ]
+    },
+    {
+      "jobType": "ACCJob",
+      "params": [
+        {
+          "reference": "TASK",
+          "value": "GenerateConformers"
+        },
+        {
+          "reference": "INPUTGEOMETRIESFILE",
+          "value": "../cli54.sdf"
+        },
+        {
+          "reference": "VERBOSITY",
+          "value": "4"
+        },
+        {
+          "reference": "SMARTS",
+          "value": "[#1][$(CO)]-[$(CN)][#1] values:[20, 6, 170.0, -90]"
+        },
+        {
+          "reference": "outFile",
+          "value": "cli54_conformers2.sdf"
+        }
+      ]
+    },
+    {
+      "jobType": "ACCJob",
+      "params": [
+        {
+          "reference": "TASK",
+          "value": "MeasureGeomDescriptors"
+        },
+        {
+          "reference": "infile",
+          "value": "cli54_conformers2.sdf"
+        },
+        {
+          "reference": "SMARTS",
+          "value": "[#1][$(CO)]-[$(CN)][#1] name=desiredTorsion2\n[#1][$(CN)]-[$(CO)][#1] name=dependentTorsion"
+        }
+      ]
+    },
+    {
+      "jobType": "ACCJob",
+      "params": [
+        {
+          "reference": "TASK",
+          "value": "GenerateConformers"
+        },
+        {
+          "reference": "INPUTGEOMETRIESFILE",
+          "value": "../cli54.sdf"
+        },
+        {
+          "reference": "VERBOSITY",
+          "value": "4"
+        },
+        {
+          "reference": "SMARTS",
+          "value": "[#1][$(CO)]-[$(CN)][#1] values:[-20]"
+        },
+        {
+          "reference": "outFile",
+          "value": "cli54_conformers3.sdf"
+        }
+      ]
+    },
+    {
+      "jobType": "ACCJob",
+      "params": [
+        {
+          "reference": "TASK",
+          "value": "MeasureGeomDescriptors"
+        },
+        {
+          "reference": "infile",
+          "value": "cli54_conformers3.sdf"
+        },
+        {
+          "reference": "SMARTS",
+          "value": "[#1][$(CO)]-[$(CN)][#1] name=negatedTorsion"
+        }
+      ]
+    }
+  ]
+}
+
