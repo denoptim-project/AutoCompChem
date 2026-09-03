@@ -295,6 +295,41 @@ public class AnnotatedAtomTupleTest
     	assertEquals(SUFFIX, tuples.get(0).getSuffix());
     	assertEquals(PREFIX, tuples.get(0).getPrefix());
     }
+
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testValuePlaceholderInfersGetCurrentValue() throws Exception
+    {
+    	AtomTupleMatchingRule withPlaceholder = new AtomTupleMatchingRule(
+    			"0 1 " + AtomTupleConstants.KEYPREFIX + ": pre="
+    					+ AtomTupleConstants.KEYVALUEPLACEHOLDER.toLowerCase(),
+    			"ruleWithPlaceholder");
+    	assertTrue(withPlaceholder.hasValuelessAttribute(
+    			AtomTupleConstants.KEYUSECURRENTVALUE));
+
+    	AtomTupleMatchingRule inSuffix = new AtomTupleMatchingRule(
+    			"[#6][#8] " + AtomTupleConstants.KEYSUFFIX + "="
+    					+ "end_" + AtomTupleConstants.KEYVALUEPLACEHOLDER,
+    			"ruleSuffixPlaceholder");
+    	assertTrue(inSuffix.hasValuelessAttribute(
+    			AtomTupleConstants.KEYUSECURRENTVALUE));
+
+    	AtomTupleMatchingRule noPlaceholder = new AtomTupleMatchingRule(
+    			"0 1 " + AtomTupleConstants.KEYPREFIX + ": plain",
+    			"ruleNoPlaceholder");
+    	assertFalse(noPlaceholder.hasValuelessAttribute(
+    			AtomTupleConstants.KEYUSECURRENTVALUE));
+
+    	AtomTupleMatchingRule viaSetter = new AtomTupleMatchingRule("viaSetter",
+    			new int[] {0, 1});
+    	assertFalse(viaSetter.hasValuelessAttribute(
+    			AtomTupleConstants.KEYUSECURRENTVALUE));
+    	viaSetter.setValuedAttribute(AtomTupleConstants.KEYPREFIX,
+    			"x=" + AtomTupleConstants.KEYVALUEPLACEHOLDER);
+    	assertTrue(viaSetter.hasValuelessAttribute(
+    			AtomTupleConstants.KEYUSECURRENTVALUE));
+    }
     
 //------------------------------------------------------------------------------
 

@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Pattern;
 
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -108,7 +109,14 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
     }
     
     public enum Mode {
+    	/**
+    	 * Keep each ordered match as its own annotated tuple.
+    	 */
     	TUPLES,
+    	/**
+    	 * After evaluating order-dependent filters on ordered matches, collapse
+    	 * the surviving atoms into one unique-atom set per rule.
+    	 */
     	SETS
     }
     
@@ -401,8 +409,10 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
      * @param mode defines how to combine atoms to generated tuples or sets.
      * In TUPLES mode, the atoms are collected in combinations of 
      * ordered and fixed-size lists.
-     * In SETS mode, the atoms are collapsed into a single list that does not 
-     * include duplicates.
+     * In SETS mode, ordered matches are still generated and filtered first
+     * (so OnlyBonded and GeometryConditions remain meaningful); afterwards
+     * the atoms from surviving matches are collapsed into a single list that
+     * does not include duplicates.
      * @return the list of tuples.
      */
     public static List<AnnotatedAtomTuple> createTuples(IAtomContainer mol,
@@ -503,95 +513,53 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
 	            }
             }
             
-            // Then we choose what to iterate over when making atom tuples
+            // Then we choose what to iterate over when making atom tuples.
+            // SETS mode also iterates ordered matches first so that
+            // order-dependent filters (OnlyBonded, GeometryConditions, etc.)
+            // can be applied; unique atoms are collapsed only afterwards.
             Iterator<List<IAtom>> iter = null;
-            switch (mode) {
-	            case TUPLES:
+            if (useMultiAtomMatches)
+            {
+                List<List<IAtom>> atmsForMR = new ArrayList<List<IAtom>>();
+            	for (List<Integer> multiAtomLst : atmIdxsForMR.get(0))
+            	{
+            		List<IAtom> atoms = new ArrayList<IAtom>();
+            		for (Integer idx : multiAtomLst)
+            		{
+            			atoms.add(mol.getAtom(idx));
+            		}
+	            	atmsForMR.add(atoms);
+            	}
+            	iter = atmsForMR.iterator();
+            } else {
+                List<List<IAtom>> atmsForMR = new ArrayList<List<IAtom>>();
+				boolean indexOutOfBounds = false;
+	            for (MatchingIdxs mIdxs : atmIdxsForMR)
 	            {
-	            	if (useMultiAtomMatches)
-	                {
-	                    List<List<IAtom>> atmsForMR = new ArrayList<List<IAtom>>();
-	                	for (List<Integer> multiAtomLst : atmIdxsForMR.get(0))
-	                	{
-	                		List<IAtom> atoms = new ArrayList<IAtom>();
-	                		for (Integer idx : multiAtomLst)
-	                		{
-	                			atoms.add(mol.getAtom(idx));
-	                		}
-	    	            	atmsForMR.add(atoms);
-	                	}
-	                	iter = atmsForMR.iterator();
-	                } else {
-	                    List<List<IAtom>> atmsForMR = new ArrayList<List<IAtom>>();
-						boolean indexOutOfBounds = false;
-	    	            for (MatchingIdxs mIdxs : atmIdxsForMR)
-	    	            {
-	    	            	List<IAtom> atoms = new ArrayList<IAtom>();
-	    	            	for (List<Integer> lst : mIdxs)
-	    	            	{
-								for (Integer idx : lst)
-	    	            		{
-									if (idx >= mol.getAtomCount()) {
-										logger.warn("Index " + idx + " is out of bounds "
-										    + "for atom container with " 
-											+ mol.getAtomCount() + " atoms. "
-											+ "Ignoring rule " + r);
-										indexOutOfBounds = true;
-										break;
-									} else {
-										atoms.add(mol.getAtom(idx));
-									}
-								}
-	    	            	}
-	    	            	atmsForMR.add(atoms);
-	    	            }
-	    	            if (!indexOutOfBounds) {
-	    	                iter = new ListOfListsCombinations<IAtom>(atmsForMR);
-	    	            } else {
-	    	                iter = null;
-	    	            }
-	                }
-	            	break;
+	            	List<IAtom> atoms = new ArrayList<IAtom>();
+	            	for (List<Integer> lst : mIdxs)
+	            	{
+						for (Integer idx : lst)
+	            		{
+							if (idx >= mol.getAtomCount()) {
+								logger.warn("Index " + idx + " is out of bounds "
+								    + "for atom container with " 
+									+ mol.getAtomCount() + " atoms. "
+									+ "Ignoring rule " + r);
+								indexOutOfBounds = true;
+								break;
+							} else {
+								atoms.add(mol.getAtom(idx));
+							}
+						}
+	            	}
+	            	atmsForMR.add(atoms);
 	            }
-	            
-	            case SETS:
-	            {
-	            	// We will iterate over a single-item list, hence the wrapper
-	            	List<List<IAtom>> wrapper = new ArrayList<List<IAtom>>();
-	            	List<IAtom> allMatchedAtoms = new ArrayList<IAtom>();
-					boolean indexOutOfBounds = false;
-    	            for (MatchingIdxs mIdxs : atmIdxsForMR)
-    	            {
-    	            	for (List<Integer> lst : mIdxs)
-    	            	{
-    	            		for (Integer idx : lst)
-    	            		{
-								if (idx >= mol.getAtomCount()) {
-									logger.warn("Index " + idx + " is out of bounds "
-									    + "for atom container with " 
-										+ mol.getAtomCount() + " atoms. "
-										+ "Ignoring rule " + r);
-									indexOutOfBounds = true;
-									break;
-								}
-    	            			IAtom atm = mol.getAtom(idx);
-    	            			if (!allMatchedAtoms.contains(atm))
-    	            				allMatchedAtoms.add(atm);
-    	            		}
-    	            	}
-    	            }
-					if (indexOutOfBounds) {
-						iter = null;
-					} else {
-						wrapper.add(allMatchedAtoms);
-						iter = wrapper.iterator();
-					}
-    	            break;
+	            if (!indexOutOfBounds) {
+	                iter = new ListOfListsCombinations<IAtom>(atmsForMR);
+	            } else {
+	                iter = null;
 	            }
-	            
-	            default:
-	                throw new IllegalStateException(
-	                		"Unrecognized mode of action '" + mode + "'.");
             }
 
 			if (iter == null) {
@@ -643,6 +611,14 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
         				}
         			}
         		}
+                List<IAtom> subTupleAtoms = new ArrayList<IAtom>();
+                if (subTupleIdxs != null) {
+                    for (Integer idx : subTupleIdxs) {
+                        subTupleAtoms.add(atoms.get(idx));
+                    }
+                } else {
+                    subTupleAtoms = atoms;
+                }
         		
         		AnnotatedAtomTuple tuple = r.makeAtomTuple(atoms, mol, subTupleIdxs);
         		
@@ -679,7 +655,7 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
         				AtomTupleConstants.KEYGETATOMLABELS))
         		{
         			List<String> atmLabels = new ArrayList<String>();
-        			for (IAtom atm : atoms)
+        			for (IAtom atm : subTupleAtoms)
         			{
         				atmLabels.add(labels.get(mol.indexOf(atm)));
         			}
@@ -689,28 +665,11 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
         		if (r.hasValuelessAttribute(
         				AtomTupleConstants.KEYUSECURRENTVALUE))
         		{
-            		Double value = null;
-        			switch (atoms.size())
-        			{
-        			case 2:
-        				value = MolecularUtils.calculateInteratomicDistance(
-        						atoms.get(0), atoms.get(1));
-        				break;
-        			case 3:
-        				value = MolecularUtils.calculateBondAngle(
-        						atoms.get(0), atoms.get(1), atoms.get(2));
-        				break;
-        			case 4:
-        				value = MolecularUtils.calculateTorsionAngle(
-        						atoms.get(0), atoms.get(1), atoms.get(2),
-        						atoms.get(3));
-        				break;
-        			}
+            		// IC from the reported atoms (SubTuple when set, else full match)
+            		Double value = computeCurrentICValue(subTupleAtoms);
         			if (value!=null)
         			{
-        				tuple.setValueOfAttribute(
-        						AtomTupleConstants.KEYCURRENTVALUE, 
-        						value.toString());
+        				applyCurrentValueToTuple(tuple, value);
         			}
         		}
 
@@ -723,6 +682,7 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
 			int numTuplesFilteredOut = 0;
 			List<AnnotatedAtomTuple> satisfiedTuples = new ArrayList<AnnotatedAtomTuple>();
 			List<AtomTupleGeomCondition> geomConstraints = new ArrayList<AtomTupleGeomCondition>();
+			List<AnnotatedAtomTuple> tuplesForRuleResult;
 			if (r.getValueOfAttribute(AtomTupleConstants.KEYGEOMETRYCONDITIONS) != null)
 			{
 				// NB: all tuples from the same rule will have the same geometry constraints,
@@ -799,9 +759,10 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
 								minValueTuple = tuple;
 							}
 						}
+						tuplesForRuleResult = new ArrayList<AnnotatedAtomTuple>();
 						if (minValueTuple != null)
 						{
-							resultingTuples.add(minValueTuple);
+							tuplesForRuleResult.add(minValueTuple);
 						}
 					} else if (listWiseCondition.operator == AtomTupleGeomCondition.GeomConditionOperator.MAX)
 					{
@@ -823,9 +784,10 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
 								maxValueTuple = tuple;
 							}
 						}
+						tuplesForRuleResult = new ArrayList<AnnotatedAtomTuple>();
 						if (maxValueTuple != null)
 						{
-							resultingTuples.add(maxValueTuple);
+							tuplesForRuleResult.add(maxValueTuple);
 						}
 					} else {
 						throw new IllegalArgumentException(
@@ -833,15 +795,143 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
 							+ listWiseCondition.operator);
 					}
 				} else {
-					resultingTuples.addAll(satisfiedTuples);
+					tuplesForRuleResult = satisfiedTuples;
 				}
 			} else {
-				resultingTuples.addAll(tuplesPerRule);
+				tuplesForRuleResult = tuplesPerRule;
+			}
+
+			// Collapse into a unique-atom set only after order-dependent filters
+			if (mode == Mode.SETS)
+			{
+				AnnotatedAtomTuple setTuple = mergeTuplesIntoAtomSet(
+						tuplesForRuleResult, r, mol, labels);
+				if (setTuple != null)
+				{
+					resultingTuples.add(setTuple);
+				}
+			} else {
+				resultingTuples.addAll(tuplesForRuleResult);
 			}
         }
 
         return resultingTuples;
     }
+
+//------------------------------------------------------------------------------
+
+	/**
+	 * Distance / angle / torsion for a matched atom list of size 2 / 3 / 4.
+	 * @return the value, or <code>null</code> if size is not 2, 3, or 4
+	 */
+	private static Double computeCurrentICValue(List<IAtom> atoms)
+	{
+		if (atoms == null)
+			return null;
+		switch (atoms.size())
+		{
+		case 2:
+			return MolecularUtils.calculateInteratomicDistance(
+					atoms.get(0), atoms.get(1));
+		case 3:
+			return MolecularUtils.calculateBondAngle(
+					atoms.get(0), atoms.get(1), atoms.get(2));
+		case 4:
+			return MolecularUtils.calculateTorsionAngle(
+					atoms.get(0), atoms.get(1), atoms.get(2),
+					atoms.get(3));
+		default:
+			return null;
+		}
+	}
+
+//------------------------------------------------------------------------------
+
+	/**
+	 * Stores the current IC value and replaces
+	 * {@link AtomTupleConstants#KEYVALUEPLACEHOLDER} in all valued attributes.
+	 */
+	private static void applyCurrentValueToTuple(AnnotatedAtomTuple tuple,
+			double value)
+	{
+		tuple.setValueOfAttribute(AtomTupleConstants.KEYCURRENTVALUE,
+				Double.toString(value));
+		// Copy keys first: setValueOfAttribute mutates the map
+		List<String> keys = new ArrayList<String>(
+				tuple.getValuedAttributes().keySet());
+		for (String valuedAttribute : keys)
+		{
+			String attrValue = tuple.getValueOfAttribute(valuedAttribute);
+			if (attrValue == null)
+				continue;
+			attrValue = attrValue.replaceAll(
+					"(?i)" + Pattern.quote(
+							AtomTupleConstants.KEYVALUEPLACEHOLDER),
+					java.util.regex.Matcher.quoteReplacement(
+							Double.toString(value)));
+			tuple.setValueOfAttribute(valuedAttribute, attrValue);
+		}
+	}
+
+//------------------------------------------------------------------------------
+
+	/**
+	 * Merges the atom indexes from ordered, already-filtered tuples into one
+	 * set-like {@link AnnotatedAtomTuple} without duplicate atoms.
+	 * @return the merged tuple, or <code>null</code> if there is nothing to merge
+	 */
+	private static AnnotatedAtomTuple mergeTuplesIntoAtomSet(
+			List<AnnotatedAtomTuple> tuples, AtomTupleMatchingRule rule,
+			IAtomContainer mol, List<String> labels)
+	{
+		if (tuples == null || tuples.isEmpty())
+		{
+			return null;
+		}
+		List<Integer> uniqueIds = new ArrayList<Integer>();
+		for (AnnotatedAtomTuple tuple : tuples)
+		{
+			for (Integer id : tuple.getAtomIDs())
+			{
+				if (!uniqueIds.contains(id))
+				{
+					uniqueIds.add(id);
+				}
+			}
+		}
+		List<IAtom> atoms = new ArrayList<IAtom>(uniqueIds.size());
+		for (Integer id : uniqueIds)
+		{
+			atoms.add(mol.getAtom(id));
+		}
+		// SubTuple was already applied when each ordered tuple was created
+		AnnotatedAtomTuple merged = rule.makeAtomTuple(atoms, mol, null);
+		merged.setValueOfAttribute(AtomTupleConstants.KEYRULENAME, rule.getRefName());
+		// Keep decorations from ordered matches (filled VALUE_PLACEHOLDER, etc.).
+		// Fresh makeAtomTuple would otherwise restore the unresolved placeholder.
+		AnnotatedAtomTuple prototype = tuples.get(0);
+		for (String key : prototype.getValuedAttributes().keySet())
+		{
+			if (AtomTupleConstants.KEYRULENAME.equalsIgnoreCase(key)
+					|| AtomTupleConstants.KEYSUBTUPLE.equalsIgnoreCase(key))
+			{
+				continue;
+			}
+			merged.setValueOfAttribute(key,
+					prototype.getValueOfAttribute(key));
+		}
+		if (labels != null && rule.hasValuelessAttribute(
+				AtomTupleConstants.KEYGETATOMLABELS))
+		{
+			List<String> atmLabels = new ArrayList<String>();
+			for (IAtom atm : atoms)
+			{
+				atmLabels.add(labels.get(mol.indexOf(atm)));
+			}
+			merged.setAtmLabels(atmLabels);
+		}
+		return merged;
+	}
     
 //------------------------------------------------------------------------------
 

@@ -121,6 +121,7 @@ public class AtomTupleMatchingRule
     	this.smartsQry = new ArrayList<SMARTS>(Arrays.asList(smarts));
     	this.valuedAttributes = valuedAttributes != null ? valuedAttributes : new HashMap<String,String>();
     	this.valuelessAttributes = valuelessAttributes != null ? valuelessAttributes : new HashSet<String>();
+    	inferUseCurrentValueFromPlaceholders();
     }
     
 //------------------------------------------------------------------------------
@@ -158,6 +159,7 @@ public class AtomTupleMatchingRule
     		this.idsQry.add(ids[i]);
     	this.valuedAttributes = valuedAttributes != null ? valuedAttributes : new HashMap<String,String>();
     	this.valuelessAttributes = valuelessAttributes != null ? valuelessAttributes : new HashSet<String>();
+    	inferUseCurrentValueFromPlaceholders();
     }
 //------------------------------------------------------------------------------
 
@@ -348,6 +350,54 @@ public class AtomTupleMatchingRule
     		if (booleanAttributes.get(key))
     			valuelessAttributes.add(key);
     	}
+    	inferUseCurrentValueFromPlaceholders();
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * If Prefix or Suffix contain {@link AtomTupleConstants#KEYVALUEPLACEHOLDER}
+     * (case-insensitive), ensure {@link AtomTupleConstants#KEYUSECURRENTVALUE}
+     * is present as a value-less attribute so the placeholder can be filled.
+     */
+    private void inferUseCurrentValueFromPlaceholders()
+    {
+    	if (containsValuePlaceholder(AtomTupleConstants.KEYPREFIX)
+    			|| containsValuePlaceholder(AtomTupleConstants.KEYSUFFIX))
+    	{
+    		valuelessAttributes.add(AtomTupleConstants.KEYUSECURRENTVALUE);
+    	}
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * @param key a valued attribute key (e.g., Prefix/Suffix); lookup is
+     * case-insensitive against stored keys.
+     * @return <code>true</code> if the attribute value contains the current-value
+     * placeholder, ignoring case.
+     */
+    private boolean containsValuePlaceholder(String key)
+    {
+    	String value = null;
+    	if (valuedAttributes.containsKey(key))
+    	{
+    		value = valuedAttributes.get(key);
+    	} else if (valuedAttributes.containsKey(key.toUpperCase()))
+    	{
+    		value = valuedAttributes.get(key.toUpperCase());
+    	} else {
+    		for (Map.Entry<String,String> e : valuedAttributes.entrySet())
+    		{
+    			if (e.getKey() != null && e.getKey().equalsIgnoreCase(key))
+    			{
+    				value = e.getValue();
+    				break;
+    			}
+    		}
+    	}
+    	return value != null && value.toUpperCase().contains(
+    			AtomTupleConstants.KEYVALUEPLACEHOLDER.toUpperCase());
     }
 
 //------------------------------------------------------------------------------
@@ -462,6 +512,7 @@ public class AtomTupleMatchingRule
     public void setValuedAttribute(String key, String value)
     {
     	valuedAttributes.put(key, value);
+    	inferUseCurrentValueFromPlaceholders();
     }
     
 //------------------------------------------------------------------------------

@@ -13,8 +13,11 @@ if ! grep -q -i "listB 1-2,4,7-10,63" "cli30.log" ; then not_passed $LINENO ; fi
 if ! grep -q -i "listC 1,7,2,4,8,9,10,63" "cli30.log" ; then not_passed $LINENO ; fi
 if ! grep -q -i "listD 1,44,6,6,17,17,6,6" "cli30.log" ; then not_passed $LINENO ; fi
 if ! grep -q -i "listE H0,Ru6,C1,C3,Cl7,Cl8,C9,C62 end" "cli30.log" ; then not_passed $LINENO ; fi
+if ! grep -q -i "listF 1-2,4,10,63" "cli30.log" ; then not_passed $LINENO ; fi
+if ! grep -q -i "listG H17" "cli30.log" ; then not_passed $LINENO ; fi
+if ! grep -q -i "listH C10,Ru7 2.0211.* Angstrom" "cli30.log" ; then not_passed $LINENO ; fi
 
 n=0; n=$(grep -c -i "Termination status: 0" "cli30.log")
-if [ 6 == "$n" ] ; then echo Passed ; exit 0 ; fi
+if [ 9 == "$n" ] ; then echo Passed ; exit 0 ; fi
 not_passed $LINENO
 exit -1

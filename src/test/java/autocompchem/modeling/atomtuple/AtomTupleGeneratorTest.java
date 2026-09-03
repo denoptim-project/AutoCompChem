@@ -1,6 +1,8 @@
 package autocompchem.modeling.atomtuple;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -304,6 +306,113 @@ public class AtomTupleGeneratorTest
     	assertEquals(4, tuples.get(0).getNumberOfIDs());
     	assertEquals(6, tuples.get(1).getNumberOfIDs());
     	assertEquals(7, tuples.get(2).getNumberOfIDs());
+	}
+
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testCreateTuples_setsMode_afterOrderDependentFilters() throws Exception
+    {
+    	/*
+    	 * C0-O1-C2-O3  with a non-bonded pair C0...O3 that also matches SMARTS
+    	 */
+    	IAtomContainer iac = chemBuilder.newAtomContainer();
+    	IAtom c0 = chemBuilder.newAtom();
+    	c0.setSymbol("C");
+    	c0.setPoint3d(new Point3d(0.0, 0.0, 0.0));
+    	iac.addAtom(c0);
+    	IAtom o1 = chemBuilder.newAtom();
+    	o1.setSymbol("O");
+    	o1.setPoint3d(new Point3d(1.4, 0.0, 0.0));
+    	iac.addAtom(o1);
+    	IAtom c2 = chemBuilder.newAtom();
+    	c2.setSymbol("C");
+    	c2.setPoint3d(new Point3d(2.1, 1.0, 0.0));
+    	iac.addAtom(c2);
+    	IAtom o3 = chemBuilder.newAtom();
+    	o3.setSymbol("O");
+    	o3.setPoint3d(new Point3d(3.5, 1.0, 0.0));
+    	iac.addAtom(o3);
+    	iac.addBond(0, 1, IBond.Order.SINGLE);
+    	iac.addBond(1, 2, IBond.Order.SINGLE);
+    	iac.addBond(2, 3, IBond.Order.SINGLE);
+
+    	// Without order-dependent filter: all C/O atoms collapsed into one set
+    	AtomTupleMatchingRule allCO = new AtomTupleMatchingRule(
+    			"[#6,#8]", "allCO");
+    	List<AnnotatedAtomTuple> allSets = AtomTupleGenerator.createTuples(
+    			iac, Arrays.asList(allCO), null, Mode.SETS);
+    	assertEquals(1, allSets.size());
+    	assertEquals(4, allSets.get(0).getNumberOfIDs());
+
+    	// OnlyBonded on ordered pairs: only bonded C-O / O-C pairs survive,
+    	// then their atoms are merged into the set (all four still appear)
+    	AtomTupleMatchingRule bondedCO = new AtomTupleMatchingRule(
+    			"[#6] [#8] " + AtomTupleConstants.KEYONLYBONDED, "bondedCO");
+    	List<AnnotatedAtomTuple> bondedSets = AtomTupleGenerator.createTuples(
+    			iac, Arrays.asList(bondedCO), null, Mode.SETS);
+    	assertEquals(1, bondedSets.size());
+    	assertEquals(4, bondedSets.get(0).getNumberOfIDs());
+
+    	// Geometry filter on ordered angle C-O-C: only the middle angle ~ near
+    	// 109-120; require CLOSE_TO a value that only the real C0-O1-C2 satisfies
+    	double ang = MolecularUtils.calculateBondAngle(c0, o1, c2);
+    	AtomTupleMatchingRule angRule = new AtomTupleMatchingRule(
+    			"[#6] [#8] [#6] " + AtomTupleConstants.KEYONLYBONDED + " "
+    			+ AtomTupleConstants.KEYGEOMETRYCONDITIONS + ": ANGLE 0 1 2 "
+    			+ "CLOSE_TO " + ang + " 1.0",
+    			"angCOC");
+    	List<AnnotatedAtomTuple> angSets = AtomTupleGenerator.createTuples(
+    			iac, Arrays.asList(angRule), null, Mode.SETS);
+    	assertEquals(1, angSets.size());
+    	// Surviving ordered match is C0-O1-C2 → set {0,1,2}, not O3
+    	assertEquals(3, angSets.get(0).getNumberOfIDs());
+    	assertTrue(angSets.get(0).getAtomIDs().containsAll(Arrays.asList(0, 1, 2)));
+    	assertFalse(angSets.get(0).getAtomIDs().contains(3));
+	}
+
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testCreateTuples_setsMode_preservesValuePlaceholder() throws Exception
+    {
+    	IAtomContainer iac = chemBuilder.newAtomContainer();
+    	IAtom c0 = chemBuilder.newAtom();
+    	c0.setSymbol("C");
+    	c0.setPoint3d(new Point3d(0.0, 0.0, 0.0));
+    	iac.addAtom(c0);
+    	IAtom o1 = chemBuilder.newAtom();
+    	o1.setSymbol("O");
+    	o1.setPoint3d(new Point3d(1.4, 0.0, 0.0));
+    	iac.addAtom(o1);
+    	IAtom c2 = chemBuilder.newAtom();
+    	c2.setSymbol("C");
+    	c2.setPoint3d(new Point3d(2.1, 1.0, 0.0));
+    	iac.addAtom(c2);
+    	iac.addBond(0, 1, IBond.Order.SINGLE);
+    	iac.addBond(1, 2, IBond.Order.SINGLE);
+
+    	double dist = MolecularUtils.calculateInteratomicDistance(c0, o1);
+    	AtomTupleMatchingRule rule = new AtomTupleMatchingRule(
+    			"0 1 2 "
+    			+ AtomTupleConstants.KEYPREFIX + ": pre "
+    			+ AtomTupleConstants.KEYSUFFIX + ": "
+    			+ AtomTupleConstants.KEYVALUEPLACEHOLDER + " DEG "
+    			+ AtomTupleConstants.KEYSUBTUPLE + ": 0 1",
+    			"angPlaceholder");
+    	assertTrue(rule.hasValuelessAttribute(
+    			AtomTupleConstants.KEYUSECURRENTVALUE));
+
+    	List<AnnotatedAtomTuple> sets = AtomTupleGenerator.createTuples(
+    			iac, Arrays.asList(rule), null, Mode.SETS);
+    	assertEquals(1, sets.size());
+    	assertEquals(2, sets.get(0).getNumberOfIDs());
+    	String suffix = sets.get(0).getSuffix();
+    	assertNotNull(suffix);
+    	assertFalse(suffix.toUpperCase().contains(
+    			AtomTupleConstants.KEYVALUEPLACEHOLDER.toUpperCase()));
+    	// GetCurrentValue uses SubTuple atoms (0 1) → distance, not angle of 0 1 2
+    	assertEquals(Double.toString(dist) + " DEG", suffix);
 	}
 
 //------------------------------------------------------------------------------

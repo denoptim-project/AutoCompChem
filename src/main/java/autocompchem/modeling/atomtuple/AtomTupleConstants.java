@@ -160,4 +160,12 @@ public class AtomTupleConstants
     // at the resource inputdefinition/*.json and
 	// inputdefinition/AtomTupleGenerator.json
     public static final String KEYRULETYPEATOMIDS = "ATOMIDS";
+
+    /**
+     * Placeholder for the current value of the tuple attributes.
+     */
+    // WARNING: if you change this list you must update also the documentation
+    // at the resource inputdefinition/*.json and
+	// inputdefinition/AtomTupleGenerator.json
+    public static final String KEYVALUEPLACEHOLDER = "VALUE_PLACEHOLDER";
 }
