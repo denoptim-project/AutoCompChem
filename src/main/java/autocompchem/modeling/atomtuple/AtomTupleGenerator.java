@@ -556,7 +556,7 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
 	            
 	            case SETS:
 	            {
-	            	// We will iterate over a single item, hence the wrapper
+	            	// We will iterate over a single-item list, hence the wrapper
 	            	List<List<IAtom>> wrapper = new ArrayList<List<IAtom>>();
 	            	List<IAtom> allMatchedAtoms = new ArrayList<IAtom>();
 					boolean indexOutOfBounds = false;
@@ -599,6 +599,31 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
 				continue;
 			}
 
+            // In case a subtuple is requested, only selected matched atoms are reported.
+            List<Integer> subTupleIdxs = null;
+            if (r.hasValuedAttribute(AtomTupleConstants.KEYSUBTUPLE)) {
+                subTupleIdxs = new ArrayList<Integer>();
+                String subtupleTxt = r.getValueOfAttribute(AtomTupleConstants.KEYSUBTUPLE);
+                String[] txtParts = subtupleTxt.trim().split("\\s+");
+                for (String idxInMatchedTuple : txtParts) {
+                    try {
+                        int idx = Integer.parseInt(idxInMatchedTuple);
+                        if (idx < 0) {
+                            throw new IllegalArgumentException("Subtuple index '" 
+                                + idxInMatchedTuple + "' in rule " + r.getRefName() 
+                                + " with sub-tuple definition '" + subtupleTxt + "'. "
+                                + "Indexes must be non-negative.");
+                        }
+                        subTupleIdxs.add(idx);
+                    } catch (NumberFormatException e) {
+                        throw new IllegalArgumentException("Invalid subtuple index: '" 
+                            + idxInMatchedTuple + "' in rule " + r.getRefName() 
+                            + " with sub-tuple definition '" + subtupleTxt + "'. "
+                            + "Indexes must be integers.");
+                    }
+                }
+            }
+
 			List<AnnotatedAtomTuple> tuplesPerRule = new ArrayList<AnnotatedAtomTuple>();
         	while (iter.hasNext())
         	{
@@ -607,9 +632,22 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
         		Set<IAtom> uniqueAtoms = new HashSet<IAtom>(atoms);
         		if (atoms.size() != uniqueAtoms.size())
         			continue;
+
+        		if (subTupleIdxs != null) {
+        			for (Integer idx : subTupleIdxs) {
+        				if (idx >= atoms.size()) {
+        					throw new IllegalArgumentException("Subtuple index '"
+        							+ idx + "' in rule " + r.getRefName()
+        							+ " is out of bounds for a matched tuple of size "
+        							+ atoms.size() + ".");
+        				}
+        			}
+        		}
         		
-        		AnnotatedAtomTuple tuple = r.makeAtomTupleFromIDs(atoms, mol);
+        		AnnotatedAtomTuple tuple = r.makeAtomTuple(atoms, mol, subTupleIdxs);
         		
+                // Evaluate conditions that must be satisfied by the tuple
+
         		if (r.hasValuelessAttribute(AtomTupleConstants.KEYONLYBONDED))
         		{
         			boolean isLinearlyConnected = true;
@@ -635,6 +673,8 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
 					}
 				}
         		
+                // Decorate the tuple with tuple-specific attributes
+
         		if (labels !=null && r.hasValuelessAttribute(
         				AtomTupleConstants.KEYGETATOMLABELS))
         		{
@@ -673,11 +713,13 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
         						value.toString());
         			}
         		}
+
+                // Store for next step
 				tuple.setValueOfAttribute(AtomTupleConstants.KEYRULENAME, key);
         		tuplesPerRule.add(tuple);
         	}
 
-			// Geometry constraints that apply to a single tuple are applied here, if any
+			// Geometry constraints are applied here, if any
 			int numTuplesFilteredOut = 0;
 			List<AnnotatedAtomTuple> satisfiedTuples = new ArrayList<AnnotatedAtomTuple>();
 			List<AtomTupleGeomCondition> geomConstraints = new ArrayList<AtomTupleGeomCondition>();
@@ -690,7 +732,7 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
 
 				AtomTupleGeomCondition listWiseCondition = null;
 
-				// Geometry constraints that apply to a single tuple are applied here, if any
+				// Geometry constraints that apply to a SINGLE tuple are applied here, if any
 				for (AnnotatedAtomTuple tuple : tuplesPerRule)
 				{
 					boolean allSatisfied = true;
@@ -734,7 +776,7 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
 						+ numTuplesFilteredOut + " tuples for rule " + r.getRefName());
 				}
 
-				// Geometry condition that applies to all tuples is applied here, if any
+				// Geometry condition that applies to ALL tuples is applied here, if any
 				if (listWiseCondition != null && satisfiedTuples.size() > 1)
 				{
 					if (listWiseCondition.operator == AtomTupleGeomCondition.GeomConditionOperator.MIN)
@@ -749,7 +791,7 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
 							    + listWiseCondition.operator + " " 
 							    + listWiseCondition.type + " " 
 								+ listWiseCondition.atomIndexes + " for tuple " 
-								+ tuple.getAtomIDs() + " is " + value);
+								+ tuple.getExtendedAtomIDs() + " is " + value);
 
 							if (value < currentMinValue)
 							{
@@ -773,7 +815,7 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
 							    + listWiseCondition.operator + " " 
 							    + listWiseCondition.type + " " 
 								+ listWiseCondition.atomIndexes + " for tuple " 
-								+ tuple.getAtomIDs() + " is " + value);
+								+ tuple.getExtendedAtomIDs() + " is " + value);
 
 							if (value > currentMaxValue)
 							{
@@ -797,9 +839,9 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
 				resultingTuples.addAll(tuplesPerRule);
 			}
         }
+
         return resultingTuples;
     }
-
     
 //------------------------------------------------------------------------------
 

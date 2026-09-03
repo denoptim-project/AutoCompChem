@@ -1,0 +1,25 @@
+{
+  "jobType": "ACCJob",
+  "params": [
+    {
+      "reference": "TASK",
+      "value": "removeBonds"
+    },
+    {
+      "reference": "inFile",
+      "value": "../cli55.sdf"
+    },
+    {
+      "reference": "VERBOSITY",
+      "value": "5"
+    },
+    {
+      "reference": "SMARTS",
+      "value": "[$([#6]~[#7])]~[#44]~[#17]~[#44] remove subtuple: 1 2 GeometryConditions: angle 0 1 2 CLOSE_TO 168.0 5.5"
+    },
+    {
+      "reference": "outFile",
+      "value": "cli55_result.sdf"
+    }
+  ]
+}

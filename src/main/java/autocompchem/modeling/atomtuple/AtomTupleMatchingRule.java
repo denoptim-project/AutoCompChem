@@ -441,6 +441,18 @@ public class AtomTupleMatchingRule
 //------------------------------------------------------------------------------
 
     /**
+     * @param key the name of the valued attribute to look for.
+     * @return <code>true</code> if the keyword was found among valued
+     * attributes, <code>false</code> otherwise.
+     */
+    public boolean hasValuedAttribute(String key)
+    {
+        return valuedAttributes.containsKey(key);
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
      * Set an attribute with a value. Overwrites any existing attribute with the 
      * same keyword.
      * @param key the keyword of the attribute to add.
@@ -470,17 +482,36 @@ public class AtomTupleMatchingRule
   	
 //------------------------------------------------------------------------------
 
+    /**
+     * Creates an atom tuple combining the attributes defined in this rule with 
+     * the given list of atom. Note that new instances of each 
+     * attribute and value are created to be assigned to the tuple instance.
+     * @param atoms the tuple of atoms. Only the index value is taken.
+     * @param mol the container of the atoms in the tuple.
+     * @return the atom tuple decorated by the attributes defined in this rule.
+     */
+    
+    public AnnotatedAtomTuple makeAtomTuple(List<IAtom> atoms,
+            IAtomContainer mol) 
+    {
+    	return makeAtomTuple(atoms, mol, null);
+    }
+  	
+//------------------------------------------------------------------------------
+
   	/**
   	 * Creates an atom tuple combining the attributes defined in this rule with 
   	 * the given list of atom. Note that new instances of each 
   	 * attribute and value are created to be assigned to the tuple instance.
   	 * @param atoms the tuple of atoms. Only the index value is taken.
   	 * @param mol the container of the atoms in the tuple.
+     * @param subTupleIdxs indexes into {@code atoms} defining the sub-tuple to
+     * report, or <code>null</code> to report all matched atoms.
   	 * @return the atom tuple decorated by the attributes defined in this rule.
   	 */
     
-  	public AnnotatedAtomTuple makeAtomTupleFromIDs(List<IAtom> atoms,
-  			IAtomContainer mol) 
+  	public AnnotatedAtomTuple makeAtomTuple(List<IAtom> atoms,
+  			IAtomContainer mol, List<Integer> subTupleIdxs) 
   	{	
   		Set<String> myValueless = new HashSet<String>(valuelessAttributes);
 		
@@ -488,7 +519,8 @@ public class AtomTupleMatchingRule
 		for (String key : valuedAttributes.keySet())
 			myValued.put(key.toUpperCase(), valuedAttributes.get(key));
 		
-		return new AnnotatedAtomTuple(atoms, null, mol, myValueless, myValued);
+		return new AnnotatedAtomTuple(atoms, null, mol, myValueless, myValued,
+				subTupleIdxs);
   	}
 
 //------------------------------------------------------------------------------	

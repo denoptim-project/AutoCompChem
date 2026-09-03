@@ -20,6 +20,7 @@ class AtomTupleGeomCondition
     public enum GeomConditionType {DISTANCE, ANGLE, DIHEDRAL};
     public GeomConditionType type;
     public Double value;
+    public Double valueTolerance = 0.001;
 	public enum GeomConditionOperator {
 		CLOSE_TO, LESS_THAN, MORE_THAN, MAX, MIN};
 	public GeomConditionOperator operator;
@@ -36,13 +37,34 @@ class AtomTupleGeomCondition
      * @param operator the operator of the condition.
      * @param value the value of the condition.
      */
+    public AtomTupleGeomCondition(GeomConditionType type, 
+        List<Integer> atomIndexes, GeomConditionOperator operator, double value)
+    {
+        this(type, atomIndexes, operator, value, 0.001);
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Constructs a geometry condition from the given type, atom indexes, operator, and value.
+     * @param type the type of the condition.
+     * @param atomIndexes the list of atom indexes.
+     * @param operator the operator of the condition.
+     * @param value the value of the condition.
+     * @param valueTolerance the tolerance of the condition.
+     */
 	public AtomTupleGeomCondition(GeomConditionType type, 
-		List<Integer> atomIndexes, GeomConditionOperator operator, double value)
+		List<Integer> atomIndexes, GeomConditionOperator operator, double value, 
+        Double valueTolerance)
 	{
 		this.type = type;
 		this.atomIndexes = atomIndexes;
 		this.operator = operator;
 		this.value = Double.valueOf(value);
+		if (valueTolerance != null)
+		{
+			this.valueTolerance = Double.valueOf(valueTolerance);
+		}
 	}
 
 //------------------------------------------------------------------------------
@@ -122,6 +144,16 @@ class AtomTupleGeomCondition
 			}
 			this.value = Double.valueOf(parts[nextIdx]);
 			nextIdx++;
+            if (this.operator == GeomConditionOperator.CLOSE_TO && nextIdx < parts.length)
+            {
+                if (!NumberUtils.isParsableToDouble(parts[nextIdx]))
+                {
+                    throw new IllegalArgumentException(
+                        "Invalid value tolerance of geometric condition: " + parts[nextIdx]);
+                }
+                this.valueTolerance = Double.valueOf(parts[nextIdx]);
+                nextIdx++;
+            }
 		}
 		if (nextIdx < parts.length)
 		{
@@ -160,6 +192,7 @@ class AtomTupleGeomCondition
 	{
 		return getValue(tuple, iac, null);
 	}
+
 //------------------------------------------------------------------------------
 
 	/**
@@ -170,24 +203,24 @@ class AtomTupleGeomCondition
 	public double getValue(AnnotatedAtomTuple tuple, IAtomContainer iac, 
 		Logger logger)
 	{
-        if (tuple.getNumberOfIDs() < atomIndexes.size())
+        if (tuple.getNumberOfExtendedIDs() < atomIndexes.size())
         {
             throw new IllegalArgumentException(
-                "The tuple has " + tuple.getNumberOfIDs() + " atoms, "
+                "The tuple has " + tuple.getNumberOfExtendedIDs() + " atoms, "
                 + "but the geometric condition specified " + atomIndexes.size() 
 				+ " indexes.");
         }
 		IAtom[] atoms = new IAtom[atomIndexes.size()];
 		for (int i = 0; i < atomIndexes.size(); i++)
 		{
-            if (i >= tuple.getNumberOfIDs())
+            if (i >= tuple.getNumberOfExtendedIDs())
             {
                 throw new IllegalArgumentException(
-                    "The tuple has " + tuple.getNumberOfIDs() + " atoms, "
+                    "The tuple has " + tuple.getNumberOfExtendedIDs() + " atoms, "
                     + "but the geometric condition specified atom index " 
                     + i + " (Out of range).");
             }
-			atoms[i] = iac.getAtom(tuple.getAtomIDs().get(atomIndexes.get(i)));
+			atoms[i] = iac.getAtom(tuple.getExtendedAtomIDs().get(atomIndexes.get(i)));
 		}
 
 		if (logger != null)
@@ -256,13 +289,13 @@ class AtomTupleGeomCondition
 		{
 			logger.debug("Value of geometry condition " 
 				+ this.type + " " + this.atomIndexes + " for tuple " 
-				+ tuple.getAtomIDs() + " is " + valueInIAC);
+				+ tuple.getExtendedAtomIDs() + " is " + valueInIAC);
 		}
 
 		switch (operator)
 		{
 			case CLOSE_TO: return NumberUtils.closeEnough(
-				value, valueInIAC, 0.001);
+                value, valueInIAC, valueTolerance);
 			case LESS_THAN: return valueInIAC < value;
 			case MORE_THAN: return valueInIAC > value;
 			case MIN: case MAX: 
@@ -280,7 +313,8 @@ class AtomTupleGeomCondition
     public String toString()
     {
         return "AtomTupleGeomCondition [type=" + type + ", atomIndexes=" 
-            + atomIndexes + ", operator=" + operator + ", value=" + value + "]";
+            + atomIndexes + ", operator=" + operator + ", value=" + value 
+            + ", valueTolerance=" + valueTolerance + "]";
     }
 
 //------------------------------------------------------------------------------
@@ -293,6 +327,9 @@ class AtomTupleGeomCondition
         AtomTupleGeomCondition other = (AtomTupleGeomCondition) obj;
         return type == other.type && atomIndexes.equals(other.atomIndexes) 
             && operator == other.operator 
+            && NumberUtils.closeEnough(valueTolerance, other.valueTolerance, 0.001)
             && NumberUtils.closeEnough(value, other.value, 0.001);
     }
+
+//------------------------------------------------------------------------------
 }

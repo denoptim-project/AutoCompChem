@@ -291,7 +291,6 @@ public class NumberUtils
      * threshold.
      * @param v1 a value to compare.
      * @param v2 another value to compare.
-     * @param thrld the threshold.
      * @return
      */
     public static boolean closeEnough(Double v1, Double v2)

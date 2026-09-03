@@ -83,13 +83,23 @@ public class AtomTupleConstants
     public static final String KEYGEOMETRYCONDITIONS = "GEOMETRYCONDITIONS";
 
     /**
+     * Keyword for valued attribute of {@link AtomTupleMatchingRule} that 
+     * specifies to take a subtuple from the matched tuple.
+     */
+    // WARNING: if you change this list you must update also the documentation
+    // at the resource inputdefinition/*.json and
+	// inputdefinition/AtomTupleGenerator.json
+    public static final String KEYSUBTUPLE = "SUBTUPLE";
+
+    /**
      * List of default valued keywords recognized in text-like definition of 
      * atom tuple matching rules.
      */
     // WARNING: if you change this list you must update also the documentation
     // at the resource inputdefinition/*.json and
 	// inputdefinition/AtomTupleGenerator.json
-    public static final String[] DEFAULTVALUEDKEYS = {KEYPREFIX,KEYSUFFIX,KEYGEOMETRYCONDITIONS};
+    public static final String[] DEFAULTVALUEDKEYS = {KEYPREFIX,KEYSUFFIX,
+        KEYGEOMETRYCONDITIONS,KEYSUBTUPLE};
     
     /**
      * List of default value-less keywords recognized in text-like definition of 

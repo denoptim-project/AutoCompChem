@@ -2,6 +2,8 @@ package autocompchem.modeling.atomtuple;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
@@ -120,6 +122,56 @@ public class AnnotatedAtomTupleTest
     	c2 = getTestAnnotatedAtomTuple();
     	c2.getAtmLabels().set(0, "different");
     	assertFalse(c1.equals(c2));
+    }
+
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testSubTupleIdxs() throws Exception
+    {
+		IAtomContainer mol = builder.newAtomContainer();
+		String[] elements = new String[]{"C", "O", "N", "P", "H"};
+        for (int i=0; i<elements.length; i++)
+        {
+            IAtom atom = builder.newAtom();
+            atom.setSymbol(elements[i]);
+            atom.setPoint3d(new Point3d(0.0, 0.0, Double.valueOf(i)));
+            mol.addAtom(atom);
+            if (i>0)
+                mol.addBond(i-1, i, IBond.Order.SINGLE);
+        }
+
+        List<IAtom> matchedAtoms = Arrays.asList(
+        		mol.getAtom(0), mol.getAtom(1), mol.getAtom(2), mol.getAtom(3));
+        List<Integer> subTupleIdxs = new ArrayList<Integer>(Arrays.asList(1, 2));
+
+        AnnotatedAtomTuple withSub = new AnnotatedAtomTuple(
+        		matchedAtoms, mol, subTupleIdxs);
+        AnnotatedAtomTuple withoutSub = new AnnotatedAtomTuple(
+        		matchedAtoms, mol);
+
+        // Full matched tuple is retained
+        assertEquals(Arrays.asList(1, 2), withSub.getAtomIDs());
+        assertEquals(Arrays.asList(0, 1, 2, 3), withoutSub.getAtomIDs());
+
+        // Sub-tuple selection is stored and used for reporting
+        assertNotNull(withSub.getSubTupleIdxs());
+        assertEquals(subTupleIdxs, withSub.getSubTupleIdxs());
+        assertNull(withoutSub.getSubTupleIdxs());
+
+        // equals / toString / clone consider non-null subTupleIdxs
+        assertFalse(withSub.equals(withoutSub));
+        assertTrue(withSub.toString().contains("subTupleIdxs:[1,2]"));
+        assertFalse(withoutSub.toString().contains("subTupleIdxs:"));
+
+        AnnotatedAtomTuple cloned = withSub.clone();
+        assertEquals(withSub, cloned);
+        cloned.getSubTupleIdxs().set(0, 0);
+        assertFalse(withSub.equals(cloned));
+        
+        AnnotatedAtomTuple otherSub = new AnnotatedAtomTuple(
+        		matchedAtoms, mol, new ArrayList<Integer>(Arrays.asList(0, 3)));
+        assertFalse(withSub.equals(otherSub));
     }
     
 //------------------------------------------------------------------------------

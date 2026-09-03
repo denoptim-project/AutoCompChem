@@ -746,7 +746,7 @@ public class AtomTupleGeneratorTest
     	assertThrows(IllegalArgumentException.class, () ->
     			AtomTupleGenerator.parseAtomTupleGeomConditions("DISTANCE 0 1 CLOSE_TO"));
     	assertThrows(IllegalArgumentException.class, () ->
-    			AtomTupleGenerator.parseAtomTupleGeomConditions("DISTANCE 0 1 CLOSE_TO 2.5 3.0"));
+    			AtomTupleGenerator.parseAtomTupleGeomConditions("DISTANCE 0 1 CLOSE_TO 2.5 3.0 1"));
     	assertThrows(IllegalArgumentException.class, () ->
     			AtomTupleGenerator.parseAtomTupleGeomConditions("DISTANCE 0 1 CLOSE_TO 2.5 INVALID"));
     }
