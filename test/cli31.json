@@ -22,14 +22,14 @@
           },
           {
             "reference": "CMD",
-            "value": "echo Iteration=ACCITERNUMBER varA=ACCVALEVARA varB=ACCVALEVARB ; exit -ACCITERNUMBER"
+            "value": "echo Iteration=ACCITERNUMBER varA=ACCVALEVARA varB=ACCVALEVARB ; exit -ACCITERINTNUMBER"
           }
         ]
       }
     },
     {
       "reference": "replacementRules",
-      "value": "ACCITERNUMBER ${x}\nACCVALEVARA ${x*1.23}\nACCVALEVARB ${2*x - 2.5}"
+      "value": "ACCITERNUMBER ${x}\nACCITERINTNUMBER ${format('0', x)}\nACCVALEVARA ${x*1.23}\nACCVALEVARB ${2*x - 2.5}"
     },
     {
       "reference": "maxIterations",

@@ -52,14 +52,14 @@
               },
               {
                 "reference": "CMD",
-                "value": "echo Iteration=ACCITERNUMBER varA=ACCVALEVARA varB=ACCVALEVARB ; exit -ACCITERNUMBER"
+                "value": "echo Iteration=ACCITERNUMBER varA=ACCVALEVARA varB=ACCVALEVARB ; exit -ACCITERINTNUMBER"
               }
             ]
           }
         },
         {
           "reference": "replacementRules",
-          "value": "ACCITERNUMBER ${x}\nACCVALEVARA ${x + getACCJobsData(#-1.0,mol-0_RuRuDist,0)}\nACCVALEVARB getACCJobsData(#-1.0,mol-0_CCDist)"
+          "value": "ACCITERNUMBER ${x}\nACCITERINTNUMBER ${format('0', x)}\nACCVALEVARA ${x + getACCJobsData(#-1.0,mol-0_RuRuDist,0)}\nACCVALEVARB getACCJobsData(#-1.0,mol-0_CCDist)"
         },
         {
           "reference": "maxIterations",
