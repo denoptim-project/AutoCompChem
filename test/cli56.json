@@ -31,7 +31,7 @@
         },
         {
           "reference": "CMD",
-          "value": "rm -rf *.txt *.dat boh.csv"
+          "value": "rm -rf *.txt *.dat boh.csv ; echo My text > cmd.log"
         }
       ]
     }
