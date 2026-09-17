@@ -22,8 +22,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -31,13 +30,19 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
 import autocompchem.datacollections.NamedData;
-import autocompchem.utils.StringUtils;
 import autocompchem.utils.TimeUtils;
 
 /**
  * A shell job is work to be done by the shell. The shell command can be executed
  * in a newly created subfolder. In this case any pathname should reflect the
  * fact that `pwd` would return the pathname of the subfolder.
+ * <p>
+ * Commands are always launched via a system shell ({@code sh -c} or
+ * {@code cmd /c}) so that the shell can expand wildcards and other shell
+ * features in {@code CMD} / {@code ARGS} text. The {@code CMD} and
+ * {@code EXE}+{@code SCRIPT} parameter styles remain available; they only
+ * differ in how the command line string is assembled before it is handed to
+ * the shell.
  *
  * @author Marco Foscato
  */
@@ -45,7 +50,8 @@ import autocompchem.utils.TimeUtils;
 public class ShellJob extends Job
 {
     /**
-     * The command will try to run
+     * The logical command components (for serialization / debugging).
+     * Execution always goes through a shell; see {@link #runThisJobSubClassSpecific()}.
      */
     private List<String> command;
  
@@ -127,7 +133,8 @@ public class ShellJob extends Job
 //------------------------------------------------------------------------------
 
     /**
-     * Runs this SHELL command
+     * Runs this SHELL command via a system shell so that wildcards and related
+     * shell features in the command line are expanded by the interpreter.
      */
 
     @Override
@@ -142,13 +149,14 @@ public class ShellJob extends Job
 					+ "in a shell job. Use either one or the other.");
 		}
 		
+    	String commandLine = "";
+    	
     	// First we need to see if the command comes from the constructor or
     	// from parameter storage
     	if (params.contains(ShellJobConstants.LABINTERPRETER))
     	{
-    		command = new ArrayList<String>();
-    		command.add(params.getParameter(
-    				ShellJobConstants.LABINTERPRETER).getValueAsString());
+    		String interpreter = params.getParameter(
+    				ShellJobConstants.LABINTERPRETER).getValueAsString();
     	
     		if (!params.contains(ShellJobConstants.LABSCRIPT))
     		{
@@ -161,43 +169,58 @@ public class ShellJob extends Job
     				ShellJobConstants.LABSCRIPT).getValueAsString();
     		script = script.replaceFirst("^~", System.getProperty("user.home")); 
     		File scriptFile = getNewFile(script);
-    		command.add(scriptFile.getAbsolutePath());
+    		String scriptPath = scriptFile.getAbsolutePath();
+    		
+    		command = new ArrayList<String>();
+    		command.add(interpreter);
+    		command.add(scriptPath);
+    		// Quote EXE/SCRIPT so paths with spaces stay one word; leave
+    		// ARGS raw so the shell can parse quotes and expand globs.
+    		commandLine = shellQuote(interpreter) + " " + shellQuote(scriptPath);
     	} else if (params.contains(ShellJobConstants.LABCOMMAND))
     	{
+    		String cmd = params.getParameter(
+					ShellJobConstants.LABCOMMAND).getValueAsString();
     		command = new ArrayList<String>();
-    		Pattern regexMatchingArgs = Pattern.compile(
-    				"[^\\s\"']+|\"[^\"]*\"|'[^']*'");
-    		Matcher matcher = regexMatchingArgs.matcher(params.getParameter(
-					ShellJobConstants.LABCOMMAND).getValueAsString());
-    		while (matcher.find()) 
-    		{
-    		    command.add(matcher.group());
-    		}	
+    		command.add(cmd);
+    		// Raw CMD text: shell tokenizes and expands wildcards.
+    		commandLine = cmd;
+    	} else if (command != null && !command.isEmpty())
+    	{
+    		// Constructor-built components: quote each token so a single
+    		// multi-word args component stays one argv entry (historical
+    		// ProcessBuilder behaviour), while unquoted-safe globs still expand.
+    		commandLine = command.stream()
+    				.map(ShellJob::shellQuote)
+    				.collect(Collectors.joining(" "));
     	}
     	
     	if (params.contains(ShellJobConstants.LABARGS))
     	{	
-			Pattern regexMatchingArgs = Pattern.compile(
-    				"[^\\s\"']+|\"[^\"]*\"|'[^']*'");
-    		Matcher matcher = regexMatchingArgs.matcher(params.getParameter(
-					ShellJobConstants.LABARGS).getValueAsString());
-    		while (matcher.find()) 
+    		String args = params.getParameter(
+					ShellJobConstants.LABARGS).getValueAsString();
+    		if (command == null)
     		{
-    		    command.add(matcher.group());
+    			command = new ArrayList<String>();
     		}
+    		command.add(args);
+    		if (!commandLine.isEmpty())
+    		{
+    			commandLine += " ";
+    		}
+    		// Raw ARGS: shell parses quotes and expands globs.
+    		commandLine += args;
     	}
     	
         logger.info("Running " + appID + " Job: " + this.toString() 
                 + " Thread: " + Thread.currentThread().getName()
         		+ " " + TimeUtils.getTimestamp());
-        
-        String commandAsString = StringUtils.mergeListToString(command, " ");
 
-        if (!commandAsString.trim().isEmpty())
+        if (commandLine != null && !commandLine.trim().isEmpty())
         {
             try
             {
-                ProcessBuilder pb = new ProcessBuilder(command);
+                ProcessBuilder pb = new ProcessBuilder(wrapInShell(commandLine));
                 if (customUserDir != null)
                 {
                 	// Here is where we move to the work space
@@ -249,12 +272,59 @@ public class ShellJob extends Job
             catch (Throwable t)
             {
                 throw new RuntimeException("Error while running command line "
-                                   + "operation '" + commandAsString + "'.", t);
+                                   + "operation '" + commandLine + "'.", t);
             }
         }
 
         logger.info("Done with " + appID + " Job " + this.toString() + " " 
         		+ TimeUtils.getTimestamp());
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Wraps a command line so it is interpreted by a system shell.
+     * @param commandLine the full command line to run.
+     * @return argv for {@link ProcessBuilder}: shell, flag, command line.
+     */
+    static List<String> wrapInShell(String commandLine)
+    {
+    	if (isWindows())
+    	{
+    		return Arrays.asList("cmd.exe", "/c", commandLine);
+    	}
+    	return Arrays.asList("/bin/sh", "-c", commandLine);
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Quotes {@code s} for inclusion in a POSIX {@code sh -c} command line.
+     * Strings that contain only path-safe characters and glob metacharacters
+     * ({@code * ? [ ]}) are left unquoted so the shell can expand them.
+     * @param s the token to quote.
+     * @return a shell-safe token.
+     */
+    static String shellQuote(String s)
+    {
+    	if (s == null || s.isEmpty())
+    	{
+    		return "''";
+    	}
+    	// Unquoted: avoid spaces and shell metacharacters that are not globs
+    	if (s.matches("[A-Za-z0-9_./:@%+=,\\-\\*\\?\\[\\]]+"))
+    	{
+    		return s;
+    	}
+    	return "'" + s.replace("'", "'\\''") + "'";
+    }
+
+//------------------------------------------------------------------------------
+
+    private static boolean isWindows()
+    {
+    	String os = System.getProperty("os.name");
+    	return os != null && os.toLowerCase().contains("win");
     }
     
 //------------------------------------------------------------------------------
