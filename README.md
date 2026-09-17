@@ -99,7 +99,7 @@ $END
 ```
 
 > [!NOTE]
-> While command line processing can exploit all command line functionality (e.g., use environmental variables and wildcards in pathnames), this cannot be done in parameters' files.
+> While command line processing can exploit all command line functionality (e.g., use environmental variables and wildcards in pathnames), this cannot be done in parameters' files. The exception are Shell jobs (`APP: SHELL`) that are run via a system shell. In such jobs wildcards and related shell features in `CMD` / `ARGS` are expanded by the shell. Other parameter values are still taken literally (they are not passed through a shell).
 
 To use a parameters' file, call AutoCompChem and give it the pathname to the parameters' file as value of the `-p` (`--params`) argument:
 ```

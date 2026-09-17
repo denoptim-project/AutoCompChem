@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.condition.OS.WINDOWS;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -33,6 +34,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.io.TempDir;
 
+import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileAnalyzer;
 
 
@@ -105,6 +107,79 @@ See {@Link JobTest} for a possible solution.
             t.printStackTrace();
             assertFalse(true, "Unable to work with tmp files.");
         }
+    }
+
+//------------------------------------------------------------------------------
+
+    @Test
+    @DisabledOnOs(WINDOWS)
+    public void testShellExpandsWildcardsInCmd() throws Exception
+    {
+        assertTrue(this.tempDir.isDirectory(), "Should be a directory");
+
+        Files.writeString(new File(tempDir, "alpha.txt").toPath(), "A");
+        Files.writeString(new File(tempDir, "beta.txt").toPath(), "B");
+        Files.writeString(new File(tempDir, "other.dat").toPath(), "X");
+
+        ParameterStorage params = new ParameterStorage();
+        params.setParameter(ShellJobConstants.LABCOMMAND,
+        		"printf '%s\\n' *.txt");
+
+        ShellJob job = new ShellJob();
+        job.setParameters(params);
+        job.setUserDirAndStdFiles(tempDir);
+        job.setRedirectOutErr(true);
+        job.run();
+
+        File outFile = (File) job.getOutput("LOG").getValue();
+        String log = Files.readString(outFile.toPath());
+        assertTrue(log.contains("alpha.txt"), "Glob should match alpha.txt");
+        assertTrue(log.contains("beta.txt"), "Glob should match beta.txt");
+        assertFalse(log.contains("other.dat"), "Glob should not match other.dat");
+    }
+
+//------------------------------------------------------------------------------
+
+    @Test
+    @DisabledOnOs(WINDOWS)
+    public void testShellExpandsWildcardsInExeArgs() throws Exception
+    {
+        assertTrue(this.tempDir.isDirectory(), "Should be a directory");
+
+        Files.writeString(new File(tempDir, "one.dat").toPath(), "1");
+        Files.writeString(new File(tempDir, "two.dat").toPath(), "2");
+
+        File script = new File(tempDir, "countargs.sh");
+        Files.writeString(script.toPath(),
+        		"#!/bin/sh" + NL + "echo \"N=$#\"" + NL + "echo \"ALL=$*\"" + NL);
+
+        ParameterStorage params = new ParameterStorage();
+        params.setParameter(ShellJobConstants.LABINTERPRETER, "/bin/sh");
+        params.setParameter(ShellJobConstants.LABSCRIPT, script.getAbsolutePath());
+        params.setParameter(ShellJobConstants.LABARGS, "*.dat");
+
+        ShellJob job = new ShellJob();
+        job.setParameters(params);
+        job.setUserDirAndStdFiles(tempDir);
+        job.setRedirectOutErr(true);
+        job.run();
+
+        File outFile = (File) job.getOutput("LOG").getValue();
+        String log = Files.readString(outFile.toPath());
+        assertTrue(log.contains("N=2"), "Wildcard should expand to two args");
+        assertTrue(log.contains("one.dat"), "Should receive one.dat");
+        assertTrue(log.contains("two.dat"), "Should receive two.dat");
+    }
+
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testShellQuoteLeavesGlobsUnquoted()
+    {
+    	assertEquals("*.txt", ShellJob.shellQuote("*.txt"));
+    	assertEquals("file?.log", ShellJob.shellQuote("file?.log"));
+    	assertEquals("'/path/with space'", ShellJob.shellQuote("/path/with space"));
+    	assertEquals("''", ShellJob.shellQuote(""));
     }
 
 //------------------------------------------------------------------------------

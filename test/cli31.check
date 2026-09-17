@@ -7,10 +7,10 @@ function not_passed() {
 
 if [ ! -f "cli31.log" ] ; then not_passed $LINENO ; fi
 
-if ! grep -q -i " varB=-2.5 " "cli31.log" ; then not_passed $LINENO ; fi
-if ! grep -q -i " varB=-0.5 " "cli31.log" ; then not_passed $LINENO ; fi
-if ! grep -q -i " varB=1.5 " "cli31.log" ; then not_passed $LINENO ; fi
-if ! grep -q -i " varB=19.5 " "cli31.log" ; then not_passed $LINENO ; fi
+if ! grep -q -i " varB=-2.5$" "cli31.log" ; then not_passed $LINENO ; fi
+if ! grep -q -i " varB=-0.5$" "cli31.log" ; then not_passed $LINENO ; fi
+if ! grep -q -i " varB=1.5$" "cli31.log" ; then not_passed $LINENO ; fi
+if ! grep -q -i " varB=19.5$" "cli31.log" ; then not_passed $LINENO ; fi
 if ! grep -q -i " varA=0.0 " "cli31.log" ; then not_passed $LINENO ; fi
 if ! grep -q -i " varA=13.53 " "cli31.log" ; then not_passed $LINENO ; fi
 

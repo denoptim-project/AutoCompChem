@@ -1,0 +1,39 @@
+{
+  "jobType": "ACCJob",
+  "steps": [
+    {
+      "jobType": "ShellJob",
+      "params": [
+        {
+          "reference": "APP",
+          "value": "SHELL"
+        },
+        {
+          "reference": "workDir",
+          "value": "cli56_wdir"
+        },
+        {
+          "reference": "CMD",
+          "value": "touch any_basename.dat cli56 cli56.dat boh.csv cli56.txt other.txt.dd"
+        }
+      ]
+    },
+    {
+      "jobType": "ShellJob",
+      "params": [
+        {
+          "reference": "APP",
+          "value": "SHELL"
+        },
+        {
+          "reference": "workDir",
+          "value": "cli56_wdir"
+        },
+        {
+          "reference": "CMD",
+          "value": "rm -rf *.txt *.dat boh.csv ; echo My text > cmd.log"
+        }
+      ]
+    }
+  ]
+}

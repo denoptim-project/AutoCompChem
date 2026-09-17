@@ -1,0 +1,32 @@
+#!/bin/bash
+
+function not_passed() {
+  echo "NOT Passed: check condition leading to line '$1' of '$0'"
+  exit -1
+}
+
+if [ ! -f "cli56.log" ] ; then not_passed $LINENO ; fi
+
+n=0; n=$(find cli56_wdir -maxdepth 1 -name '*.txt' | wc -l | awk '{print $1}')
+if [ 0 != "$n" ] ; then not_passed $LINENO ; fi
+
+n=0; n=$(find cli56_wdir -maxdepth 1 -name '*.dat' | wc -l | awk '{print $1}')
+if [ 0 != "$n" ] ; then not_passed $LINENO ; fi
+
+n=0; n=$(find cli56_wdir -maxdepth 1 -name '*dd' | wc -l | awk '{print $1}')
+if [ 1 != "$n" ] ; then not_passed $LINENO ; fi
+
+n=0; n=$(find cli56_wdir -maxdepth 1 -name 'cli56' | wc -l | awk '{print $1}')
+if [ 1 != "$n" ] ; then not_passed $LINENO ; fi
+
+n=0; n=$(find cli56_wdir -maxdepth 1 -name 'cmd.log' | wc -l | awk '{print $1}')
+if [ 1 != "$n" ] ; then not_passed $LINENO ; fi
+
+n=0; n=$(find cli56_wdir -maxdepth 1 -type f | wc -l | awk '{print $1}')
+if [ 3 != "$n" ] ; then not_passed $LINENO ; fi
+
+if ! grep -q "My text" "cli56_wdir/cmd.log" ; then not_passed $LINENO ; fi
+
+if grep -q 'Termination status: 0' "cli56.log" ; then echo Passed ; exit 0 ; fi
+not_passed $LINENO
+exit -1
